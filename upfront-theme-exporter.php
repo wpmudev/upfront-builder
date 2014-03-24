@@ -302,9 +302,14 @@ class UpfrontThemeExporter {
 
     protected function addElementSelector($element, $styles) {
       $rules = explode('}', $styles);
+      $selector = ".upfront-output-$element ";
       array_pop($rules);
       foreach ($rules as $i => $rule){
-        $rules[$i] = '.upfront-output-' . $element . ' ' . trim($rule) . "\n}";
+        $r = trim($rule);
+        if(substr($r, 0, strlen($selector)) != $selector)
+          $rules[$i] = $selector . $r . "\n}";
+        else
+          $rules[$i] = $r . "\n}";
       }
 
       return implode("\n\n", $rules);
