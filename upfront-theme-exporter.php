@@ -126,6 +126,7 @@ class UpfrontThemeExporter {
       preg_match_all("#'(http.+?(jpg|jpeg|png|gif))'#", $content, $matches);
 
       $images_used_in_template = array();
+      $separator = '/';
       foreach ($matches[1] as $image) {
         // Image is from a theme
         if (strpos($image, get_theme_root_uri()) !== false) {
@@ -144,8 +145,8 @@ class UpfrontThemeExporter {
         $image_filename = end($source_path_parts);
 
         // Get source and destination image
-        $source_relative_path = str_replace('/', DIRECTORY_SEPARATOR, $relative_url);
-        $source_image = $source_root . DIRECTORY_SEPARATOR . $source_relative_path;
+        $source_relative_path = str_replace('/', $separator, $relative_url);
+        $source_image = $source_root . $separator . $source_relative_path;
 
         $destination_image = $template_images_dir . $image_filename;
 
@@ -155,10 +156,10 @@ class UpfrontThemeExporter {
 
         // Replace images url root with stylesheet uri
         $image_uri = sprintf("get_stylesheet_directory_uri() . '%simages%s%s%s%s'",
-          DIRECTORY_SEPARATOR,
-          DIRECTORY_SEPARATOR,
+          $separator,
+          $separator,
           $template,
-          DIRECTORY_SEPARATOR,
+          $separator,
           $image_filename
         );
 
