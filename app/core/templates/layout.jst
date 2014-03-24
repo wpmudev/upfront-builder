@@ -1,8 +1,4 @@
 <?php
-{[ if (type === 'main') { ]}
-  include('header.php');
-{[ } ]}
-
 {[ if(regions) { _.each(regions, function(region) { ]}
 {{ region }}
 {[ });} else if (type === 'main') { ]}
@@ -30,8 +26,4 @@ $main->add_element('PlainTxt', array(
   )
 ));
 $regions->add($main);
-{[ } ]}
-
-{[ if (type === 'main') { ]}
-  include('footer.php');
 {[ } ]}
