@@ -57,6 +57,7 @@ define([
         case 'background_color':
         case 'background_map_style':
         case 'background_map_location':
+        case 'type':
           transformed = "'" + value + "'";
           break;
         case 'background_map_styles':
@@ -71,6 +72,7 @@ define([
 
       return template({
           regionName : regionData.name,
+          regionType: regionData.type,
           backgroundProperties: regionData.properties,
           modules: _.invoke(modules, 'parse')
         }
