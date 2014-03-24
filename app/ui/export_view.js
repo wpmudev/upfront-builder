@@ -43,7 +43,7 @@ define([
         evaluate    : /<%([\s\S]+?)%>/g,
         interpolate : /<%=([\s\S]+?)%>/g,
         escape      : /<%-([\s\S]+?)%>/g
-      }
+      };
 
       this.$el.html(_.template(tpl, this.model.toJSON()));
 
@@ -68,7 +68,7 @@ define([
       this.$el.html('exporting...');
       $.ajax({
         type: "POST",
-        url: 'http://upfront.dev/wp-admin/admin-ajax.php?action=upfront_thx-save-layout-to-template',
+        url: Upfront.Settings.ajax_url + '?action=upfront_thx-save-layout-to-template',
         data: {
           data: {
             theme: theme,
