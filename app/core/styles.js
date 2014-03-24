@@ -1,5 +1,5 @@
 define([
-  'underscore', 'jquery'
+  'underscore', 'jquery-loader'
 ], function(_, $) {
 
   var ThemeStyleManager = function(){};
@@ -7,6 +7,13 @@ define([
   ThemeStyleManager.prototype = {
     init: function(){
       var me = this;
+
+      if(!Upfront.Events.on){
+        return setTimeout(function(){
+          me.init();
+        },50);
+      }
+
       $(document).on('click', 'a.upfront-css-edit', this.onEditDefaultStyle);
 
       Upfront.Events.on('Upfront:loaded', function(){

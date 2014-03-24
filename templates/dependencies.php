@@ -1,7 +1,7 @@
       <script type="text/javascript">
         Upfront.themeExporter = {
           root: '<?php echo $this->pluginDirUrl ?>',
-          includes: '<?php echo includes_url() ?>/js/',
+          includes: '<?php echo includes_url() ?>js/',
           themes: <?php echo json_encode($themes) ?>,
           templates: [
             { filename: 'archive-home', name: 'Home'},
