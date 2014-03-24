@@ -1,0 +1,17 @@
+${{ region }}->add_element('{{ elementType }}', array(
+  'columns' => {{ columns }},
+  'id' => '{{ region }}-module{{ index }}-{{ elementType }}',
+  'rows' => {{ rows }},
+  'margin_top' => {{ margin_top }},
+  'margin_left' => {{ margin_left }},
+  'margin_bottom' => {{ margin_bottom }},
+  'margin_right' => {{ margin_right }},
+  {[ if (leaveWrapperOpen) { ]}
+  'close_wrapper' => false,
+  {[ } ]}
+	'options' => array(
+    'theme_style' => '{{ theme_style }}',
+    'anchor' => '{{ anchor }}',
+    {{ elementOptions }}
+	)
+));

@@ -1,0 +1,34 @@
+<p>Current theme is "<%= currentTheme %>"</p>
+<form id="thx-page-export-form">
+  <fieldset>
+    <label for="thX-destination-theme">Select theme to export</label>
+      <select name="thX-destination-theme">
+      <% _.each(themes, function(theme) { %>
+        <option <% if (theme.directory === currentTheme) { %>selected="selected" <% } %> value="<%= theme.directory %>"><%= theme.name %></option>
+      <% }) %>
+      </select>
+  </fieldset>
+  <fieldset>
+    <label for="thX-destination-template">Select template to export</label>
+      <select name="thX-destination-template">
+        <optgroup label="Layout Specific Templates">
+      <% _.each(specificTemplates, function(template) { %>
+        <option value="<%= template.filename %>"><%= template.name %></option>
+      <% }) %>
+        </optgroup>
+        <optgroup label="General Templates">
+      <% _.each(generalTemplates, function(template) { %>
+        <option value="<%= template.filename %>"><%= template.name %></option>
+      <% }) %>
+        </optgroup>
+      </select>
+  </fieldset>
+  <fieldset>
+    <input type="checkbox" name="thX-debug" />
+    <label for="thX-debug">Output to console, don't save (for debug)</label>
+  </fieldset>
+  <fieldset>
+    <input type="button" id="thx-submit-form" value="Export">
+    <input type="button" id="thx-back-to-actions" value="Back to actions">
+  </fieldset>
+</form>
