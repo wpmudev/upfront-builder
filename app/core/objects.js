@@ -29,7 +29,7 @@ define([
       PlainTxtView: UplainText,
       UgalleryView: Ugallery,
       UcontactView: Ucontact,
-      MapView: Umap,
+      UmapView: Umap,
       UtabsView: Utabs,
       UyoutubeView: Uyoutube,
       UaccordionView: Uaccordion,

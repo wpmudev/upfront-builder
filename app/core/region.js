@@ -57,6 +57,7 @@ define([
         case 'background_color':
         case 'background_map_style':
         case 'background_map_location':
+        case 'nav_region':
         case 'type':
           transformed = "'" + value + "'";
           break;
