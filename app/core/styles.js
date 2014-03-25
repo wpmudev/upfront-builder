@@ -40,12 +40,13 @@ define([
         var defaultStyle = $('#upfront-default-style-' + editor.elementType.id),
           styleContent
         ;
-        if(defaultStyle.length)
+        if(defaultStyle.length){
           styleContent = $.trim(defaultStyle.html());
           styleContent = styleContent.replace(new RegExp('.upfront-output-' + editor.elementType.id + ' ', 'g'), '');
           editor.prepareAce.then(function(){
             editor.editor.setValue(styleContent, -1);
           });
+        }
       }
     },
 
