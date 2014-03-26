@@ -16,12 +16,13 @@ define([
     elementType: '',
 
     initialize: function(objectData) {
+      this.properties = objectData.properties;
       this.data = objectData.objectProperties;
       this.parseData();
-      this.class = objectData.properties.class;
+      this.class = this.properties.class;
       this.region = objectData.region;
       this.index = objectData.index;
-      this.row = objectData.properties.row;
+      this.row = this.properties.row;
       this.leaveWrapperOpen = objectData.leaveWrapperOpen;
     },
 
@@ -45,7 +46,8 @@ define([
         index: this.index,
         elementOptions: this.optionsTemplate(this.data),
         elementType: this.elementType,
-        leaveWrapperOpen: this.leaveWrapperOpen
+        leaveWrapperOpen: this.leaveWrapperOpen,
+        elementSpecificProperties: this.addElementSpecificProperties()
       };
 
       return _.template(objectTpl, tplData);
@@ -55,7 +57,24 @@ define([
      * Children have to implement this if some specific data
      * manipulation is to be done before template rendering.
      */
-    parseData: function() {}
+    parseData: function() {},
+
+    /**
+     * This gives child classes option to specify additional
+     * properties that is not in options but in main element data.
+     * See template for uobject and upost.js object
+     * Element specific properties must be returned in formated way
+     * e.g.:
+     *   'sticky' => true,
+     * this should be valid php in which value is assigned to
+     * key and comma is finishing line.
+     * This is also valid:
+     * e.g.:
+     *   'some_key' => array('red', 'blue', 'yellow'),
+     */
+    addElementSpecificProperties: function() {
+      return false;
+    }
   });
 
   BaseObject.extend = Backbone.View.extend;//borrowing from Backbone

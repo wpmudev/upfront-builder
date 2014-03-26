@@ -9,7 +9,10 @@ ${{ region }}->add_element('{{ elementType }}', array(
   {[ if (leaveWrapperOpen) { ]}
   'close_wrapper' => false,
   {[ } ]}
-	'options' => array(
+  {[ if (elementSpecificProperties) { ]}
+  {{ elementSpecificProperties }}
+  {[ } ]}
+  'options' => array(
     'theme_style' => '{{ theme_style }}',
     'anchor' => '{{ anchor }}',
     {{ elementOptions }}
