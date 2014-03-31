@@ -17,12 +17,13 @@ define([
   'core/objects/ucode',
   'core/objects/upost',
   'core/objects/ucomment',
+  'core/objects/unewnavigation',
   'core/objects/not_implemented'
 ], function(
     Uimage, Unavigation, UplainText, Ugallery, Ucontact, Umap,
     Utabs, Uyoutube, Uaccordion, Usocial, Ulikebox, Uwidget,
     Usearch, Uslider, Uposts, Ucode, Upost, Ucomment,
-    NotImplemented
+    UnewNavigation, NotImplemented
   ) {
 
   var get = function(type) {
@@ -44,7 +45,8 @@ define([
       UpostsView: Uposts,
       CodeView: Ucode,
       ThisPostView: Upost,
-      UcommentView: Ucomment
+      UcommentView: Ucomment,
+      UnewnavigationView: UnewNavigation
     }
 
     return map[type] || NotImplemented;
