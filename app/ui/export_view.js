@@ -52,7 +52,29 @@ define([
       return this;
     },
 
-    exportPage: function(event) {
+    exportPage: function(e){
+      var self = this,
+          data = {
+            theme: self.$('form [name="thX-destination-theme"] :selected').val(),
+            template: self.$('form [name="thX-destination-template"] :selected').val(),
+            regions: JSON.stringify(Upfront.Application.LayoutEditor.get_layout_data().regions)
+          }
+      ;
+
+      this.$el.html('exporting...');
+
+      $.ajax({
+        type: "POST",
+        url: Upfront.Settings.ajax_url + '?action=upfront_thx-export-layout',
+        data: {data: data}
+      })
+      .done(function() {
+        self.render();
+        return;
+      });
+    },
+
+    exportPageOld: function(event) {
       var self = this;
       var theme = self.$('form [name="thX-destination-theme"] :selected').val();
       var template = self.$('form [name="thX-destination-template"] :selected').val();

@@ -26,6 +26,8 @@ class UpfrontThemeExporter {
       add_action($ajaxPrefix . 'create-theme', array($this, 'createTheme'));
       add_action($ajaxPrefix . 'get-themes', array($this, 'getThemesJson'));
 
+      add_action($ajaxPrefix . 'export-layout', array($this, 'exportLayout'));
+
       add_action($ajaxPrefix . 'get-default-styles', array($this, 'ajaxGetDefaultStyles'));
       add_filter('upfront-save_styles', array($this, 'saveDefaultElementStyles'), 10, 3);
     }
@@ -59,6 +61,92 @@ class UpfrontThemeExporter {
     protected function jsonError($message, $code='generic_error') {
       status_header(400);
       wp_send_json(array('error' => array('message' => $message, 'code' => $code)));
+    }
+
+    public function exportLayout(){
+      $data = $_POST['data'];
+      $regions = json_decode(stripslashes($data['regions']));
+
+      $template = "<?php\n";
+      foreach($regions as $region)
+        if($region->name != 'shadow')
+          $template .= $this->renderRegion($region);
+
+      $this->theme = $data['theme'];
+
+      $this->saveLayoutToTemplate(
+        array(
+          'template' => $data['template'],
+          'content' => $template
+        )
+      );
+
+      die;
+    }
+
+    protected function renderRegion($region){
+      include_once 'phpon.php';
+
+      $data = (array) $region;
+      $name = $data['name'];
+      $main = array(
+        'name' => $name,
+        'title' => $data['title'],
+        'type' => $data['title'],
+        'scope' => $data['scope']
+      );
+      $secondary = $this->parseProperties($data['properties']);
+
+      $output = '$'. $name . ' = upfront_create_region(
+        ' . PHPON::stringify($main) .',
+        ' . PHPON::stringify($secondary) . '
+        );
+';
+      foreach ($data['modules'] as $m) {
+        $module = (array) $m;
+        $moduleProperties = $this->parseProperties($module['properties']);
+        $props = $this->parseModuleClass($moduleProperties['class']);
+        $props['id'] = $moduleProperties['element_id'];
+        $props['rows'] = $moduleProperties['row'];
+        $props['options'] = $this->parseProperties($module['objects'][0]->properties);
+
+        $type = $this->getObjectType($props['options']['view_class']);
+
+        $output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
+      }
+
+      $output .= "\n" . '$regions->add($' . $name . ");\n";
+      return $output;
+    }
+
+    protected function getObjectType($class){
+      return str_replace('View', '', $class);
+    }
+
+    protected function parseProperties($props){
+      $parsed = array();
+      foreach($props as $p){
+        $parsed[$p->name] = $p->value;
+      }
+      return $parsed;
+    }
+
+    protected function parseModuleClass($class){
+      $classes = explode(' ', $class);
+      $properties = array();
+      foreach ($classes as $c) {
+        if(preg_match('/^c\d+$/', $c))
+          $properties['columns'] = str_replace('c', '', $c);
+        else if(preg_match('/^ml\d+$/', $c))
+          $properties['margin_left'] = str_replace('ml', '', $c);
+        else if(preg_match('/^mr\d+$/', $c))
+          $properties['margin_right'] = str_replace('mr', '', $c);
+        else if(preg_match('/^mt\d+$/', $c))
+          $properties['margin_top'] = str_replace('mt', '', $c);
+        else if(preg_match('/^mb\d+$/', $c))
+          $properties['margin_bottom'] = str_replace('mb', '', $c);
+      }
+      return $properties;
     }
 
     public function saveLayout() {
@@ -123,10 +211,11 @@ class UpfrontThemeExporter {
       // Save file list for later
       $original_images = glob($template_images_dir . '*');
 
-      preg_match_all("#'(http.+?(jpg|jpeg|png|gif))'#", $content, $matches);
+      preg_match_all("#[\"'](http.+?(jpg|jpeg|png|gif))[\"']#", $content, $matches);
 
       $images_used_in_template = array();
       $separator = '/';
+
       foreach ($matches[1] as $image) {
         // Image is from a theme
         if (strpos($image, get_theme_root_uri()) !== false) {
@@ -173,6 +262,8 @@ class UpfrontThemeExporter {
           unlink($file);
         }
       }
+
+      $theme_path = $this->getThemePath('layouts');
 
       // Save layout to file
       $layout_file = sprintf('%s%s.php',
