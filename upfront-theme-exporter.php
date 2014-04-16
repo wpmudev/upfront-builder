@@ -125,13 +125,21 @@ class UpfrontThemeExporter {
         ' . PHPON::stringify($secondary) . '
         );
 ';
-      foreach ($data['modules'] as $m) {
+      foreach ($data['modules'] as $i => $m) {
+        $nextModule = false;
+        if(sizeof($data['modules']) > ($i+1))
+          $nextModule = $this->parseProperties($data['modules'][$i+1]->properties);
+
         $module = (array) $m;
         $moduleProperties = $this->parseProperties($module['properties']);
         $props = $this->parseModuleClass($moduleProperties['class']);
         $props['id'] = $moduleProperties['element_id'];
         $props['rows'] = $moduleProperties['row'];
         $props['options'] = $this->parseProperties($module['objects'][0]->properties);
+
+        if($nextModule && $moduleProperties['wrapper_id'] == $nextModule['wrapper_id']){
+          $props['close_wrapper'] = false;
+        }
 
         $type = $this->getObjectType($props['options']['view_class']);
 
