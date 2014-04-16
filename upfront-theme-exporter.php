@@ -8,11 +8,13 @@ Author: WPMUdev
 Author URI: http://premium.wpmudev.com
 License: GPLv2 or later
 */
+
+include_once 'phpon.php';
 class UpfrontThemeExporter {
     protected $pluginDirUrl;
     protected $pluginDir;
 
-    var $DEFAULT_ELEMENT_STYLESHEET = 'defaultElementStyles.css';
+    var $DEFAULT_ELEMENT_STYLESHEET = 'elementStyles.css';
 
     public function __construct()
     {
@@ -30,6 +32,8 @@ class UpfrontThemeExporter {
 
       add_action($ajaxPrefix . 'get-default-styles', array($this, 'ajaxGetDefaultStyles'));
       add_filter('upfront-save_styles', array($this, 'saveDefaultElementStyles'), 10, 3);
+
+      add_action( 'wp_enqueue_scripts', array($this,'addStyles'));
     }
 
     function injectDependencies() {
@@ -72,12 +76,33 @@ class UpfrontThemeExporter {
         if($region->name != 'shadow')
           $template .= $this->renderRegion($region);
 
-      $this->theme = $data['theme'];
+      //Has no sense to export a layout that is not for the current theme.
+      $this->theme = get_stylesheet();
+
+      $file = $data['functionsphp'];
+      if($file == 'test')
+        $file = 'functions.test.php';
+      else if($file == 'functions')
+        $file = 'functions.php';
+      else
+        $file = false;
+
+      //Export elements' alternative styles
+      $elements = get_option('upfront_' . $this->theme . '_styles');
+      if($elements){
+        $stylesheet = "/* IMPORTANT: This file is used only in the theme installation and should not be included as a stylesheet. */\n\n";
+        foreach($elements as $element => $styles) {
+          foreach($styles as $name => $style)
+          $stylesheet .= "\n/* start $element.$name */\n$style\n/* end $element.$name */\n";
+        }
+        file_put_contents($this->getThemePath() . '/alternativeElementStyles.css', $stylesheet);
+      }
 
       $this->saveLayoutToTemplate(
         array(
           'template' => $data['template'],
-          'content' => $template
+          'content' => $template,
+          'functions' => $file
         )
       );
 
@@ -85,8 +110,6 @@ class UpfrontThemeExporter {
     }
 
     protected function renderRegion($region){
-      include_once 'phpon.php';
-
       $data = (array) $region;
       $name = $data['name'];
       $main = array(
@@ -160,7 +183,8 @@ class UpfrontThemeExporter {
 
       $elementStyles = $data['layout']['elementStyles'];
       if (!empty($elementStyles)) {
-        $this->saveElementStyles($elementStyles);
+        // Let's save the default styles directly
+        //$this->saveElementStyles($elementStyles);
       }
 
       foreach($data['layout']['layouts'] as $index=>$layout) {
@@ -263,7 +287,9 @@ class UpfrontThemeExporter {
         }
       }
 
-      $theme_path = $this->getThemePath('layouts');
+      // update functions.php ?
+      if($functions)
+        $this->createFunctionsPhp($this->getThemePath(), $functions, $this->theme);
 
       // Save layout to file
       $layout_file = sprintf('%s%s.php',
@@ -272,6 +298,45 @@ class UpfrontThemeExporter {
       );
 
       $result = file_put_contents($layout_file, $content);
+    }
+
+    public function createFunctionsPhp($themepath, $filename, $slug){
+      if(substr($themepath, -1) != DIRECTORY_SEPARATOR)
+        $themepath .=  DIRECTORY_SEPARATOR;
+
+      $filepath = $themepath . $filename;
+      $data = array(
+        'name' => ucwords(str_replace('-', '_', sanitize_html_class($slug))),
+        'slug' => $slug,
+        'pages' => '',
+        'styles' => '',
+        'import_styles' => '',
+        'styles_function' => ''
+      );
+
+      //Enqueue default element styles?
+      if(file_exists($themepath . 'elementStyles.css'))
+        $data['styles'] = 'wp_enqueue_style("elements_styles", get_stylesheet_directory_uri() . "/elementStyles.css");';
+
+      //Import alternative element styles?
+      if(file_exists($themepath . 'alternativeElementStyles.css')){
+        $data['import_styles'] = '$this->install_element_alternative_styles();';
+        $data['styles_function'] = 'protected function install_element_alternative_styles(){
+    $this->import_element_styles();
+  }';
+      }
+
+      $contents = $this->template($this->pluginDir . '/templates/functions.php', $data);
+
+      file_put_contents($filepath, $contents);
+    }
+
+    protected function template($path, $data){
+      $template = file_get_contents($path);
+      foreach ($data as $key => $value) {
+        $template = str_replace('%' . $key . '%', $value, $template);
+      }
+      return $template;
     }
 
     public function createTheme() {
@@ -326,7 +391,7 @@ class UpfrontThemeExporter {
       if ($text_domain = $form['thx-theme-text-domain']) $stylesheet_header .= "Text Domain: $text_domain\n";
       $stylesheet_header .= "*/\n";
       $stylesheet_header .= "@import url(../{$form['thx-theme-template']}/style.css);";
-      $stylesheet_header .= "@import url(elementStyle.css);@import url(dedfaultElementStyles.css);";
+      //$stylesheet_header .= "@import url(elementStyle.css);@import url(dedfaultElementStyles.css);";
 
       file_put_contents($theme_path.DIRECTORY_SEPARATOR.'style.css', $stylesheet_header);
 
@@ -335,7 +400,9 @@ class UpfrontThemeExporter {
       mkdir($theme_path.DIRECTORY_SEPARATOR.'images');
 
       // Write functions.php to add stylesheet for theme
-      copy($this->pluginDir . '/templates/functions.php', $theme_path);
+      //copy($this->pluginDir . '/templates/functions.php', $theme_path);
+
+      $this->createFunctionsPhp($theme_path . DIRECTORY_SEPARATOR . 'functions.php', $form['thx-theme-slug']);
 
       //TODO Maybe add empty files for layouts? (with one region)
 
@@ -417,6 +484,10 @@ class UpfrontThemeExporter {
       $styles = $this->parseDefaultStyles($elementStyles);
 
       wp_send_json(array('data' => $styles));
+    }
+
+    public function addStyles(){
+      wp_enqueue_style('theme_exporter', plugins_url('/exporter.css', __FILE__));
     }
 }
 

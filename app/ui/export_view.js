@@ -57,6 +57,7 @@ define([
           data = {
             theme: self.$('form [name="thX-destination-theme"] :selected').val(),
             template: self.$('form [name="thX-destination-template"] :selected').val(),
+            functionsphp: self.$('form [name="thX-functionsphp"]:checked').val(),
             regions: JSON.stringify(Upfront.Application.LayoutEditor.get_layout_data().regions)
           }
       ;
