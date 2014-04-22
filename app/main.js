@@ -39,6 +39,9 @@
     });
 
     // Upfront.themeExporter.ui = ui;
+    
+    // Expose parser to Upfront
+    Upfront.themeExporter.parse = parser;
     $('body').append(ui.render().el);
     StylesHelper.init();
   });

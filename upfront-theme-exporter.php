@@ -410,7 +410,7 @@ class UpfrontThemeExporter {
       // Write functions.php to add stylesheet for theme
       //copy($this->pluginDir . '/templates/functions.php', $theme_path);
 
-      $this->createFunctionsPhp($theme_path . DIRECTORY_SEPARATOR . 'functions.php', $form['thx-theme-slug']);
+      $this->createFunctionsPhp($theme_path, 'functions.php', $form['thx-theme-slug']);
 
       //TODO Maybe add empty files for layouts? (with one region)
 

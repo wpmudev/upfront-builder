@@ -18,7 +18,7 @@ define([
       main: [],
       footer: []
     };
-    layoutData = Upfront.Application.LayoutEditor.get_layout_data();
+    layoutData = Upfront.Application.current_subapplication.get_layout_data();
 
     _.each(layoutData.regions, function(region) {
       if (region.name.indexOf('header') > -1) {
