@@ -7,22 +7,23 @@
       backbone: Upfront.themeExporter.includes + 'backbone.min'
     },
     shim: {
-      'jquery-loader': {
-        exports : '$'
-      },
       'underscore' : {
         exports : '_'
       },
       'backbone': {
-        deps: ['underscore', 'jquery-loader'],
+        deps: ['underscore'],
         exports: 'Backbone'
       }
     }
   });
 
+  define('jquery', [], function(){
+    return jQuery;
+  });
+
   customRequire([
     'underscore',
-    'jquery-loader',
+    'jquery',
     'core/layoutParser',
     'ui/ui',
     'core/styles'

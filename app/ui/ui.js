@@ -1,6 +1,6 @@
 define([
   'underscore',
-  'jquery-loader',
+  'jquery',
   'backbone',
   'ui/export_view',
   'ui/actions_view',
@@ -13,6 +13,7 @@ define([
     },
 
     initialize: function(options) {
+      this.options = options;
       this.model = new Backbone.Model();
     },
 

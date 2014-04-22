@@ -1,6 +1,6 @@
 define([
   'underscore',
-  'jquery-loader',
+  'jquery',
   'backbone',
   'text!ui/templates/create_theme.jst'
 ], function(_, $, Backbone, tpl) {

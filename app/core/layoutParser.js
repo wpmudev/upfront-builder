@@ -1,6 +1,6 @@
 define([
   'underscore',
-  'jquery-loader',
+  'jquery',
   'core/layout',
 ], function(_, $, Layout) {
   _.templateSettings = {

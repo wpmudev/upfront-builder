@@ -1,5 +1,5 @@
 define([
-  'underscore', 'jquery-loader'
+  'underscore', 'jquery'
 ], function(_, $) {
 
   var ThemeStyleManager = function(){};

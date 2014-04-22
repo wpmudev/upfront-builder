@@ -1,5 +1,3 @@
-define([
-  Upfront.themeExporter.includes + 'jquery/jquery.js'
-], function() {
-  return jQuery.noConflict(true);
+define('jquery', [], function() {
+  return jQuery;
 });

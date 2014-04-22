@@ -1,6 +1,6 @@
 define([
   'underscore',
-  'jquery-loader',
+  'jquery',
   'backbone',
   'text!ui/templates/export.jst'
 ], function(_, $, Backbone, tpl) {
@@ -28,7 +28,7 @@ define([
       });
 
 
-      this.parse = this.options.parser;
+      this.parse = options.parser;
     },
 
     changeTheme: function(event) {

@@ -1,6 +1,6 @@
 define([
   'underscore',
-  'jquery-loader',
+  'jquery',
   'backbone',
   'text!ui/templates/actions.jst'
 ], function(_, $, Backbone, tpl) {
