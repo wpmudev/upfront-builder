@@ -4,9 +4,8 @@
 */
 
 class PHPON {
-	public static function stringify($object, $deep){
+	public static function stringify($object, $deep = 0){
 		$elements = array();
-		$deep = $deep ? $deep : 0;
 		$ob = is_object($object) ? (array) $object : $object;
 		$assoc = self::is_assoc($ob);
 
