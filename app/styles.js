@@ -3,7 +3,10 @@ define([
 ], function(_, $) {
 
   var ThemeStyleManager = function(){};
-
+  /**
+   * Allows to save default styles for the elements.
+   * @type {Object}
+   */
   ThemeStyleManager.prototype = {
     init: function(){
       var me = this;

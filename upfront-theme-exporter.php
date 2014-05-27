@@ -111,7 +111,7 @@ class UpfrontThemeExporter {
 
     protected function renderRegion($region){
       $data = (array) $region;
-      $name = $data['name'];
+      $name = str_replace('-', '_', $data['name']);
       $main = array(
         'name' => $name,
         'title' => $data['title'],
@@ -485,8 +485,8 @@ class UpfrontThemeExporter {
       $stylesheetPath = get_stylesheet_directory() . DIRECTORY_SEPARATOR . $this->DEFAULT_ELEMENT_STYLESHEET;
       $elementStyles = @file_get_contents($stylesheetPath);
       if($elementStyles === FALSE){
-        $this->jsonError('Not styles available.');
-        die;
+        //No styles, send an almost empty object
+        wp_send_json(array('data' => array('' => false))); //Needs to have an index to not to be parsed as a JS array
       }
 
       $styles = $this->parseDefaultStyles($elementStyles);
@@ -495,7 +495,6 @@ class UpfrontThemeExporter {
     }
 
     public function addStyles(){
-      wp_enqueue_style('theme_exporter', plugins_url('/exporter.css', __FILE__));
     }
 }
 
