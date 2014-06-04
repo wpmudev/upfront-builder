@@ -34,6 +34,8 @@ class UpfrontThemeExporter {
       add_filter('upfront-save_styles', array($this, 'saveDefaultElementStyles'), 10, 3);
 
       add_action( 'wp_enqueue_scripts', array($this,'addStyles'));
+
+      add_filter('upfront_data', array($this, 'addData'));
     }
 
     function injectDependencies() {
@@ -495,6 +497,19 @@ class UpfrontThemeExporter {
     }
 
     public function addStyles(){
+    }
+
+    public function addData($data){
+      ob_start();
+      include dirname(__FILE__) . '/templates/testContent.php';
+      $testContent = ob_get_clean();
+
+      $data['exporter'] = array(
+        'url' => plugins_url('', __FILE__),
+        'testContent' => $testContent
+      );
+
+      return $data;
     }
 }
 

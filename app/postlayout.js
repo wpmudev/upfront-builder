@@ -17,6 +17,7 @@ PostLayoutManager.prototype = {
 
 		Upfront.Events.on('post:layout:sidebarcommands', _.bind(this.addExportCommand, this));
 		Upfront.Events.on('command:layout:export_postlayout', _.bind(this.exportPostLayout, this));
+		Upfront.Events.on('post:layout:partrendered', this.setTestContent);
 	},
 	addExportCommand: function(){
 		var commands = Upfront.Application.sidebar.sidebar_commands.control.commands,
@@ -39,6 +40,11 @@ PostLayoutManager.prototype = {
 	},
 	exportPostLayout: function(){
 		console.log('Export layout');
+	},
+	setTestContent: function(view){
+		if(view.postPart != 'contents')
+			return;
+		view.$el.html(Upfront.data.exporter.testContent);
 	}
 };
 
