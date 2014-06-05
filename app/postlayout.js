@@ -44,7 +44,7 @@ PostLayoutManager.prototype = {
 	setTestContent: function(view){
 		if(view.postPart != 'contents')
 			return;
-		view.$el.html(Upfront.data.exporter.testContent);
+		view.$('.upfront-object-content').html(Upfront.data.exporter.testContent);
 	}
 };
 
