@@ -63,7 +63,7 @@ PostLayoutManager.prototype = {
                 })
             ;
             if(elementSlug == 'single')
-                specificity = type == 'this-post' ? post_type + "-" +  editor.postView.postId : editor.postView.editor.post.get('post_type');
+                specificity = type == 'this-post' ? editor.postView.postId : editor.postView.editor.post.get('post_type');
             else
                 specificity = type == 'this-post' ? editor.postView.property('element_id').replace('uposts-object-','') : editor.postView.property('post_type');
 
@@ -78,10 +78,15 @@ PostLayoutManager.prototype = {
             Upfront.Util.post({
                 action: 'upfront_thx-export-post-layout',
                 layoutData: layoutData,
-                file_name: elementSlug + '-' + specificity
+                params: {
+                    specificity : specificity,
+                    type        : elementSlug
+                }
             }).done(function (response) {
                 loading.done();
-                console.log(response);
+                var message = "<h4>Layout successfully exported in the following file:</h4>";
+                message += response.file;
+                Upfront.Views.Editor.notify( message );
                 saveDialog.close();
             });
         });

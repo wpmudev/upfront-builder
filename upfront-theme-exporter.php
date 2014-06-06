@@ -526,17 +526,17 @@ class UpfrontThemeExporter {
     public function ajax_export_post_layout(){
 
         $layoutData = isset($_POST['layoutData']) ? $_POST['layoutData'] : false;
-        $layout = isset($_POST['layout']) ? $_POST['layout'] : false;
-        $file_name = isset($_POST['file_name']) ? $_POST['file_name'] : false;
-        if(!$layoutData || !$file_name )
+        $params = isset($_POST['params']) ? $_POST['params'] : false;
+        if(!$layoutData || !$params )
             $this->jsonError('No layout data or cascade sent.');
 
         wp_send_json(array(
-            "saved" => $this->save_post_layout( $file_name, $layoutData ),
+            "file" => $this->save_post_layout( $params, $layoutData ),
         ));
     }
 
-    protected function save_post_layout( $file_name, $layoutData ){
+    protected function save_post_layout( $params, $layoutData ){
+        $file_name = $params['type'] . "-" . $params['specificity'];
         $dir = trailingslashit( get_stylesheet_directory() ) . "postlayouts";
         if (!file_exists( $dir )) {
             mkdir( $dir );
@@ -546,7 +546,7 @@ class UpfrontThemeExporter {
         $contents = "<?php return " .  PHPON::stringify( $layoutData ) . ";";
         $result = file_put_contents($file_name, $contents);
         chmod($file_name, 0777);
-        return $result;
+        return $file_name;
     }
 }
 
