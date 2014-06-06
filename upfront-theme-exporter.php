@@ -1,12 +1,32 @@
 <?php
 /*
 Plugin Name: Upfront Theme Exporter
-Plugin URI: http://premium.wpmudev.com
+Plugin URI: http://premium.wpmudev.com/
 Description: Exports upfront page layouts to theme.
 Version: 0.0.1
-Author: WPMUdev
+Author: WPMU DEV
 Author URI: http://premium.wpmudev.com
 License: GPLv2 or later
+WDP ID: 
+*/
+
+/* 
+Copyright 2009-2014 Incsub (http://incsub.com)
+Author - Javier
+Contributors - Jeffri
+  
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
+the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 include_once 'phpon.php';
