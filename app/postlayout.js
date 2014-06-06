@@ -39,7 +39,52 @@ PostLayoutManager.prototype = {
 		console.log(commands.length);
 	},
 	exportPostLayout: function(){
-		console.log('Export layout');
+        var self = this,
+            editor = Upfront.Application.PostLayoutEditor,
+            saveDialog = new Upfront.Views.Editor.SaveDialog({
+                question: 'Do you wish to export the post layout just for this post or apply it to all posts?',
+                thisPostButton: 'This post only',
+                allPostsButton: 'All posts of this type'
+            });
+        saveDialog.render();
+        saveDialog.on('closed', function(){
+                saveDialog.remove();
+                saveDialog = false;
+        });
+        saveDialog.on('save', function(type) {
+            var elementType = editor.postView.property('type');
+            var specificity,
+                post_type = editor.postView.editor.post.get('post_type'),
+                elementSlug = elementType == 'ThisPostModel' ? 'single' : 'archive',
+                loading = new Upfront.Views.Editor.Loading({
+                    loading: "Saving post layout...",
+                    done: "Thank you for waiting",
+                    fixed: false
+                })
+            ;
+            if(elementSlug == 'single')
+                specificity = type == 'this-post' ? post_type + "-" +  editor.postView.postId : editor.postView.editor.post.get('post_type');
+            else
+                specificity = type == 'this-post' ? editor.postView.property('element_id').replace('uposts-object-','') : editor.postView.property('post_type');
+
+            var layoutData = {
+                postLayout: editor.exportPostLayout(),
+                partOptions: editor.postView.partOptions || {}
+            };
+
+            loading.render();
+            saveDialog.$('#upfront-save-dialog').append(loading.$el);
+
+            Upfront.Util.post({
+                action: 'upfront_thx-export-post-layout',
+                layoutData: layoutData,
+                file_name: elementSlug + '-' + specificity
+            }).done(function (response) {
+                loading.done();
+                console.log(response);
+                saveDialog.close();
+            });
+        });
 	},
 	setTestContent: function(view){
 		if(view.postPart != 'contents')

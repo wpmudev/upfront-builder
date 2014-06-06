@@ -29,6 +29,7 @@ class UpfrontThemeExporter {
       add_action($ajaxPrefix . 'get-themes', array($this, 'getThemesJson'));
 
       add_action($ajaxPrefix . 'export-layout', array($this, 'exportLayout'));
+      add_action($ajaxPrefix . 'export-post-layout', array($this, 'ajax_export_post_layout'));
 
       add_action($ajaxPrefix . 'get-default-styles', array($this, 'ajaxGetDefaultStyles'));
       add_filter('upfront-save_styles', array($this, 'saveDefaultElementStyles'), 10, 3);
@@ -38,6 +39,15 @@ class UpfrontThemeExporter {
       add_filter('upfront_data', array($this, 'addData'));
     }
 
+    protected function render_json( $data, $die = true, $errorHeader = false){
+        if ($errorHeader)
+            header('HTTP/1.1 500 Internal Server Error');
+
+        header('Content-type: application/json');
+        echo json_encode( $data );
+
+        if( $die ) wp_die();
+    }
     function injectDependencies() {
       if (!is_user_logged_in()) return false; // Do not inject for non-logged in user
 
@@ -110,6 +120,7 @@ class UpfrontThemeExporter {
 
       die;
     }
+
 
     protected function renderRegion($region){
       $data = (array) $region;
@@ -510,6 +521,32 @@ class UpfrontThemeExporter {
       );
 
       return $data;
+    }
+
+    public function ajax_export_post_layout(){
+
+        $layoutData = isset($_POST['layoutData']) ? $_POST['layoutData'] : false;
+        $layout = isset($_POST['layout']) ? $_POST['layout'] : false;
+        $file_name = isset($_POST['file_name']) ? $_POST['file_name'] : false;
+        if(!$layoutData || !$file_name )
+            $this->jsonError('No layout data or cascade sent.');
+
+        wp_send_json(array(
+            "saved" => $this->save_post_layout( $file_name, $layoutData ),
+        ));
+    }
+
+    protected function save_post_layout( $file_name, $layoutData ){
+        $dir = trailingslashit( get_stylesheet_directory() ) . "postlayouts";
+        if (!file_exists( $dir )) {
+            mkdir( $dir );
+        }
+
+        $file_name = $dir . DIRECTORY_SEPARATOR . $file_name . ".php";
+        $contents = "<?php return " .  PHPON::stringify( $layoutData ) . ";";
+        $result = file_put_contents($file_name, $contents);
+        chmod($file_name, 0777);
+        return $result;
     }
 }
 
