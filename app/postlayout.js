@@ -88,6 +88,10 @@ PostLayoutManager.prototype = {
                 message += response.file;
                 Upfront.Views.Editor.notify( message );
                 saveDialog.close();
+                editor.postView.postLayout = layoutData.postLayout;
+                editor.postView.render();
+                Upfront.Application.start(Upfront.Application.mode.last);
+
             });
         });
 	},
