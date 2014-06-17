@@ -7,14 +7,14 @@ Version: 0.0.1
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.com
 License: GPLv2 or later
-WDP ID: 
+WDP ID:
 */
 
-/* 
+/*
 Copyright 2009-2014 Incsub (http://incsub.com)
 Author - Javier
 Contributors - Jeffri
-  
+
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
 the Free Software Foundation.
@@ -50,6 +50,8 @@ class UpfrontThemeExporter {
 
       add_action($ajaxPrefix . 'export-layout', array($this, 'exportLayout'));
       add_action($ajaxPrefix . 'export-post-layout', array($this, 'ajax_export_post_layout'));
+
+      add_action($ajaxPrefix . 'export-part-template', array($this, 'ajax_export_part_template'));
 
       add_action($ajaxPrefix . 'get-default-styles', array($this, 'ajaxGetDefaultStyles'));
       add_filter('upfront-save_styles', array($this, 'saveDefaultElementStyles'), 10, 3);
@@ -528,6 +530,7 @@ class UpfrontThemeExporter {
     }
 
     public function addStyles(){
+      wp_enqueue_style('upfront-exporter', $this->pluginDirUrl . '/exporter.css');
     }
 
     public function addData($data){
@@ -543,8 +546,66 @@ class UpfrontThemeExporter {
       return $data;
     }
 
-    public function ajax_export_post_layout(){
+    public function ajax_export_part_template(){
+      global $allowedposttags;
+      $tpl = isset($_POST['tpl']) ? wp_kses(stripslashes($_POST['tpl']), $allowedposttags) : false;
+      $type = isset($_POST['type']) ? $_POST['type'] : false;
+      $part = isset($_POST['part']) ? $_POST['part'] : false;
+      $id = isset($_POST['id']) ? $_POST['id'] : false;
 
+      if(!$tpl || !$type || !$part || !$id)
+        $this->jsonError('Not all required data sent.');
+
+      if($type == 'UpostsModel')
+        $type = 'archive';
+      else
+        $type = 'single';
+
+      $filename = $this->export_post_part_template($type, $id, $part, $tpl);
+
+      wp_send_json(array('filename' => $filename));
+    }
+
+    protected function export_post_part_template($type, $id, $part, $tpl){
+      $filePath = trailingslashit( get_stylesheet_directory() ) . "templates";
+      if (!file_exists( $filePath ))
+          mkdir( $filePath );
+
+      $filePath .= '/postparts';
+      if (!file_exists( $filePath ))
+          mkdir( $filePath );
+
+      $filePath .= '/' . $type . '-' . $id . '.php';
+      $templates = array();
+      if(file_exists($filePath))
+        $templates = require $filePath;
+
+      $templates[$part] = $tpl;
+
+      $output = $this->generate_exported_templates($templates);
+
+      file_put_contents($filePath, $output);
+
+      return $filePath;
+    }
+
+    protected function generate_exported_templates($templates){
+      $out = '<?php $templates = array(); ob_start();' . "\n\n";
+
+      foreach($templates as $part => $template){
+        $out .= "//***** $part\n";
+        $out .= "?>$template<?php\n";
+        $out .= '$templates["' . $part . "\"] = ob_get_contents();\n";
+        $out .= "ob_clean();\n\n";
+      }
+
+      $out .= "ob_end_clean();\n";
+      $out .= 'return $templates;';
+
+      return $out;
+    }
+
+    public function ajax_export_post_layout(){
         $layoutData = isset($_POST['layoutData']) ? $_POST['layoutData'] : false;
         $params = isset($_POST['params']) ? $_POST['params'] : false;
         if(!$layoutData || !$params )
@@ -554,6 +615,7 @@ class UpfrontThemeExporter {
             "file" => $this->save_post_layout( $params, $layoutData ),
         ));
     }
+
 
     protected function save_post_layout( $params, $layoutData ){
         $file_name = $params['type'] . "-" . $params['specificity'];

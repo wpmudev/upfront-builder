@@ -26,6 +26,9 @@ define([
     },
 
     onEditDefaultStyle: function(e){
+      if($(e.target).hasClass('upfront-template-edit'))
+        return;
+
       var editor = Upfront.Application.cssEditor;
       if(!editor.name){
         var name = '_default',

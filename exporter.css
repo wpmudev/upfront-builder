@@ -1,62 +1,12 @@
-.theme-exporter {
-  z-index: 2000;
-  padding: 0 10px;
-  position: fixed;
-  top: 50px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  line-height: 1.2em;
+.upfront-export-postpart {
+  position: absolute;
+  bottom: 10px;
+  right: 80px;
+  border: 2px solid #3d5266;
+  color: #dae6f2 !important;
+  padding: 3px 7px;
+  font-size: 14px;
 }
-.theme-exporter span.export {
-	display: block;
-	cursor: pointer;
-	width:30px;
-	height: 30px;
-	text-align: center;
-}
-.theme-exporter form {
-	margin-bottom: 10px;
-}
-.theme-exporter label {
-  padding: 0;
-  margin: 0;
-  display:inline-block;
-  width: 120px;
-  font-size: 12px;
-}
-.theme-exporter label[for=thX-debug] {
-  width: auto;
-  font-size: 12px;
-}
-.theme-exporter input {
-  font-size: 12px;
-}
-.theme-exporter input[type=text] {
-  padding: 0;
-  margin: 0;
-  display: inline-block;
-  margin: 0px 0 2px;
-  display: block;
-}
-.theme-exporter select {
-  font-size: 12px;
-}
-.theme-exporter p {
-  font-size: 12px;
-  margin-bottom: 3px;
-}
-
-.theme-exporter input,
-.theme-exporter select,
-.theme-exporter textarea {
-  color: #333;
-}
-
-.theme-exporter fieldset{
-	margin-top: -1px;
-}
-
-.theme-exporter fieldset * {
-	vertical-align: middle;
+.upfront-export-postpart:hover {
+  border-color: #3ea;
 }
