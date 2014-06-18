@@ -548,6 +548,7 @@ class UpfrontThemeExporter {
 
     public function ajax_export_part_template(){
       global $allowedposttags;
+      $allowedposttags['time'] = array('datetime' => true);
       $tpl = isset($_POST['tpl']) ? wp_kses(stripslashes($_POST['tpl']), $allowedposttags) : false;
       $type = isset($_POST['type']) ? $_POST['type'] : false;
       $part = isset($_POST['part']) ? $_POST['part'] : false;
