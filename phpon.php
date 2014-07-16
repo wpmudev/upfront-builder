@@ -25,7 +25,7 @@ class PHPON {
 				$string .= '"' . $key . '" => ';
 
 			if(is_string($value))
-				$string .= '"' . $value . '"';
+				$string .= '"' . addslashes($value) . '"';
 			else if(is_object($value) || is_array($value))
 				$string .= self::stringify($value, $deep + 1);
 			else if(is_bool($value))

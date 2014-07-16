@@ -158,8 +158,8 @@ class UpfrontThemeExporter {
       $output = '$'. $name . ' = upfront_create_region(
         ' . PHPON::stringify($main) .',
         ' . PHPON::stringify($secondary) . '
-        );
-';
+        );';
+
       foreach ($data['modules'] as $i => $m) {
         $nextModule = false;
         if(sizeof($data['modules']) > ($i+1))
