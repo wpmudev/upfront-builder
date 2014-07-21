@@ -103,15 +103,18 @@ class UpfrontThemeExporter {
 
     public function exportLayout(){
       $data = $_POST['data'];
+      if (empty($data['theme']) || empty($data['template'])) {
+        $this->jsonError('Theme & template must be choosen.', 'missing_data');
+      }
+
+      $this->theme = $data['theme'];
+
       $regions = json_decode(stripslashes($data['regions']));
 
       $template = "<?php\n";
       foreach($regions as $region)
         if($region->name != 'shadow')
           $template .= $this->renderRegion($region);
-
-      //Has no sense to export a layout that is not for the current theme.
-      $this->theme = get_stylesheet();
 
       $file = $data['functionsphp'];
       if($file == 'test')
@@ -150,7 +153,7 @@ class UpfrontThemeExporter {
       $main = array(
         'name' => $name,
         'title' => $data['title'],
-        'type' => $data['title'],
+        'type' => 'wide',
         'scope' => $data['scope']
       );
       $secondary = $this->parseProperties($data['properties']);
@@ -268,7 +271,10 @@ class UpfrontThemeExporter {
     }
 
     protected function saveLayoutToTemplate($layout) {
-      extract($layout); //$template, $content
+      $template = $layout['template'];
+      $content = $layout['content'];
+      $functions = isset($layout['functions']) ? $layout['functions'] : null;
+
       $matches = array();
       $uploads_dir = wp_upload_dir();
 
@@ -283,6 +289,7 @@ class UpfrontThemeExporter {
       $images_used_in_template = array();
       $separator = '/';
 
+			// matches[1] containes full image urls
       foreach ($matches[1] as $image) {
         // Image is from a theme
         if (strpos($image, get_theme_root_uri()) !== false) {
@@ -318,8 +325,10 @@ class UpfrontThemeExporter {
           $separator,
           $image_filename
         );
+				// var_dump('image uri', $image_uri);
 
         $content = str_replace("'" . $image . "'", $image_uri, $content);
+        $content = str_replace('"' . $image . '"', $image_uri, $content);
       }
 
       // Delete images that are not used, this is needed if template is exported from itself
@@ -447,7 +456,25 @@ class UpfrontThemeExporter {
 
       $this->createFunctionsPhp($theme_path, 'functions.php', $form['thx-theme-slug']);
 
-      //TODO Maybe add empty files for layouts? (with one region)
+      // Adding default layouts
+			$default_layouts_dir = sprintf(
+				'%s%stemplates%sdefault_layouts%s',
+				$this->pluginDir,
+				DIRECTORY_SEPARATOR,
+				DIRECTORY_SEPARATOR,
+				DIRECTORY_SEPARATOR
+			);
+			$theme_layouts_dir = sprintf(
+				'%s%slayouts%s',
+				$theme_path,
+				DIRECTORY_SEPARATOR,
+				DIRECTORY_SEPARATOR
+			);
+			$default_layouts = glob($default_layouts_dir . '*');
+			foreach($default_layouts as $layout) {
+				$destination_file = str_replace($default_layouts_dir, $theme_layouts_dir, $layout);
+        copy($layout, $destination_file);
+			}
 
       $this->getThemesJson();
     }
