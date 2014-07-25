@@ -350,7 +350,30 @@ class UpfrontThemeExporter {
       );
 
       $result = file_put_contents($layout_file, $content);
+
+			// Save typography to settngs.json
+			$typography = isset($_POST['data']['typography']) ? $_POST['data']['typography'] : false;
+			if ($typography !== false) {
+				$this->saveTypography($typography);
+			}
     }
+
+		public function saveTypography($typography) {
+			$settings = false;
+			$settings_file = sprintf(
+				'%ssettings.php',
+        $this->getThemePath()
+      );
+
+			// if (file_exists($settings_file)) {
+				// ob_start();
+				// include $settings_file;
+				// $settings = ob_get_clean();
+			// }
+
+			$settings = sprintf('<?php $typography = \'%s\';', $typography);
+			file_put_contents($settings_file, $settings);
+		}
 
     public function createFunctionsPhp($themepath, $filename, $slug){
       if(substr($themepath, -1) != DIRECTORY_SEPARATOR)
