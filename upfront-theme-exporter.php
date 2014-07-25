@@ -351,27 +351,36 @@ class UpfrontThemeExporter {
 
       $result = file_put_contents($layout_file, $content);
 
-			// Save typography to settngs.json
-			$typography = isset($_POST['data']['typography']) ? $_POST['data']['typography'] : false;
-			if ($typography !== false) {
-				$this->saveTypography($typography);
+			// Save properties to settings file
+			$properties = array('typography', 'layout_style');
+			$updated_properties = array();
+			foreach($properties as $property) {
+				$value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
+				if ($tvalue === false) continue;
+				$updated_properties[$property] = $value;
 			}
+			$this->updateSettingsFile($updated_properties);
     }
 
-		public function saveTypography($typography) {
-			$settings = false;
+		public function updateSettingsFile($properties) {
 			$settings_file = sprintf(
 				'%ssettings.php',
         $this->getThemePath()
       );
 
-			// if (file_exists($settings_file)) {
-				// ob_start();
-				// include $settings_file;
-				// $settings = ob_get_clean();
-			// }
-
-			$settings = sprintf('<?php $typography = \'%s\';', $typography);
+			if (file_exists($settings_file)) {
+				// This will import all variables from settings file
+				include $settings_file;
+			}
+			// Overwrite variables that are updated
+			foreach($properties as $property=>$value) {
+				$$property = $value;
+			}
+			$settings = sprintf(
+				'<?php $typography = \'%s\';' . "\n" . '$layout_style = \'%s\';',
+				isset($typography) ? $typography : '',
+				isset($layout_style) ? addslashes($layout_style) : '/* Write global theme styles here */'
+			);
 			file_put_contents($settings_file, $settings);
 		}
 
