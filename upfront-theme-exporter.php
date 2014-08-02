@@ -55,6 +55,7 @@ class UpfrontThemeExporter {
 
       add_action($ajaxPrefix . 'get-default-styles', array($this, 'ajaxGetDefaultStyles'));
       add_filter('upfront-save_styles', array($this, 'saveDefaultElementStyles'), 10, 3);
+      add_action($ajaxPrefix . 'export-element-styles', array($this, 'exportElementStyles'));
 
       add_action( 'wp_enqueue_scripts', array($this,'addStyles'));
 
@@ -101,7 +102,7 @@ class UpfrontThemeExporter {
       wp_send_json(array('error' => array('message' => $message, 'code' => $code)));
     }
 
-    public function exportLayout(){
+    public function exportLayout() {
       $data = $_POST['data'];
       if (empty($data['theme']) || empty($data['template'])) {
         $this->jsonError('Theme & template must be choosen.', 'missing_data');
@@ -146,8 +147,24 @@ class UpfrontThemeExporter {
       die;
     }
 
+		public function exportElementStyles() {
+			$data = $_POST['data'];
+			if (empty($data['stylename']) || empty($data['styles']) || empty($data['elementType'])) {
+				$this->jsonError('Some data is missing.', 'missing_data');
+			}
 
-    protected function renderRegion($region){
+			$this->theme = $_POST['stylesheet'];
+
+			$style_file = sprintf(
+				'%s%s.css',
+				$this->getThemePath('element-styles', $data['elementType']),
+				$data['stylename']
+      );
+
+			file_put_contents($style_file, $data['styles']);
+		}
+
+    protected function renderRegion($region) {
       $data = (array) $region;
       $name = str_replace('-', '_', $data['name']);
       $main = array(
