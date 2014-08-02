@@ -60,6 +60,9 @@ class UpfrontThemeExporter {
       add_action( 'wp_enqueue_scripts', array($this,'addStyles'));
 
       add_filter('upfront_data', array($this, 'addData'));
+
+			add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
+			add_filter('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 10, 2);
     }
 
     protected function render_json( $data, $die = true, $errorHeader = false){
@@ -379,7 +382,35 @@ class UpfrontThemeExporter {
 			$this->updateSettingsFile($updated_properties);
     }
 
+		public function updateThemeFonts($theme_fonts) {
+			$this->updateSettingsFile(
+				array('theme_fonts' => json_encode($theme_fonts))
+			);
+		}
+
+		public function getThemeFonts($theme_fonts, $args) {
+			if (empty($args['stylesheet'])) return $theme_fonts;
+
+			$this->theme = $args['stylesheet'];
+
+			$settings_file = sprintf(
+				'%ssettings.php',
+        $this->getThemePath()
+      );
+
+			if (file_exists($settings_file)) {
+				// This will import all variables from settings file
+				include $settings_file;
+			}
+
+			if (isset($args['json']) && $args['json']) return $theme_fonts;
+
+			return json_decode($theme_fonts);
+		}
+
 		public function updateSettingsFile($properties) {
+			if (empty($this->theme)) $this->theme = $_POST['stylesheet'];
+
 			$settings_file = sprintf(
 				'%ssettings.php',
         $this->getThemePath()
@@ -394,9 +425,10 @@ class UpfrontThemeExporter {
 				$$property = $value;
 			}
 			$settings = sprintf(
-				'<?php $typography = \'%s\';' . "\n" . '$layout_style = \'%s\';',
+				'<?php $typography = \'%s\';' . "\n" . '$layout_style = \'%s\';' . "\n" . '$theme_fonts = \'%s\';',
 				isset($typography) ? $typography : '',
-				isset($layout_style) ? addslashes($layout_style) : '/* Write global theme styles here */'
+				isset($layout_style) ? addslashes($layout_style) : '/* Write global theme styles here */',
+				isset($theme_fonts) ? $theme_fonts : ''
 			);
 			file_put_contents($settings_file, $settings);
 		}
@@ -592,10 +624,10 @@ class UpfrontThemeExporter {
       return implode("\n\n", $rules);
     }
 
-    public function ajaxGetDefaultStyles(){
+    public function ajaxGetDefaultStyles() {
       $stylesheetPath = get_stylesheet_directory() . DIRECTORY_SEPARATOR . $this->DEFAULT_ELEMENT_STYLESHEET;
       $elementStyles = @file_get_contents($stylesheetPath);
-      if($elementStyles === FALSE){
+      if($elementStyles === FALSE) {
         //No styles, send an almost empty object
         wp_send_json(array('data' => array('' => false))); //Needs to have an index to not to be parsed as a JS array
       }
@@ -605,11 +637,11 @@ class UpfrontThemeExporter {
       wp_send_json(array('data' => $styles));
     }
 
-    public function addStyles(){
+    public function addStyles() {
       wp_enqueue_style('upfront-exporter', $this->pluginDirUrl . '/exporter.css');
     }
 
-    public function addData($data){
+    public function addData($data) {
       ob_start();
       include dirname(__FILE__) . '/templates/testContent.php';
       $testContent = ob_get_clean();
@@ -622,7 +654,7 @@ class UpfrontThemeExporter {
       return $data;
     }
 
-    public function ajax_export_part_template(){
+    public function ajax_export_part_template() {
       global $allowedposttags;
       $allowedposttags['time'] = array('datetime' => true);
       $tpl = isset($_POST['tpl']) ? wp_kses(stripslashes($_POST['tpl']), $allowedposttags) : false;
@@ -682,7 +714,7 @@ class UpfrontThemeExporter {
       return $out;
     }
 
-    public function ajax_export_post_layout(){
+    public function ajax_export_post_layout() {
         $layoutData = isset($_POST['layoutData']) ? $_POST['layoutData'] : false;
         $params = isset($_POST['params']) ? $_POST['params'] : false;
         if(!$layoutData || !$params )
@@ -694,7 +726,7 @@ class UpfrontThemeExporter {
     }
 
 
-    protected function save_post_layout( $params, $layoutData ){
+    protected function save_post_layout( $params, $layoutData ) {
         $file_name = $params['type'] . "-" . $params['specificity'];
         $dir = trailingslashit( get_stylesheet_directory() ) . "postlayouts";
         if (!file_exists( $dir )) {
