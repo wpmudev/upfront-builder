@@ -63,6 +63,9 @@ class UpfrontThemeExporter {
 
 			add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
 			add_filter('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 10, 2);
+
+			add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
+			add_filter('upfront_get_theme_colors', array($this, 'getThemeColors'), 10, 2);
     }
 
     protected function render_json( $data, $die = true, $errorHeader = false){
@@ -408,6 +411,33 @@ class UpfrontThemeExporter {
 			return json_decode($theme_fonts);
 		}
 
+		public function updateThemeColors($theme_colors) {
+			$this->updateSettingsFile(
+				array('theme_colors' => json_encode($theme_colors))
+			);
+		}
+
+		public function getThemeColors($theme_colors, $args) {
+			if (empty($args['stylesheet'])) return $theme_colors;
+
+			$this->theme = $args['stylesheet'];
+
+			$settings_file = sprintf(
+				'%ssettings.php',
+        $this->getThemePath()
+      );
+
+			if (file_exists($settings_file)) {
+				// This will import all variables from settings file
+				include $settings_file;
+			}
+
+			if (isset($args['json']) && $args['json']) return $theme_colors;
+
+			return json_decode($theme_colors);
+		}
+
+
 		public function updateSettingsFile($properties) {
 			if (empty($this->theme)) $this->theme = $_POST['stylesheet'];
 
@@ -425,10 +455,11 @@ class UpfrontThemeExporter {
 				$$property = $value;
 			}
 			$settings = sprintf(
-				'<?php $typography = \'%s\';' . "\n" . '$layout_style = \'%s\';' . "\n" . '$theme_fonts = \'%s\';',
+				'<?php $typography = \'%s\';' . "\n" . '$layout_style = \'%s\';' . "\n" . '$theme_fonts = \'%s\';' . "\n" . '$theme_colors = \'%s\';',
 				isset($typography) ? $typography : '',
 				isset($layout_style) ? addslashes($layout_style) : '/* Write global theme styles here */',
-				isset($theme_fonts) ? $theme_fonts : ''
+				isset($theme_fonts) ? $theme_fonts : '',
+				isset($theme_colors) ? $theme_colors : ''
 			);
 			file_put_contents($settings_file, $settings);
 		}
