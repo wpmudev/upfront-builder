@@ -61,6 +61,8 @@ class UpfrontThemeExporter {
 
       add_filter('upfront_data', array($this, 'addData'));
 
+			add_filter('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 10, 2);
+
 			add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
 			add_filter('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 10, 2);
 
@@ -176,7 +178,7 @@ class UpfrontThemeExporter {
       $main = array(
         'name' => $name,
         'title' => $data['title'],
-        'type' => 'wide',
+        'type' => $data['type'],
         'scope' => $data['scope']
       );
       $secondary = $this->parseProperties($data['properties']);
@@ -375,7 +377,7 @@ class UpfrontThemeExporter {
       $result = file_put_contents($layout_file, $content);
 
 			// Save properties to settings file
-			$properties = array('typography', 'layout_style');
+			$properties = array('typography', 'layout_style', 'layout_properties');
 			$updated_properties = array();
 			foreach($properties as $property) {
 				$value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
@@ -384,6 +386,37 @@ class UpfrontThemeExporter {
 			}
 			$this->updateSettingsFile($updated_properties);
     }
+
+		public function getLayoutProperties($properties, $args) {
+			if (empty($args['stylesheet'])) return $properties;
+
+			$this->theme = $args['stylesheet'];
+
+			$settings_file = sprintf(
+				'%ssettings.php',
+        $this->getThemePath()
+      );
+			if (file_exists($settings_file)) {
+				include $settings_file;
+			}
+			if ($layout_properties) {
+				$properties = json_decode(stripslashes($layout_properties), true);
+			}
+			if ($typography) {
+				$properties[] = array(
+					'name' => 'typography',
+					'value' => json_decode(stripslashes($typography))
+				);
+			}
+			if ($layout_style) {
+				$properties[] = array(
+					'name' => 'layout_style',
+					'value' => stripslashes($layout_style)
+				);
+			}
+
+			return $properties;
+		}
 
 		public function updateThemeFonts($theme_fonts) {
 			$this->updateSettingsFile(
@@ -455,11 +488,12 @@ class UpfrontThemeExporter {
 				$$property = $value;
 			}
 			$settings = sprintf(
-				'<?php $typography = \'%s\';' . "\n" . '$layout_style = \'%s\';' . "\n" . '$theme_fonts = \'%s\';' . "\n" . '$theme_colors = \'%s\';',
+				'<?php $typography = \'%s\';' . "\n" . '$layout_style = \'%s\';' . "\n" . '$theme_fonts = \'%s\';' . "\n" . '$theme_colors = \'%s\';' . "\n" . '$layout_properties = \'%s\';',
 				isset($typography) ? $typography : '',
 				isset($layout_style) ? addslashes($layout_style) : '/* Write global theme styles here */',
 				isset($theme_fonts) ? $theme_fonts : '',
-				isset($theme_colors) ? $theme_colors : ''
+				isset($theme_colors) ? $theme_colors : '',
+				isset($layout_properties) ? $layout_properties : ''
 			);
 			file_put_contents($settings_file, $settings);
 		}
