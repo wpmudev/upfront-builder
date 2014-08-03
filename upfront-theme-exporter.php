@@ -364,6 +364,9 @@ class UpfrontThemeExporter {
         }
       }
 
+			// Replace all urls that reffer to current site with get_current_site
+			$content = str_replace(get_site_url(), '" . get_site_url() . "', $content);
+
       // update functions.php ?
       if($functions)
         $this->createFunctionsPhp($this->getThemePath(), $functions, $this->theme);
