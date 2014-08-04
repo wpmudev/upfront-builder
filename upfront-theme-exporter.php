@@ -444,7 +444,7 @@ class UpfrontThemeExporter {
 
 			if (isset($args['json']) && $args['json']) return $theme_fonts;
 
-			return json_decode($theme_fonts);
+			return is_array( $theme_fonts ) ? $theme_fonts : json_decode($theme_fonts);
 		}
 
 		public function updateThemeColors($theme_colors) {
