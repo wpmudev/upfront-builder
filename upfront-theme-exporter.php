@@ -298,7 +298,6 @@ class UpfrontThemeExporter {
     protected function saveLayoutToTemplate($layout) {
       $template = $layout['template'];
       $content = $layout['content'];
-      $functions = isset($layout['functions']) ? $layout['functions'] : null;
 
       $matches = array();
       $uploads_dir = wp_upload_dir();
@@ -366,10 +365,6 @@ class UpfrontThemeExporter {
 
 			// Replace all urls that reffer to current site with get_current_site
 			$content = str_replace(get_site_url(), '" . get_site_url() . "', $content);
-
-      // update functions.php ?
-      if($functions)
-        $this->createFunctionsPhp($this->getThemePath(), $functions, $this->theme);
 
       // Save layout to file
       $layout_file = sprintf('%s%s.php',
@@ -506,7 +501,7 @@ class UpfrontThemeExporter {
 			file_put_contents($settings_file, $settings);
 		}
 
-    public function createFunctionsPhp($themepath, $filename, $slug){
+    public function createFunctionsPhp($themepath, $filename, $slug) {
       if(substr($themepath, -1) != DIRECTORY_SEPARATOR)
         $themepath .=  DIRECTORY_SEPARATOR;
 
