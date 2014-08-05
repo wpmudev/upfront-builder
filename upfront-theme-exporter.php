@@ -390,8 +390,13 @@ class UpfrontThemeExporter {
 			$this->updateSettingsFile($updated_properties);
     }
 
+		protected function incorrect_stylesheet($stylesheet) {
+			if(empty($stylesheet) || $stylesheet === 'theme' || $stylesheet === 'upfront') return true;
+			return false;
+		}
+
 		public function getLayoutProperties($properties, $args) {
-			if (empty($args['stylesheet'])) return $properties;
+			if ($this->incorrect_stylesheet($args['stylesheet'])) return $properties;
 
 			$this->theme = $args['stylesheet'];
 
@@ -428,7 +433,7 @@ class UpfrontThemeExporter {
 		}
 
 		public function getThemeFonts($theme_fonts, $args) {
-			if (empty($args['stylesheet'])) return $theme_fonts;
+			if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_fonts;
 
 			$this->theme = $args['stylesheet'];
 
@@ -454,7 +459,7 @@ class UpfrontThemeExporter {
 		}
 
 		public function getThemeColors($theme_colors, $args) {
-			if (empty($args['stylesheet'])) return $theme_colors;
+			if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_colors;
 
 			$this->theme = $args['stylesheet'];
 
