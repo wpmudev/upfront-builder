@@ -414,7 +414,7 @@ class UpfrontThemeExporter {
 			if ($layout_style) {
 				$properties[] = array(
 					'name' => 'layout_style',
-					'value' => stripslashes($layout_style)
+					'value' => addslashes($layout_style)
 				);
 			}
 
