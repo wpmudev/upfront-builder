@@ -169,7 +169,7 @@ class UpfrontThemeExporter {
 				$data['stylename']
       );
 
-			file_put_contents($style_file, $data['styles']);
+			file_put_contents($style_file, stripslashes($data['styles']));
 		}
 
     protected function renderRegion($region) {
