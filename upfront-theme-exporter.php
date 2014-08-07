@@ -121,9 +121,11 @@ class UpfrontThemeExporter {
       $regions = json_decode(stripslashes($data['regions']));
 
       $template = "<?php\n";
-      foreach($regions as $region)
-        if($region->name != 'shadow')
-          $template .= $this->renderRegion($region);
+
+      foreach($regions as $index=>$region) {
+				if($region->name === 'shadow') continue;
+				$template .= $this->renderRegion($region);
+			}
 
       $file = $data['functionsphp'];
       if($file == 'test')
@@ -175,12 +177,17 @@ class UpfrontThemeExporter {
     protected function renderRegion($region) {
       $data = (array) $region;
       $name = str_replace('-', '_', $data['name']);
+
       $main = array(
         'name' => $name,
         'title' => $data['title'],
         'type' => $data['type'],
         'scope' => $data['scope']
       );
+			if ($data['container']) $main['container'] = $data['container'];
+			if ($data['sub']) $main['sub'] = $data['sub'];
+			if ($data['position']) $main['position'] = $data['position'];
+			if ($data['allow_sidebar']) $main['allow_sidebar'] = $data['allow_sidebar'];
       $secondary = $this->parseProperties($data['properties']);
 
       $output = '$'. $name . ' = upfront_create_region(
