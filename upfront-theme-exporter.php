@@ -127,7 +127,7 @@ class UpfrontThemeExporter {
 				$template .= $this->renderRegion($region);
 			}
 
-      $file = !empty($data['functionsphp']) ? $data['functionsphp'] : false;
+      $file = $data['functionsphp'];
       if($file == 'test')
         $file = 'functions.test.php';
       else if($file == 'functions')
@@ -184,10 +184,10 @@ class UpfrontThemeExporter {
         'type' => $data['type'],
         'scope' => $data['scope']
       );
-			if (!empty($data['container'])) $main['container'] = $data['container'];
-			if (!empty($data['sub'])) $main['sub'] = $data['sub'];
-			if (!empty($data['position'])) $main['position'] = $data['position'];
-			if (!empty($data['allow_sidebar'])) $main['allow_sidebar'] = $data['allow_sidebar'];
+			if ($data['container']) $main['container'] = $data['container'];
+			if ($data['sub']) $main['sub'] = $data['sub'];
+			if ($data['position']) $main['position'] = $data['position'];
+			if ($data['allow_sidebar']) $main['allow_sidebar'] = $data['allow_sidebar'];
       $secondary = $this->parseProperties($data['properties']);
 
       $output = '$'. $name . ' = upfront_create_region(
@@ -212,6 +212,10 @@ class UpfrontThemeExporter {
         }
 
         $type = $this->getObjectType($props['options']['view_class']);
+
+				// This is needed since module groups are not correctly exported yet and
+				// until that is handled we're just skipping module group export.
+				if (!$type) continue;
 
         $output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
       }
@@ -315,8 +319,7 @@ class UpfrontThemeExporter {
       // Save file list for later
       $original_images = glob($template_images_dir . '*');
 
-      //preg_match_all("#[\"'](http.+?(jpg|jpeg|png|gif))[\"']#", $content, $matches); // Won't recognize escaped quotes (such as content images), and will find false positives such as "httpajpg"
-      preg_match_all("#\b(https?://.+?\.(jpg|jpeg|png|gif))\b#", $content, $matches);
+      preg_match_all("#[\"'](http.+?(jpg|jpeg|png|gif))[\"']#", $content, $matches);
 
       $images_used_in_template = array();
       $separator = '/';
@@ -412,16 +415,16 @@ class UpfrontThemeExporter {
 			if (file_exists($settings_file)) {
 				include $settings_file;
 			}
-			if (!empty($layout_properties)) {
+			if ($layout_properties) {
 				$properties = json_decode(stripslashes($layout_properties), true);
 			}
-			if (!empty($typography)) {
+			if ($typography) {
 				$properties[] = array(
 					'name' => 'typography',
 					'value' => json_decode(stripslashes($typography))
 				);
 			}
-			if (!empty($layout_style)) {
+			if ($layout_style) {
 				$properties[] = array(
 					'name' => 'layout_style',
 					'value' => addslashes($layout_style)
