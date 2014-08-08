@@ -315,7 +315,8 @@ class UpfrontThemeExporter {
       // Save file list for later
       $original_images = glob($template_images_dir . '*');
 
-      preg_match_all("#[\"'](http.+?(jpg|jpeg|png|gif))[\"']#", $content, $matches);
+      //preg_match_all("#[\"'](http.+?(jpg|jpeg|png|gif))[\"']#", $content, $matches); // Won't recognize escaped quotes (such as content images), and will find false positives such as "httpajpg"
+      preg_match_all("#\b(https?://.+?\.(jpg|jpeg|png|gif))\b#", $content, $matches);
 
       $images_used_in_template = array();
       $separator = '/';
