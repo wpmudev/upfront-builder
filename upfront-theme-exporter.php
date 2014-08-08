@@ -230,6 +230,7 @@ class UpfrontThemeExporter {
 
     protected function parseProperties($props){
       $parsed = array();
+			if (empty($props)) return $parsed;
       foreach($props as $p){
         $parsed[$p->name] = $p->value;
       }
@@ -392,7 +393,7 @@ class UpfrontThemeExporter {
 			$updated_properties = array();
 			foreach($properties as $property) {
 				$value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
-				if ($tvalue === false) continue;
+				if ($value === false) continue;
 				$updated_properties[$property] = $value;
 			}
 			$this->updateSettingsFile($updated_properties);
