@@ -127,7 +127,7 @@ class UpfrontThemeExporter {
 				$template .= $this->renderRegion($region);
 			}
 
-      $file = $data['functionsphp'];
+      $file = !empty($data['functionsphp']) ? $data['functionsphp'] : false;
       if($file == 'test')
         $file = 'functions.test.php';
       else if($file == 'functions')
@@ -184,10 +184,10 @@ class UpfrontThemeExporter {
         'type' => $data['type'],
         'scope' => $data['scope']
       );
-			if ($data['container']) $main['container'] = $data['container'];
-			if ($data['sub']) $main['sub'] = $data['sub'];
-			if ($data['position']) $main['position'] = $data['position'];
-			if ($data['allow_sidebar']) $main['allow_sidebar'] = $data['allow_sidebar'];
+			if (!empty($data['container'])) $main['container'] = $data['container'];
+      if (!empty($data['sub'])) $main['sub'] = $data['sub'];
+      if (!empty($data['position'])) $main['position'] = $data['position'];
+      if (!empty($data['allow_sidebar'])) $main['allow_sidebar'] = $data['allow_sidebar'];
       $secondary = $this->parseProperties($data['properties']);
 
       $output = '$'. $name . ' = upfront_create_region(
