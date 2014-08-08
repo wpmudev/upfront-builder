@@ -571,6 +571,23 @@ class UpfrontThemeExporter {
       parse_str($_POST['form'], $form);
       // print_r($form);
 
+      $form = wp_parse_args($form, array(
+        'thx-theme-template' => 'upfront',
+        'thx-theme-name' => false,
+        'thx-theme-slug' => false,
+        'thx-theme-uri' => false,
+        'thx-theme-author' => false,
+        'thx-author' => false,
+        'thx-theme-author-uri' => false,
+        'thx-author-uri' => false,
+        'thx-theme-description' => false,
+        'thx-theme-version' => false,
+        'thx-theme-licence' => false,
+        'thx-theme-licence-uri' => false,
+        'thx-theme-tags' => false,
+        'thx-theme-text-domain' => false,
+      ));
+
       // Check required fields
       if (empty($form['thx-theme-slug']) || empty($form['thx-theme-name']) || empty($form['thx-theme-template'])) {
         $this->jsonError('Please check required fields.', 'missing_required');
@@ -596,8 +613,8 @@ class UpfrontThemeExporter {
         $form['thx-theme-template']
       );
       if ($uri = $form['thx-theme-uri']) $stylesheet_header .= "Theme URI: $uri\n";
-      if ($author = $form['thx-theme-author']) $stylesheet_header .= "Author: $author\n";
-      if ($author_uri = $form['thx-theme-author-uri']) $stylesheet_header .= "Author URI: $author_uri\n";
+      if ($author = $form['thx-author']) $stylesheet_header .= "Author: $author\n";
+      if ($author_uri = $form['thx-author-uri']) $stylesheet_header .= "Author URI: $author_uri\n";
       if ($description = $form['thx-theme-description']) $stylesheet_header .= "Description: $description\n";
       if ($version = $form['thx-theme-version']) $stylesheet_header .= "Version: $version\n";
       if ($licence = $form['thx-theme-licence']) $stylesheet_header .= "Licence: $licence\n";
