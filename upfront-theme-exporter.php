@@ -204,7 +204,7 @@ class UpfrontThemeExporter {
         $moduleProperties = $this->parseProperties($module['properties']);
         $props = $this->parseModuleClass($moduleProperties['class']);
         $props['id'] = $moduleProperties['element_id'];
-        $props['rows'] = $moduleProperties['row'];
+        $props['rows'] = $moduleProperties['row'] ? $moduleProperties['row'] : 10;
         $props['options'] = $this->parseProperties($module['objects'][0]->properties);
 
         if($nextModule && $moduleProperties['wrapper_id'] == $nextModule['wrapper_id']){
@@ -346,8 +346,10 @@ class UpfrontThemeExporter {
         $destination_image = $template_images_dir . $image_filename;
 
         // Copy image
-        $result = copy($source_image, $destination_image);
-        $images_used_in_template[] = $destination_image;
+				if (file_exists($source_image)) {
+					$result = copy($source_image, $destination_image);
+				}
+				$images_used_in_template[] = $destination_image;
 
         // Replace images url root with stylesheet uri
         $image_uri = sprintf("get_stylesheet_directory_uri() . '%simages%s%s%s%s'",
