@@ -416,16 +416,16 @@ class UpfrontThemeExporter {
 			if (file_exists($settings_file)) {
 				include $settings_file;
 			}
-			if ($layout_properties) {
+			if (!empty($layout_properties)) {
 				$properties = json_decode(stripslashes($layout_properties), true);
 			}
-			if ($typography) {
+			if (!empty($typography)) {
 				$properties[] = array(
 					'name' => 'typography',
 					'value' => json_decode(stripslashes($typography))
 				);
 			}
-			if ($layout_style) {
+			if (!empty($layout_style)) {
 				$properties[] = array(
 					'name' => 'layout_style',
 					'value' => addslashes($layout_style)
