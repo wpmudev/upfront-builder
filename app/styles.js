@@ -3,10 +3,6 @@ define([
 ], function(_, $) {
 
   var ThemeStyleManager = function(){};
-  /**
-   * Allows to save default styles for the elements.
-   * @type {Object}
-   */
   ThemeStyleManager.prototype = {
     init: function(){
       var me = this;
@@ -17,58 +13,8 @@ define([
         },50);
       }
 
-      $(document).on('click', 'a.upfront-css-edit', this.onEditDefaultStyle);
-
       Upfront.Events.on('Upfront:loaded', function(){
-        me.fetchDefaultStyles();
         me.setThemeCSSImages();
-      });
-    },
-
-    onEditDefaultStyle: function(e){
-      if($(e.target).hasClass('upfront-template-edit'))
-        return;
-
-      var editor = Upfront.Application.cssEditor;
-      if(!editor.name){
-        var name = '_default',
-          selector = editor.elementType.id + '-' + name,
-          styleId = 'upfront-style-' + selector
-        ;
-        editor.name = name;
-        editor.selector = selector;
-        //Avoid the csseditor throw errors
-        if(!$('#' + styleId).length)
-          $('body').append('<style id="' + styleId + '"></style>');
-
-        editor.$('input.upfront-css-save-name').val(name);
-
-        //If the default style already exists, load it in the editor
-        var defaultStyle = $('#upfront-default-style-' + editor.elementType.id),
-          styleContent
-        ;
-        if(defaultStyle.length){
-          styleContent = $.trim(defaultStyle.html());
-          styleContent = styleContent.replace(new RegExp('.upfront-output-' + editor.elementType.id + ' ', 'g'), '');
-          editor.prepareAce.then(function(){
-            editor.editor.setValue(styleContent, -1);
-          });
-        }
-      }
-    },
-
-    fetchDefaultStyles: function(){
-      $.ajax({
-        type: "POST",
-        url: Upfront.Settings.ajax_url + '?action=upfront_thx-get-default-styles',
-        data: {}
-      }).done(function(response){
-        var styles = response.data,
-          body = $('body')
-        ;
-        _.each(styles, function(style, elementId) {
-          body.append('<style id="upfront-default-style-' + elementId + '">' + style + '</style>');
-        });
       });
     },
 

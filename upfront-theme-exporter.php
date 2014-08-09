@@ -12,8 +12,6 @@ WDP ID:
 
 /*
 Copyright 2009-2014 Incsub (http://incsub.com)
-Author - Javier
-Contributors - Jeffri
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -53,8 +51,6 @@ class UpfrontThemeExporter {
 
       add_action($ajaxPrefix . 'export-part-template', array($this, 'ajax_export_part_template'));
 
-      add_action($ajaxPrefix . 'get-default-styles', array($this, 'ajaxGetDefaultStyles'));
-      add_filter('upfront-save_styles', array($this, 'saveDefaultElementStyles'), 10, 3);
       add_action($ajaxPrefix . 'export-element-styles', array($this, 'exportElementStyles'));
 
       add_action( 'wp_enqueue_scripts', array($this,'addStyles'));
@@ -647,7 +643,6 @@ class UpfrontThemeExporter {
       if ($text_domain = $form['thx-theme-text-domain']) $stylesheet_header .= "Text Domain: $text_domain\n";
       $stylesheet_header .= "*/\n";
       $stylesheet_header .= "@import url(../{$form['thx-theme-template']}/style.css);";
-      //$stylesheet_header .= "@import url(elementStyle.css);@import url(dedfaultElementStyles.css);";
 
       file_put_contents($theme_path.DIRECTORY_SEPARATOR.'style.css', $stylesheet_header);
 
@@ -656,8 +651,6 @@ class UpfrontThemeExporter {
       mkdir($theme_path.DIRECTORY_SEPARATOR.'images');
 
       // Write functions.php to add stylesheet for theme
-      //copy($this->pluginDir . '/templates/functions.php', $theme_path);
-
       $this->createFunctionsPhp($theme_path, 'functions.php', $form['thx-theme-slug']);
 
       // Adding default layouts
@@ -681,83 +674,6 @@ class UpfrontThemeExporter {
       }
 
       $this->getThemesJson();
-    }
-
-    public function saveDefaultElementStyles($styles, $name, $element_type){
-      if($name != '_default')
-        return $styles;
-
-      $stylesheetPath = get_stylesheet_directory() . DIRECTORY_SEPARATOR . $this->DEFAULT_ELEMENT_STYLESHEET;
-
-      //Storing a new default style, intercepting upfront response
-      $elementStyles = @file_get_contents($stylesheetPath);
-      if($elementStyles === FALSE)
-        $elementStyles = '';
-
-      $styleArray = $this->parseDefaultStyles($elementStyles);
-      $styleArray[$element_type] = $styles;
-      $elementStyles = $this->createDefaultStyles($styleArray);
-
-      if(@file_put_contents($stylesheetPath, $elementStyles) !== FALSE)
-        wp_send_json(array('data' => array(
-          'name' => $name,
-          'styles' => $styles
-        )));
-      else{
-        $this->jsonError('Could not save the stylesheet.');
-        die;
-      }
-    }
-
-    protected function parseDefaultStyles($styles) {
-      $elements = array();
-      preg_match_all("/\/\* start ([^\s]+?) \*\/(.*?)\/\* end/s", $styles, $matches);
-      foreach($matches[1] as $i => $element)
-        $elements[$element] = $matches[2][$i];
-      return $elements;
-    }
-
-    protected function createDefaultStyles($styleArray) {
-      $styles = array();
-      foreach($styleArray as $element => $style){
-        $withSelectors = $this->addElementSelector($element, $style);
-        $styles[] = "/* start $element */\n$withSelectors\n/* end $element */";
-      }
-      $notice = "/*\n" .
-        " IMPORTANT: This file is also used by Upfront's theme builder.\n" .
-        " Please don't delete the comments before and after each element styles to preserve builder compatibility.\n" .
-        "*/\n\n"
-      ;
-
-      return $notice . implode("\n\n", $styles);
-    }
-
-    protected function addElementSelector($element, $styles) {
-      $rules = explode('}', $styles);
-      $selector = ".upfront-output-$element ";
-      array_pop($rules);
-      foreach ($rules as $i => $rule){
-        $r = trim($rule);
-        if(substr($r, 0, strlen($selector)) != $selector)
-          $rules[$i] = $selector . $r . "\n}";
-        else
-          $rules[$i] = $r . "\n}";
-      }
-
-      return implode("\n\n", $rules);
-    }
-
-    public function ajaxGetDefaultStyles() {
-      $stylesheetPath = get_stylesheet_directory() . DIRECTORY_SEPARATOR . $this->DEFAULT_ELEMENT_STYLESHEET;
-      $elementStyles = @file_get_contents($stylesheetPath);
-      if($elementStyles === FALSE) {
-        //No styles, send an almost empty object
-        wp_send_json(array('data' => array('' => false))); //Needs to have an index to not to be parsed as a JS array
-      }
-
-      $styles = $this->parseDefaultStyles($elementStyles);
-
-      wp_send_json(array('data' => $styles));
     }
 
     public function addStyles() {
