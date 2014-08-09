@@ -357,7 +357,8 @@ class UpfrontThemeExporter {
         $images_used_in_template[] = $destination_image;
 
         // Replace images url root with stylesheet uri
-        $image_uri = sprintf("get_stylesheet_directory_uri() . '%simages%s%s%s%s'",
+        /*
+        $image_uri = sprintf("' . get_stylesheet_directory_uri() . '%simages%s%s%s%s'",
           $separator,
           $separator,
           $template,
@@ -368,6 +369,10 @@ class UpfrontThemeExporter {
 
         $content = str_replace("'" . $image . "'", $image_uri, $content);
         $content = str_replace('"' . $image . '"', $image_uri, $content);
+        */
+
+        $image_uri = get_stylesheet_directory_uri() . '/images/' . $template . '/' . $image_filename;
+        $content = preg_replace('/\b' . preg_quote($image, '/') . '\b/i', $image_uri, $content);
       }
 
       // Delete images that are not used, this is needed if template is exported from itself
@@ -378,6 +383,11 @@ class UpfrontThemeExporter {
         }
       }
 
+      // Okay, so now the imported image is hard-linked to *current* theme dir...
+      // Not what we want - the images don't have to be in the current theme, not really
+      // Ergo, fix - replace all the hardcoded stylesheet URIs to dynamic ones.
+      $content = str_replace(get_stylesheet_directory_uri(), '" . get_stylesheet_directory_uri() . "', $content);
+      
       // Replace all urls that reffer to current site with get_current_site
       $content = str_replace(get_site_url(), '" . get_site_url() . "', $content);
 
