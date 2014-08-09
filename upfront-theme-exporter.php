@@ -61,13 +61,13 @@ class UpfrontThemeExporter {
 
       add_filter('upfront_data', array($this, 'addData'));
 
-			add_filter('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 10, 2);
+      add_filter('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 10, 2);
 
-			add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
-			add_filter('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 10, 2);
+      add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
+      add_filter('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 10, 2);
 
-			add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
-			add_filter('upfront_get_theme_colors', array($this, 'getThemeColors'), 10, 2);
+      add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
+      add_filter('upfront_get_theme_colors', array($this, 'getThemeColors'), 10, 2);
     }
 
     protected function render_json( $data, $die = true, $errorHeader = false){
@@ -123,9 +123,9 @@ class UpfrontThemeExporter {
       $template = "<?php\n";
 
       foreach($regions as $index=>$region) {
-				if($region->name === 'shadow') continue;
-				$template .= $this->renderRegion($region);
-			}
+        if($region->name === 'shadow') continue;
+        $template .= $this->renderRegion($region);
+      }
 
       $file = !empty($data['functionsphp']) ? $data['functionsphp'] : false;
       if($file == 'test')
@@ -157,22 +157,22 @@ class UpfrontThemeExporter {
       die;
     }
 
-		public function exportElementStyles() {
-			$data = $_POST['data'];
-			if (empty($data['stylename']) || empty($data['styles']) || empty($data['elementType'])) {
-				$this->jsonError('Some data is missing.', 'missing_data');
-			}
+    public function exportElementStyles() {
+      $data = $_POST['data'];
+      if (empty($data['stylename']) || empty($data['styles']) || empty($data['elementType'])) {
+        $this->jsonError('Some data is missing.', 'missing_data');
+      }
 
-			$this->theme = $_POST['stylesheet'];
+      $this->theme = $_POST['stylesheet'];
 
-			$style_file = sprintf(
-				'%s%s.css',
-				$this->getThemePath('element-styles', $data['elementType']),
-				$data['stylename']
+      $style_file = sprintf(
+        '%s%s.css',
+        $this->getThemePath('element-styles', $data['elementType']),
+        $data['stylename']
       );
 
-			file_put_contents($style_file, stripslashes($data['styles']));
-		}
+      file_put_contents($style_file, stripslashes($data['styles']));
+    }
 
     protected function renderRegion($region) {
       $data = (array) $region;
@@ -184,7 +184,7 @@ class UpfrontThemeExporter {
         'type' => $data['type'],
         'scope' => $data['scope']
       );
-			if (!empty($data['container'])) $main['container'] = $data['container'];
+      if (!empty($data['container'])) $main['container'] = $data['container'];
       if (!empty($data['sub'])) $main['sub'] = $data['sub'];
       if (!empty($data['position'])) $main['position'] = $data['position'];
       if (!empty($data['allow_sidebar'])) $main['allow_sidebar'] = $data['allow_sidebar'];
@@ -213,9 +213,9 @@ class UpfrontThemeExporter {
 
         $type = $this->getObjectType($props['options']['view_class']);
 
-				// This is needed since module groups are not correctly exported yet and
-				// until that is handled we're just skipping module group export.
-				if (!$type) continue;
+        // This is needed since module groups are not correctly exported yet and
+        // until that is handled we're just skipping module group export.
+        if (!$type) continue;
 
         $output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
       }
@@ -230,7 +230,7 @@ class UpfrontThemeExporter {
 
     protected function parseProperties($props){
       $parsed = array();
-			if (empty($props)) return $parsed;
+      if (empty($props)) return $parsed;
       foreach($props as $p){
         $parsed[$p->name] = $p->value;
       }
@@ -326,7 +326,7 @@ class UpfrontThemeExporter {
       $images_used_in_template = array();
       $separator = '/';
 
-			// matches[1] containes full image urls
+      // matches[1] containes full image urls
       foreach ($matches[1] as $image) {
         // Image is from a theme
         if (strpos($image, get_theme_root_uri()) !== false) {
@@ -351,10 +351,10 @@ class UpfrontThemeExporter {
         $destination_image = $template_images_dir . $image_filename;
 
         // Copy image
-				if (file_exists($source_image)) {
-					$result = copy($source_image, $destination_image);
-				}
-				$images_used_in_template[] = $destination_image;
+        if (file_exists($source_image)) {
+          $result = copy($source_image, $destination_image);
+        }
+        $images_used_in_template[] = $destination_image;
 
         // Replace images url root with stylesheet uri
         $image_uri = sprintf("get_stylesheet_directory_uri() . '%simages%s%s%s%s'",
@@ -364,7 +364,7 @@ class UpfrontThemeExporter {
           $separator,
           $image_filename
         );
-				// var_dump('image uri', $image_uri);
+        // var_dump('image uri', $image_uri);
 
         $content = str_replace("'" . $image . "'", $image_uri, $content);
         $content = str_replace('"' . $image . '"', $image_uri, $content);
@@ -378,8 +378,8 @@ class UpfrontThemeExporter {
         }
       }
 
-			// Replace all urls that reffer to current site with get_current_site
-			$content = str_replace(get_site_url(), '" . get_site_url() . "', $content);
+      // Replace all urls that reffer to current site with get_current_site
+      $content = str_replace(get_site_url(), '" . get_site_url() . "', $content);
 
       // Save layout to file
       $layout_file = sprintf('%s%s.php',
@@ -389,132 +389,132 @@ class UpfrontThemeExporter {
 
       $result = file_put_contents($layout_file, $content);
 
-			// Save properties to settings file
-			$properties = array('typography', 'layout_style', 'layout_properties');
-			$updated_properties = array();
-			foreach($properties as $property) {
-				$value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
-				if ($value === false) continue;
-				$updated_properties[$property] = $value;
-			}
-			$this->updateSettingsFile($updated_properties);
+      // Save properties to settings file
+      $properties = array('typography', 'layout_style', 'layout_properties');
+      $updated_properties = array();
+      foreach($properties as $property) {
+        $value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
+        if ($value === false) continue;
+        $updated_properties[$property] = $value;
+      }
+      $this->updateSettingsFile($updated_properties);
     }
 
-		protected function incorrect_stylesheet($stylesheet) {
-			if(empty($stylesheet) || $stylesheet === 'theme' || $stylesheet === 'upfront') return true;
-			return false;
-		}
+    protected function incorrect_stylesheet($stylesheet) {
+      if(empty($stylesheet) || $stylesheet === 'theme' || $stylesheet === 'upfront') return true;
+      return false;
+    }
 
-		public function getLayoutProperties($properties, $args) {
-			if ($this->incorrect_stylesheet($args['stylesheet'])) return $properties;
+    public function getLayoutProperties($properties, $args) {
+      if ($this->incorrect_stylesheet($args['stylesheet'])) return $properties;
 
-			$this->theme = $args['stylesheet'];
+      $this->theme = $args['stylesheet'];
 
-			$settings_file = sprintf(
-				'%ssettings.php',
+      $settings_file = sprintf(
+        '%ssettings.php',
         $this->getThemePath()
       );
-			if (file_exists($settings_file)) {
-				include $settings_file;
-			}
-			if (!empty($layout_properties)) {
-				$properties = json_decode(stripslashes($layout_properties), true);
-			}
-			if (!empty($typography)) {
-				$properties[] = array(
-					'name' => 'typography',
-					'value' => json_decode(stripslashes($typography))
-				);
-			}
-			if (!empty($layout_style)) {
-				$properties[] = array(
-					'name' => 'layout_style',
-					'value' => addslashes($layout_style)
-				);
-			}
+      if (file_exists($settings_file)) {
+        include $settings_file;
+      }
+      if (!empty($layout_properties)) {
+        $properties = json_decode(stripslashes($layout_properties), true);
+      }
+      if (!empty($typography)) {
+        $properties[] = array(
+          'name' => 'typography',
+          'value' => json_decode(stripslashes($typography))
+        );
+      }
+      if (!empty($layout_style)) {
+        $properties[] = array(
+          'name' => 'layout_style',
+          'value' => addslashes($layout_style)
+        );
+      }
 
-			return $properties;
-		}
+      return $properties;
+    }
 
-		public function updateThemeFonts($theme_fonts) {
-			$this->updateSettingsFile(
-				array('theme_fonts' => json_encode($theme_fonts))
-			);
-		}
-
-		public function getThemeFonts($theme_fonts, $args) {
-			if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_fonts;
-
-			$this->theme = $args['stylesheet'];
-
-			$settings_file = sprintf(
-				'%ssettings.php',
-        $this->getThemePath()
+    public function updateThemeFonts($theme_fonts) {
+      $this->updateSettingsFile(
+        array('theme_fonts' => json_encode($theme_fonts))
       );
+    }
 
-			if (file_exists($settings_file)) {
-				// This will import all variables from settings file
-				include $settings_file;
-			}
+    public function getThemeFonts($theme_fonts, $args) {
+      if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_fonts;
 
-			if (isset($args['json']) && $args['json']) return $theme_fonts;
+      $this->theme = $args['stylesheet'];
 
-			return is_array( $theme_fonts ) ? $theme_fonts : json_decode($theme_fonts);
-		}
-
-		public function updateThemeColors($theme_colors) {
-			$this->updateSettingsFile(
-				array('theme_colors' => json_encode($theme_colors))
-			);
-		}
-
-		public function getThemeColors($theme_colors, $args) {
-			if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_colors;
-
-			$this->theme = $args['stylesheet'];
-
-			$settings_file = sprintf(
-				'%ssettings.php',
+      $settings_file = sprintf(
+        '%ssettings.php',
         $this->getThemePath()
       );
 
-			if (file_exists($settings_file)) {
-				// This will import all variables from settings file
-				include $settings_file;
-			}
+      if (file_exists($settings_file)) {
+        // This will import all variables from settings file
+        include $settings_file;
+      }
 
-			if (isset($args['json']) && $args['json']) return $theme_colors;
+      if (isset($args['json']) && $args['json']) return $theme_fonts;
 
-			return json_decode($theme_colors);
-		}
+      return is_array( $theme_fonts ) ? $theme_fonts : json_decode($theme_fonts);
+    }
 
+    public function updateThemeColors($theme_colors) {
+      $this->updateSettingsFile(
+        array('theme_colors' => json_encode($theme_colors))
+      );
+    }
 
-		public function updateSettingsFile($properties) {
-			if (empty($this->theme)) $this->theme = $_POST['stylesheet'];
+    public function getThemeColors($theme_colors, $args) {
+      if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_colors;
 
-			$settings_file = sprintf(
-				'%ssettings.php',
+      $this->theme = $args['stylesheet'];
+
+      $settings_file = sprintf(
+        '%ssettings.php',
         $this->getThemePath()
       );
 
-			if (file_exists($settings_file)) {
-				// This will import all variables from settings file
-				include $settings_file;
-			}
-			// Overwrite variables that are updated
-			foreach($properties as $property=>$value) {
-				$$property = $value;
-			}
-			$settings = sprintf(
-				'<?php $typography = \'%s\';' . "\n" . '$layout_style = \'%s\';' . "\n" . '$theme_fonts = \'%s\';' . "\n" . '$theme_colors = \'%s\';' . "\n" . '$layout_properties = \'%s\';',
-				isset($typography) ? $typography : '',
-				isset($layout_style) ? addslashes($layout_style) : '/* Write global theme styles here */',
-				isset($theme_fonts) ? $theme_fonts : '',
-				isset($theme_colors) ? $theme_colors : '',
-				isset($layout_properties) ? $layout_properties : ''
-			);
-			file_put_contents($settings_file, $settings);
-		}
+      if (file_exists($settings_file)) {
+        // This will import all variables from settings file
+        include $settings_file;
+      }
+
+      if (isset($args['json']) && $args['json']) return $theme_colors;
+
+      return json_decode($theme_colors);
+    }
+
+
+    public function updateSettingsFile($properties) {
+      if (empty($this->theme)) $this->theme = $_POST['stylesheet'];
+
+      $settings_file = sprintf(
+        '%ssettings.php',
+        $this->getThemePath()
+      );
+
+      if (file_exists($settings_file)) {
+        // This will import all variables from settings file
+        include $settings_file;
+      }
+      // Overwrite variables that are updated
+      foreach($properties as $property=>$value) {
+        $$property = $value;
+      }
+      $settings = sprintf(
+        '<?php $typography = \'%s\';' . "\n" . '$layout_style = \'%s\';' . "\n" . '$theme_fonts = \'%s\';' . "\n" . '$theme_colors = \'%s\';' . "\n" . '$layout_properties = \'%s\';',
+        isset($typography) ? $typography : '',
+        isset($layout_style) ? addslashes($layout_style) : '/* Write global theme styles here */',
+        isset($theme_fonts) ? $theme_fonts : '',
+        isset($theme_colors) ? $theme_colors : '',
+        isset($layout_properties) ? $layout_properties : ''
+      );
+      file_put_contents($settings_file, $settings);
+    }
 
     public function createFunctionsPhp($themepath, $filename, $slug) {
       if(substr($themepath, -1) != DIRECTORY_SEPARATOR)
@@ -638,24 +638,24 @@ class UpfrontThemeExporter {
       $this->createFunctionsPhp($theme_path, 'functions.php', $form['thx-theme-slug']);
 
       // Adding default layouts
-			$default_layouts_dir = sprintf(
-				'%s%stemplates%sdefault_layouts%s',
-				$this->pluginDir,
-				DIRECTORY_SEPARATOR,
-				DIRECTORY_SEPARATOR,
-				DIRECTORY_SEPARATOR
-			);
-			$theme_layouts_dir = sprintf(
-				'%s%slayouts%s',
-				$theme_path,
-				DIRECTORY_SEPARATOR,
-				DIRECTORY_SEPARATOR
-			);
-			$default_layouts = glob($default_layouts_dir . '*');
-			foreach($default_layouts as $layout) {
-				$destination_file = str_replace($default_layouts_dir, $theme_layouts_dir, $layout);
+      $default_layouts_dir = sprintf(
+        '%s%stemplates%sdefault_layouts%s',
+        $this->pluginDir,
+        DIRECTORY_SEPARATOR,
+        DIRECTORY_SEPARATOR,
+        DIRECTORY_SEPARATOR
+      );
+      $theme_layouts_dir = sprintf(
+        '%s%slayouts%s',
+        $theme_path,
+        DIRECTORY_SEPARATOR,
+        DIRECTORY_SEPARATOR
+      );
+      $default_layouts = glob($default_layouts_dir . '*');
+      foreach($default_layouts as $layout) {
+        $destination_file = str_replace($default_layouts_dir, $theme_layouts_dir, $layout);
         copy($layout, $destination_file);
-			}
+      }
 
       $this->getThemesJson();
     }
