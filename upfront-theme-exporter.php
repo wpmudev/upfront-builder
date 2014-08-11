@@ -27,6 +27,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require 'settings.php';
 include_once 'phpon.php';
 class UpfrontThemeExporter {
     protected $pluginDirUrl;
@@ -34,10 +35,13 @@ class UpfrontThemeExporter {
 
     var $DEFAULT_ELEMENT_STYLESHEET = 'elementStyles.css';
 
-    public function __construct()
-    {
+    public function __construct() {
       $this->pluginDir = dirname(__FILE__);
       $this->pluginDirUrl = plugin_dir_url(__FILE__);
+
+			$this->theme = upfront_get_builder_stylesheet();
+
+			$this->themeSettings = new UfExThemeSettings($this->getThemePath());
 
       $ajaxPrefix = 'wp_ajax_upfront_thx-';
 
@@ -62,19 +66,10 @@ class UpfrontThemeExporter {
       add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
       add_filter('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 10, 2);
 
-      add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
-      add_filter('upfront_get_theme_colors', array($this, 'getThemeColors'), 10, 2);
+			add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
+			add_filter('upfront_get_theme_colors', array($this, 'getThemeColors'), 10, 2);
     }
 
-    protected function render_json( $data, $die = true, $errorHeader = false){
-        if ($errorHeader)
-            header('HTTP/1.1 500 Internal Server Error');
-
-        header('Content-type: application/json');
-        echo json_encode( $data );
-
-        if( $die ) wp_die();
-    }
     function injectDependencies() {
       if (!is_user_logged_in()) return false; // Do not inject for non-logged in user
 
@@ -222,9 +217,13 @@ class UpfrontThemeExporter {
 
         $type = $this->getObjectType($props['options']['view_class']);
 
-        // This is needed since module groups are not correctly exported yet and
-        // until that is handled we're just skipping module group export.
-        if (!$type) continue;
+				if ($type === 'Unewnavigation') {
+					$this->addMenuFromElement($props);
+				}
+
+				// This is needed since module groups are not correctly exported yet and
+				// until that is handled we're just skipping module group export.
+				if (!$type) continue;
 
         $output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
       }
@@ -232,6 +231,39 @@ class UpfrontThemeExporter {
       $output .= "\n" . '$regions->add($' . $name . ");\n";
       return $output;
     }
+
+		protected function addMenuFromElement($properties) {
+			$menu_id = $properties['options']['menu_id'];
+
+			$menu_object = wp_get_nav_menu_object($menu_id);
+			$menu_items = wp_get_nav_menu_items($menu_id);
+
+			$menu = array(
+				'id' => $menu_object->id,
+				'slug' => $menu_object->slug,
+				'name' => $menu_object->name,
+				'description' => $menu_object->description,
+				'items' => $menu_items
+			);
+
+			$menus = json_decode($this->themeSettings->get('menus'));
+
+			if (is_null($menus)) $menus = array();
+
+			$updated = false;
+
+			foreach($menus as $index=>$stored_menu) {
+				if ($stored_menu->id != $menu['id']) continue;
+
+				$menus[$index] = $menu;
+				$updated = true;
+				break;
+			}
+
+			if ($updated === false) $menus[] = $menu;
+
+			$this->themeSettings->set('menus', json_encode($menus));
+		}
 
     protected function getObjectType($class){
       return str_replace('View', '', $class);
@@ -396,7 +428,7 @@ class UpfrontThemeExporter {
       // Not what we want - the images don't have to be in the current theme, not really
       // Ergo, fix - replace all the hardcoded stylesheet URIs to dynamic ones.
       $content = str_replace(get_stylesheet_directory_uri(), '" . get_stylesheet_directory_uri() . "', $content);
-      
+
       // Replace all urls that reffer to current site with get_current_site
       $content = str_replace(get_site_url(), '" . get_site_url() . "', $content);
 
@@ -408,15 +440,13 @@ class UpfrontThemeExporter {
 
       $result = file_put_contents($layout_file, $content);
 
-      // Save properties to settings file
-      $properties = array('typography', 'layout_style', 'layout_properties');
-      $updated_properties = array();
-      foreach($properties as $property) {
-        $value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
-        if ($value === false) continue;
-        $updated_properties[$property] = $value;
-      }
-      $this->updateSettingsFile($updated_properties);
+			// Save properties to settings file
+			$properties = array('typography', 'layout_style', 'layout_properties');
+			foreach($properties as $property) {
+				$value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
+				if ($value === false) continue;
+				$this->themeSettings->set($property, $value);
+			}
     }
 
     protected function incorrect_stylesheet($stylesheet) {
@@ -427,112 +457,49 @@ class UpfrontThemeExporter {
     public function getLayoutProperties($properties, $args) {
       if ($this->incorrect_stylesheet($args['stylesheet'])) return $properties;
 
-      $this->theme = $args['stylesheet'];
+			if ($this->themeSettings->get('layout_properties')) {
+				$properties = json_decode(stripslashes($this->themeSettings->get('layout_properties')), true);
+			}
+			if ($this->themeSettings->get('typography')) {
+				$properties[] = array(
+					'name' => 'typography',
+					'value' => json_decode(stripslashes($this->themeSettings->get('typography')))
+				);
+			}
+			if ($this->themeSettings->get('layout_style')) {
+				$properties[] = array(
+					'name' => 'layout_style',
+					'value' => addslashes($this->themeSettings->get('layout_style'))
+				);
+			}
 
-      $settings_file = sprintf(
-        '%ssettings.php',
-        $this->getThemePath()
-      );
-      if (file_exists($settings_file)) {
-        include $settings_file;
-      }
-      if (!empty($layout_properties)) {
-        $properties = json_decode(stripslashes($layout_properties), true);
-      }
-      if (!empty($typography)) {
-        $properties[] = array(
-          'name' => 'typography',
-          'value' => json_decode(stripslashes($typography))
-        );
-      }
-      if (!empty($layout_style)) {
-        $properties[] = array(
-          'name' => 'layout_style',
-          'value' => addslashes($layout_style)
-        );
-      }
+			return $properties;
+		}
 
-      return $properties;
-    }
+		public function updateThemeFonts($theme_fonts) {
+			$this->themeSettings->set('theme_fonts', json_encode($theme_fonts));
+		}
 
-    public function updateThemeFonts($theme_fonts) {
-      $this->updateSettingsFile(
-        array('theme_fonts' => json_encode($theme_fonts))
-      );
-    }
+		public function getThemeFonts($theme_fonts, $args) {
+			if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_fonts;
 
-    public function getThemeFonts($theme_fonts, $args) {
-      if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_fonts;
+			$theme_fonts = $this->themeSettings->get('theme_fonts');
+			if (isset($args['json']) && $args['json']) return $theme_fonts;
 
-      $this->theme = $args['stylesheet'];
+			return is_array( $$theme_fonts ) ? $theme_fonts : json_decode($theme_fonts);
+		}
 
-      $settings_file = sprintf(
-        '%ssettings.php',
-        $this->getThemePath()
-      );
-
-      if (file_exists($settings_file)) {
-        // This will import all variables from settings file
-        include $settings_file;
-      }
-
-      if (isset($args['json']) && $args['json']) return $theme_fonts;
-
-      return is_array( $theme_fonts ) ? $theme_fonts : json_decode($theme_fonts);
-    }
-
-    public function updateThemeColors($theme_colors) {
-      $this->updateSettingsFile(
-        array('theme_colors' => json_encode($theme_colors))
-      );
-    }
+		public function updateThemeColors($theme_colors) {
+			$this->themeSettings->set('theme_colors', json_encode($theme_colors));
+		}
 
     public function getThemeColors($theme_colors, $args) {
       if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_colors;
 
-      $this->theme = $args['stylesheet'];
-
-      $settings_file = sprintf(
-        '%ssettings.php',
-        $this->getThemePath()
-      );
-
-      if (file_exists($settings_file)) {
-        // This will import all variables from settings file
-        include $settings_file;
-      }
-
-      if (isset($args['json']) && $args['json']) return $theme_colors;
+			$theme_colors = $this->themeSettings->get('theme_colors');
+			if (isset($args['json']) && $args['json']) return $theme_colors;
 
       return json_decode($theme_colors);
-    }
-
-
-    public function updateSettingsFile($properties) {
-      if (empty($this->theme)) $this->theme = $_POST['stylesheet'];
-
-      $settings_file = sprintf(
-        '%ssettings.php',
-        $this->getThemePath()
-      );
-
-      if (file_exists($settings_file)) {
-        // This will import all variables from settings file
-        include $settings_file;
-      }
-      // Overwrite variables that are updated
-      foreach($properties as $property=>$value) {
-        $$property = $value;
-      }
-      $settings = sprintf(
-        '<?php $typography = \'%s\';' . "\n" . '$layout_style = \'%s\';' . "\n" . '$theme_fonts = \'%s\';' . "\n" . '$theme_colors = \'%s\';' . "\n" . '$layout_properties = \'%s\';',
-        isset($typography) ? $typography : '',
-        isset($layout_style) ? addslashes($layout_style) : '/* Write global theme styles here */',
-        isset($theme_fonts) ? $theme_fonts : '',
-        isset($theme_colors) ? $theme_colors : '',
-        isset($layout_properties) ? $layout_properties : ''
-      );
-      file_put_contents($settings_file, $settings);
     }
 
     public function createFunctionsPhp($themepath, $filename, $slug) {
@@ -778,10 +745,10 @@ class UpfrontThemeExporter {
         chmod($file_name, 0777);
         return $file_name;
     }
+
 }
 
-new UpfrontThemeExporter();
-
-
-
-
+function upfront_exporter_initialize() {
+	new UpfrontThemeExporter();
+}
+add_action('upfront-core-initialized', 'upfront_exporter_initialize');
