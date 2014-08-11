@@ -27,7 +27,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require 'settings.php';
+include_once 'util.php';
 include_once 'phpon.php';
 class UpfrontThemeExporter {
     protected $pluginDirUrl;
@@ -39,9 +39,9 @@ class UpfrontThemeExporter {
       $this->pluginDir = dirname(__FILE__);
       $this->pluginDirUrl = plugin_dir_url(__FILE__);
 
-			$this->theme = upfront_get_builder_stylesheet();
+			$this->theme = upfront_exporter_get_stylesheet();
 
-			$this->themeSettings = new UfExThemeSettings($this->getThemePath());
+			$this->themeSettings = new Upfront_Theme_Settings($this->getThemePath(false) . 'settings.php');
 
       $ajaxPrefix = 'wp_ajax_upfront_thx-';
 
@@ -61,14 +61,118 @@ class UpfrontThemeExporter {
 
       add_filter('upfront_data', array($this, 'addData'));
 
-      add_filter('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 10, 2);
+			add_filter('upfront_theme_layout_cascade', array($this, 'getThemeLayoutCascade'), 10, 2);
+			add_filter('upfront_theme_postpart_templates_cascade', array($this, 'getThemePostpartTemplatesCascade'), 10, 2);
 
-      add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
-      add_filter('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 10, 2);
+			add_filter('upfront_prepare_theme_styles', array($this, 'prepareThemeStyles'), 15);
+			add_filter('upfront_prepare_typography_styles', array($this, 'prepareTypographyStyles'), 15);
 
 			add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
-			add_filter('upfront_get_theme_colors', array($this, 'getThemeColors'), 10, 2);
+			add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
+
+			add_action('upfront_get_stylesheet_directory', array($this, 'getStylesheetDirectory'));
+			add_action('upfront_get_stylesheet', array($this, 'getStylesheet'));
+
+			// This set of actions will force child theme class to load data from theme files
+			// since child theme class is also hooked into this actions and loads data from
+			// theme files if data is empty. So all these actions will reset data to empty.
+			// These actions are lower priority than actions in child theme so they will be
+			// executed first.
+			add_action('upfront_get_theme_styles', array($this, 'getThemeStyles'), 5);
+			add_action('upfront_get_element_styles', array($this, 'getElementStyles'), 5);
+			add_action('upfront_get_responsive_settings', array($this, 'getResponsiveSettings'), 5);
+			add_action('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 5, 2);
+			add_action('upfront_get_theme_colors', array($this, 'getThemeColors'), 5, 2);
+			add_action('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 5);
     }
+
+		public function prepareThemeStyles($styles) {
+			// In editor mode this would load element styles to main stylesheet. In builder mode
+			// don't load any since styles are gonna be loaded each separately.
+			return '';
+		}
+
+		public function prepareTypographyStyles($styles) {
+			return '';
+		}
+
+		// TODO this should go to upfront theme!
+		public function getThemeLayoutCascade($cascade, $base_filename) {
+			// Override brute force to ensure single-something page get their specific postlayout loaded
+			$layout_cascade = $_POST['layout_cascade'];
+			if (empty($layout_cascade)) return $cascade;
+
+			return array(
+				$base_filename . $layout_cascade['item'] . '.php',
+				$base_filename . $layout_cascade['type'] . '.php'
+			);
+		}
+
+		// TODO this should go to upfront theme!
+		public function getThemePostpartTemplatesCascade($cascade, $base_filename) {
+			// Override brute force to ensure single-something page get page specific post layout parts loaded
+			$layout_cascade = $_POST['layout_cascade'];
+			if (empty($layout_cascade)) return $cascade;
+
+			$cascade = array(
+				$base_filename . $layout_cascade['item'] . '.php',
+				$base_filename . $layout_cascade['type'] . '.php'
+			);
+		}
+
+		public function getElementStyles($styles) {
+			if (upfront_exporter_is_start_page()) {
+				// Provide empty defaults
+				return array('plain_text' => array());
+			}
+
+			return array();
+		}
+
+		public function getLayoutProperties($properties) {
+			if (upfront_exporter_is_start_page()) {
+				// Provide empty defaults
+				return array('typography' => array());
+			}
+
+			return array();
+		}
+
+		public function getThemeStyles($styles) {
+			if (upfront_exporter_is_start_page()) {
+				// Provide empty defaults
+				return array('plain_text' => array());
+			}
+
+			return array();
+		}
+
+		public function getResponsiveSettings($settings) {
+			return array();
+		}
+
+		public function getThemeFonts($fonts, $args) {
+			if (isset($args['json']) && $args['json']) return json_encode(array());
+			return array();
+		}
+
+		public function getThemeColors($colors, $args) {
+			if (isset($args['json']) && $args['json']) return json_encode(array());
+			return array();
+		}
+
+		public function getStylesheet($stylesheet) {
+			return upfront_exporter_get_stylesheet();
+		}
+
+		public function getStylesheetDirectory($stylesheetDirectory) {
+			return	sprintf(
+				'%s%s%s',
+				get_theme_root(),
+				DIRECTORY_SEPARATOR,
+				upfront_exporter_get_stylesheet()
+			);
+		}
 
     function injectDependencies() {
       if (!is_user_logged_in()) return false; // Do not inject for non-logged in user
@@ -323,6 +427,7 @@ class UpfrontThemeExporter {
     }
 
     protected function getThemePath() {
+			if (($this->theme === 'theme' || $this->theme === 'upfront') && !upfront_exporter_is_creating()) return '';
       $path = sprintf('%s%s%s%s',
         get_theme_root(),
         DIRECTORY_SEPARATOR,
@@ -330,15 +435,25 @@ class UpfrontThemeExporter {
         DIRECTORY_SEPARATOR
       );
 
-      if (!file_exists($path)) $this->jsonError('Theme root does not exists.', 'system_error');
+			$create = true;
+			if (upfront_exporter_is_creating()) {
+				$create = false;
+			} else {
+				if (!file_exists($path)) $this->jsonError('Theme root does not exists.', 'system_error');
+			}
 
       $segments = func_get_args();
 
+			if ($segments[0] === false) {
+				$create = false;
+				array_splice($segments, 0, 1);
+			}
+
       foreach($segments as $segment) {
         $path .= $segment . DIRECTORY_SEPARATOR;
-        if (!file_exists($path)) {
+        if (file_exists($path) === false && $create) {
           mkdir($path);
-        }
+				}
       }
 
       return $path;
@@ -449,58 +564,13 @@ class UpfrontThemeExporter {
 			}
     }
 
-    protected function incorrect_stylesheet($stylesheet) {
-      if(empty($stylesheet) || $stylesheet === 'theme' || $stylesheet === 'upfront') return true;
-      return false;
-    }
-
-    public function getLayoutProperties($properties, $args) {
-      if ($this->incorrect_stylesheet($args['stylesheet'])) return $properties;
-
-			if ($this->themeSettings->get('layout_properties')) {
-				$properties = json_decode(stripslashes($this->themeSettings->get('layout_properties')), true);
-			}
-			if ($this->themeSettings->get('typography')) {
-				$properties[] = array(
-					'name' => 'typography',
-					'value' => json_decode(stripslashes($this->themeSettings->get('typography')))
-				);
-			}
-			if ($this->themeSettings->get('layout_style')) {
-				$properties[] = array(
-					'name' => 'layout_style',
-					'value' => addslashes($this->themeSettings->get('layout_style'))
-				);
-			}
-
-			return $properties;
-		}
-
 		public function updateThemeFonts($theme_fonts) {
 			$this->themeSettings->set('theme_fonts', json_encode($theme_fonts));
-		}
-
-		public function getThemeFonts($theme_fonts, $args) {
-			if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_fonts;
-
-			$theme_fonts = $this->themeSettings->get('theme_fonts');
-			if (isset($args['json']) && $args['json']) return $theme_fonts;
-
-			return is_array( $$theme_fonts ) ? $theme_fonts : json_decode($theme_fonts);
 		}
 
 		public function updateThemeColors($theme_colors) {
 			$this->themeSettings->set('theme_colors', json_encode($theme_colors));
 		}
-
-    public function getThemeColors($theme_colors, $args) {
-      if ($this->incorrect_stylesheet($args['stylesheet'])) return $theme_colors;
-
-			$theme_colors = $this->themeSettings->get('theme_colors');
-			if (isset($args['json']) && $args['json']) return $theme_colors;
-
-      return json_decode($theme_colors);
-    }
 
     public function createFunctionsPhp($themepath, $filename, $slug) {
       if(substr($themepath, -1) != DIRECTORY_SEPARATOR)
@@ -511,22 +581,7 @@ class UpfrontThemeExporter {
         'name' => ucwords(str_replace('-', '_', sanitize_html_class($slug))),
         'slug' => $slug,
         'pages' => '',
-        'styles' => '',
-        'import_styles' => '',
-        'styles_function' => ''
       );
-
-      //Enqueue default element styles?
-      if(file_exists($themepath . 'elementStyles.css'))
-        $data['styles'] = 'wp_enqueue_style("elements_styles", get_stylesheet_directory_uri() . "/elementStyles.css");';
-
-      //Import alternative element styles?
-      if(file_exists($themepath . 'alternativeElementStyles.css')){
-        $data['import_styles'] = '$this->install_element_alternative_styles();';
-        $data['styles_function'] = 'protected function install_element_alternative_styles(){
-    $this->import_element_styles();
-  }';
-      }
 
       $contents = $this->template($this->pluginDir . '/templates/functions.php', $data);
 
@@ -751,4 +806,12 @@ class UpfrontThemeExporter {
 function upfront_exporter_initialize() {
 	new UpfrontThemeExporter();
 }
-add_action('upfront-core-initialized', 'upfront_exporter_initialize');
+
+function upfront_exporter_stylesheet_directory($stylesheet_dir) {
+	return get_theme_root() . DIRECTORY_SEPARATOR . upfront_exporter_get_stylesheet();
+}
+
+if (upfront_exporter_is_running()) {
+	add_action('upfront-core-initialized', 'upfront_exporter_initialize');
+	add_filter('stylesheet_directory', 'upfront_exporter_stylesheet_directory', 100);
+}
