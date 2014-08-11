@@ -199,7 +199,7 @@ class UpfrontThemeExporter {
           $file = basename($source);
           $destination = $this->getThemePath('images') . $file;
           copy($source, $destination);
-          $secondary['background_slider_images'][$idx] = $destination;
+          $secondary['background_slider_images'][$idx] = "/images/{$file}";
         }
       }
 
