@@ -190,6 +190,19 @@ class UpfrontThemeExporter {
       if (!empty($data['allow_sidebar'])) $main['allow_sidebar'] = $data['allow_sidebar'];
       $secondary = $this->parseProperties($data['properties']);
 
+      // Deal with the slider images
+      if (!empty($secondary['background_slider_images'])) {
+        foreach ($secondary['background_slider_images'] as $idx => $img) {
+          $source = get_attached_file($img);
+          if (empty($source)) continue;
+          // copy file to theme folder
+          $file = basename($source);
+          $destination = $this->getThemePath('images') . $file;
+          copy($source, $destination);
+          $secondary['background_slider_images'][$idx] = $destination;
+        }
+      }
+
       $output = '$'. $name . ' = upfront_create_region(
         ' . PHPON::stringify($main) .',
         ' . PHPON::stringify($secondary) . '
