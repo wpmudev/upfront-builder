@@ -46,7 +46,6 @@ class UpfrontThemeExporter {
       $ajaxPrefix = 'wp_ajax_upfront_thx-';
 
       add_action('wp_footer', array($this, 'injectDependencies'), 100);
-      add_action($ajaxPrefix . 'save-layout-to-template', array($this, 'saveLayout'));
       add_action($ajaxPrefix . 'create-theme', array($this, 'createTheme'));
       add_action($ajaxPrefix . 'get-themes', array($this, 'getThemesJson'));
 
@@ -398,32 +397,6 @@ class UpfrontThemeExporter {
           $properties['margin_bottom'] = str_replace('mb', '', $c);
       }
       return $properties;
-    }
-
-    public function saveLayout() {
-      $data = $_POST['data'];
-
-      if (empty($data['theme']) || empty($data['template'])) {
-        $this->jsonError('Theme & template must be choosen.', 'missing_data');
-      }
-
-      $this->theme = $data['theme'];
-
-      $elementStyles = $data['layout']['elementStyles'];
-      if (!empty($elementStyles)) {
-        // Let's save the default styles directly
-        //$this->saveElementStyles($elementStyles);
-      }
-
-      foreach($data['layout']['layouts'] as $index=>$layout) {
-        $this->saveLayoutToTemplate(
-          array(
-            'template' => $index === 'main' ? $data['template'] : $index,
-            'content' => stripslashes($layout)
-          )
-        );
-      }
-      die;
     }
 
     protected function getThemePath() {
