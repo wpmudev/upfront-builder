@@ -808,6 +808,7 @@ function upfront_exporter_initialize() {
 }
 
 function upfront_exporter_stylesheet_directory($stylesheet_dir) {
+	if (upfront_exporter_is_start_page()) return $stylesheet_dir;
 	return get_theme_root() . DIRECTORY_SEPARATOR . upfront_exporter_get_stylesheet();
 }
 
