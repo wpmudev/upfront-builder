@@ -78,8 +78,9 @@ class UpfrontThemeExporter {
 			// theme files if data is empty. So all these actions will reset data to empty.
 			// These actions are lower priority than actions in child theme so they will be
 			// executed first.
-			add_action('upfront_get_theme_styles', array($this, 'getThemeStyles'), 5);
-			add_action('upfront_get_element_styles', array($this, 'getElementStyles'), 5);
+		//add_action('upfront_get_theme_styles', array($this, 'getThemeStyles'), 5); // <-- not sure what that does...
+		add_action('upfront_get_element_styles', array($this, 'getElementStyles'), 5); // <-- this either :/
+		add_action('upfront_get_theme_styles', array($this, 'getElementStyles'), 5); // This actually loads up the theme styles per element, so... go with that
 			add_action('upfront_get_responsive_settings', array($this, 'getResponsiveSettings'), 5);
 			add_action('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 5, 2);
 			add_action('upfront_get_theme_colors', array($this, 'getThemeColors'), 5, 2);
@@ -126,7 +127,27 @@ class UpfrontThemeExporter {
 				return array('plain_text' => array());
 			}
 
-			return array();
+		$styles = array();
+		$element_root = $this->getThemePath('element-styles');
+		if (!is_dir($element_root)) return $styles;
+
+		$elements = glob("{$element_root}/*", GLOB_ONLYDIR);
+		if (empty($elements)) return $styles;
+
+		foreach ($elements as $element) {
+			$element_style_files = glob("{$element}/*.css");
+			if (empty($element_style_files)) continue;
+			
+			$key = basename($element);
+			$element_styles = array();
+			foreach ($element_style_files as $file) {
+				$style_name = basename($file, '.css');
+				$element_styles[$style_name] = file_get_contents($file);
+			}
+			if (!empty($element_styles)) $styles[$key] = $element_styles;
+		}
+
+		return $styles;
 		}
 
 		public function getLayoutProperties($properties) {
