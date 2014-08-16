@@ -294,14 +294,14 @@ class UpfrontThemeExporter {
 		$name = str_replace('-', '_', $data['name']);
 
 		$main = array(
-			'name' => $name,
+			'name' => $data['name'],
 			'title' => $data['title'],
 			'type' => $data['type'],
 			'scope' => $data['scope']
 		);
-		//if (!empty($data['container'])) $main['container'] = $data['container']; // This breaks the rendering of newly added regions
-		if (!empty($data['container']) && $data['name'] !== $data['container']) $main['container'] = str_replace('-', '_', $data['container']); // using `str_replace` call to hopefully match the containing region name properly
-		else $main['container'] = $name;
+
+		if (!empty($data['container']) && $data['name'] !== $data['container']) $main['container'] = $data['container'];
+		else $main['container'] = $data['name'];
 
 		if (!empty($data['sub'])) $main['sub'] = $data['sub'];
 		if (!empty($data['position'])) $main['position'] = $data['position'];
