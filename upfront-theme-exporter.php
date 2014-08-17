@@ -308,6 +308,7 @@ class UpfrontThemeExporter {
 			$props['id'] = $moduleProperties['element_id'];
 			$props['rows'] = $moduleProperties['row'] ? $moduleProperties['row'] : 10;
 			$props['options'] = $this->parseProperties($module['objects'][0]->properties);
+			$props['wrapper_id'] = $moduleProperties['wrapper_id'];
 
 			if($nextModule && $moduleProperties['wrapper_id'] == $nextModule['wrapper_id']){
 				$props['close_wrapper'] = false;
