@@ -77,9 +77,7 @@ class UpfrontThemeExporter {
 		// theme files if data is empty. So all these actions will reset data to empty.
 		// These actions are lower priority than actions in child theme so they will be
 		// executed first.
-		//add_action('upfront_get_theme_styles', array($this, 'getThemeStyles'), 5); // <-- not sure what that does...
-		add_action('upfront_get_element_styles', array($this, 'getElementStyles'), 5); // <-- this either :/
-		add_action('upfront_get_theme_styles', array($this, 'getElementStyles'), 5); // This actually loads up the theme styles per element, so... go with that
+		add_action('upfront_get_theme_styles', array($this, 'getThemeStyles'), 5);
 		add_action('upfront_get_responsive_settings', array($this, 'getResponsiveSettings'), 5);
 		add_action('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 5, 2);
 		add_action('upfront_get_theme_colors', array($this, 'getThemeColors'), 5, 2);
@@ -120,31 +118,35 @@ class UpfrontThemeExporter {
 		);
 	}
 
-	public function getElementStyles($styles) {
+	public function getThemeStyles($styles) {
 		if (upfront_exporter_is_start_page()) {
 			// Provide empty defaults
 			return array('plain_text' => array());
 		}
 
 		$styles = array();
-		$element_root = $this->getThemePath('element-styles');
-		if (!is_dir($element_root)) return $styles;
+		// I've commented this out since everything works fine w/o it.
+		// If you find some use case where theme styles don't get laoded please
+		// contact me to fix it. Exporter should not load anything. [Ivan]
+		//
+		// $element_root = $this->getThemePath('element-styles');
+		// if (!is_dir($element_root)) return $styles;
 
-		$elements = glob("{$element_root}/*", GLOB_ONLYDIR);
-		if (empty($elements)) return $styles;
+		// $elements = glob("{$element_root}/*", GLOB_ONLYDIR);
+		// if (empty($elements)) return $styles;
 
-		foreach ($elements as $element) {
-			$element_style_files = glob("{$element}/*.css");
-			if (empty($element_style_files)) continue;
+		// foreach ($elements as $element) {
+			// $element_style_files = glob("{$element}/*.css");
+			// if (empty($element_style_files)) continue;
 
-			$key = basename($element);
-			$element_styles = array();
-			foreach ($element_style_files as $file) {
-				$style_name = basename($file, '.css');
-				$element_styles[$style_name] = file_get_contents($file);
-			}
-			if (!empty($element_styles)) $styles[$key] = $element_styles;
-		}
+			// $key = basename($element);
+			// $element_styles = array();
+			// foreach ($element_style_files as $file) {
+				// $style_name = basename($file, '.css');
+				// $element_styles[$style_name] = file_get_contents($file);
+			// }
+			// if (!empty($element_styles)) $styles[$key] = $element_styles;
+		// }
 
 		return $styles;
 	}
@@ -155,14 +157,6 @@ class UpfrontThemeExporter {
 			return array('typography' => array());
 		}
 
-		return array();
-	}
-
-	public function getThemeStyles($styles) {
-		if (upfront_exporter_is_start_page()) {
-			// Provide empty defaults
-			return array('plain_text' => array());
-		}
 		return array();
 	}
 
@@ -345,6 +339,7 @@ class UpfrontThemeExporter {
 
 			if ($type === 'Unewnavigation') {
 				$this->addMenuFromElement($props);
+				$props['options']['menu_id'] = false; // Should not be set in exported layout
 			}
 
 			// This is needed since module groups are not correctly exported yet and
@@ -365,7 +360,7 @@ class UpfrontThemeExporter {
 		$menu_items = wp_get_nav_menu_items($menu_id);
 
 		$menu = array(
-			'id' => $menu_object->id,
+			'id' => false, // Shouldn't be set
 			'slug' => $menu_object->slug,
 			'name' => $menu_object->name,
 			'description' => $menu_object->description,
@@ -379,7 +374,7 @@ class UpfrontThemeExporter {
 		$updated = false;
 
 		foreach($menus as $index=>$stored_menu) {
-			if ($stored_menu->id != $menu['id']) continue;
+			if ($stored_menu->slug != $menu['slug']) continue;
 
 			$menus[$index] = $menu;
 			$updated = true;
