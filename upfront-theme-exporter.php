@@ -125,28 +125,6 @@ class UpfrontThemeExporter {
 		}
 
 		$styles = array();
-		// I've commented this out since everything works fine w/o it.
-		// If you find some use case where theme styles don't get laoded please
-		// contact me to fix it. Exporter should not load anything. [Ivan]
-		//
-		// $element_root = $this->getThemePath('element-styles');
-		// if (!is_dir($element_root)) return $styles;
-
-		// $elements = glob("{$element_root}/*", GLOB_ONLYDIR);
-		// if (empty($elements)) return $styles;
-
-		// foreach ($elements as $element) {
-			// $element_style_files = glob("{$element}/*.css");
-			// if (empty($element_style_files)) continue;
-
-			// $key = basename($element);
-			// $element_styles = array();
-			// foreach ($element_style_files as $file) {
-				// $style_name = basename($file, '.css');
-				// $element_styles[$style_name] = file_get_contents($file);
-			// }
-			// if (!empty($element_styles)) $styles[$key] = $element_styles;
-		// }
 
 		return $styles;
 	}
