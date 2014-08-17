@@ -30,7 +30,7 @@ function upfront_exporter_get_stylesheet() {
 	if (upfront_exporter_is_exporter_uri()) {
 		$uri = $_SERVER['REQUEST_URI'];
 		$matches = array();
-		preg_match('#create_new/([a-z\-]+)#', $uri, $matches);
+		preg_match('#create_new/([-_a-z0-9]+)#i', $uri, $matches);
 		if (isset($matches[1])) return $matches[1];
 	}
 
@@ -40,7 +40,7 @@ function upfront_exporter_get_stylesheet() {
 	if (upfront_exporter_is_exporter_referer()) {
 		$referer = $_SERVER['HTTP_REFERER'];
 		$matches = array();
-		preg_match('#create_new/([a-z\-]+)#', $referer, $matches);
+		preg_match('#create_new/([-_a-z0-9]+)#i', $referer, $matches);
 		if (isset($matches[1])) return $matches[1];
 	}
 
