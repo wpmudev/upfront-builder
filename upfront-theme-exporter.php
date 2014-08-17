@@ -462,7 +462,9 @@ class UpfrontThemeExporter {
 		if (upfront_exporter_is_creating()) {
 			$create = false;
 		} else {
-			if (!file_exists($path)) $this->jsonError('Theme root does not exists.', 'system_error');
+			if (!file_exists($path)) {
+				$this->jsonError('Theme root does not exists.', 'system_error');
+			}
 		}
 
 		$segments = func_get_args();
@@ -760,6 +762,7 @@ class UpfrontThemeExporter {
 	}
 
 	protected function export_post_part_template($type, $id, $part, $tpl){
+		/*
 		$filePath = trailingslashit( get_stylesheet_directory() ) . "templates";
 		if (!file_exists( $filePath ))
 				mkdir( $filePath );
@@ -769,6 +772,12 @@ class UpfrontThemeExporter {
 				mkdir( $filePath );
 
 		$filePath .= '/' . $type . '-' . $id . '.php';
+		*/
+		$filePath = sprintf(
+			'%s%s.php',
+			$this->getThemePath('templates', 'postparts'),
+			"{$type}-{$id}"
+		);
 		$templates = array();
 		if(file_exists($filePath))
 			$templates = require $filePath;
@@ -812,15 +821,22 @@ class UpfrontThemeExporter {
 
 	protected function save_post_layout( $params, $layoutData ) {
 		$file_name = $params['type'] . "-" . $params['specificity'];
+		/*
 		$dir = trailingslashit( get_stylesheet_directory() ) . "postlayouts";
 		if (!file_exists( $dir )) {
 				mkdir( $dir );
 		}
-
 		$file_name = $dir . DIRECTORY_SEPARATOR . $file_name . ".php";
+		*/
+		$file_name = sprintf(
+			'%s%s.php',
+			$this->getThemePath('postlayouts'),
+			$file_name
+		);
+
 		$contents = "<?php return " .  PHPON::stringify( $layoutData ) . ";";
 		$result = file_put_contents($file_name, $contents);
-		chmod($file_name, 0777);
+		//chmod($file_name, 0777);
 		return $file_name;
 	}
 
