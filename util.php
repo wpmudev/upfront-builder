@@ -16,7 +16,8 @@ function upfront_exporter_get_stylesheet() {
 		return $form['thx-theme-slug'];
 	}
 
-	if (isset($_POST['data']['theme']) && isset($_POST['stylesheet']) && $_POST['stylesheet'] === 'upfront') {
+	//if (isset($_POST['data']['theme']) && isset($_POST['stylesheet']) && $_POST['stylesheet'] === 'upfront') {
+	if (!empty($_POST['data']) && is_array($_POST['data']) && array_key_exists('theme', $_POST['data']) && isset($_POST['stylesheet']) && $_POST['stylesheet'] === 'upfront') {
 		return $_POST['data']['theme'];
 	}
 
