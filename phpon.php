@@ -31,7 +31,7 @@ class PHPON {
 			else if(is_bool($value))
 				$string .= $value ? 'true' : 'false';
 			else
-				$string .= $value;
+				$string .= empty($value) && !is_numeric($value) ? "''" : $value;
 
 			array_push($elements, $string);
 		}
