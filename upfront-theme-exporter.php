@@ -221,16 +221,6 @@ class UpfrontThemeExporter {
 		else
 			$file = false;
 
-		//Export elements' alternative styles
-		$elements = get_option('upfront_' . $this->theme . '_styles');
-		if($elements){
-			$stylesheet = "/* IMPORTANT: This file is used only in the theme installation and should not be included as a stylesheet. */\n\n";
-			foreach($elements as $element => $styles) {
-				foreach($styles as $name => $style)
-				$stylesheet .= "\n/* start $element.$name */\n$style\n/* end $element.$name */\n";
-			}
-			file_put_contents($this->getThemePath() . '/alternativeElementStyles.css', $stylesheet);
-		}
 
 		$this->saveLayoutToTemplate(
 			array(
@@ -554,11 +544,17 @@ class UpfrontThemeExporter {
 		$result = file_put_contents($layout_file, $content);
 
 		// Save properties to settings file
-		$properties = array('typography', 'layout_style', 'layout_properties');
-		foreach($properties as $property) {
+		$string_properties = array('typography', 'layout_style', 'layout_properties');
+		foreach($string_properties as $property) {
 			$value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
 			if ($value === false) continue;
 			$this->themeSettings->set($property, $value);
+		}
+		$array_properties = array('theme_colors');
+		foreach($array_properties as $property) {
+			$value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
+			if ($value === false) continue;
+			$this->themeSettings->set($property, json_encode($value));
 		}
 	}
 
@@ -595,21 +591,8 @@ class UpfrontThemeExporter {
 	}
 
 	public function createTheme() {
-		//  [thx-theme-name] =>
-		//  [thx-theme-template] => upfront
-		//  [thx-theme-slug] =>
-		//  [thx-theme-uri] =>
-		//  [thx-theme-author] =>
-		//  [thx-theme-author-uri] =>
-		//  [thx-theme-description] =>
-		//  [thx-theme-version] =>
-		//  [thx-theme-licence] =>
-		//  [thx-theme-licence-uri] =>
-		//  [thx-theme-tags] =>
-		//  [thx-theme-text-domain] =>
 		$form = array();
 		parse_str($_POST['form'], $form);
-		// print_r($form);
 
 		$form = wp_parse_args($form, array(
 			'thx-theme-template' => 'upfront',
