@@ -30,6 +30,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 include_once 'util.php';
 include_once 'phpon.php';
 class UpfrontThemeExporter {
+
+	const TEMP_STYLES_KEY = 'uf-thx-temporary_styles';
+
 	protected $pluginDirUrl;
 	protected $pluginDir;
 
