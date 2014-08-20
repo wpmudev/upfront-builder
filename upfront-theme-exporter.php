@@ -242,7 +242,19 @@ class UpfrontThemeExporter {
 			$this->jsonError('Some data is missing.', 'missing_data');
 		}
 
-		$this->theme = $_POST['stylesheet'];
+		$stylesheet = !empty($_POST['stylesheet']) && 'upfront' !== $_POST['stylesheet']
+			? $_POST['stylesheet']
+			: false
+		;
+		if (!empty($stylesheet)) $this->_export_element_style($stylesheet, $data);
+		else $this->_temporarily_store_export_file($data);
+	}
+
+	/**
+	 * Actually writes element styles to files.
+	 */
+	private function _export_element_style ($name, $data) {
+		$this->theme = $name;
 
 		$style_file = sprintf(
 			'%s%s.css',
@@ -251,6 +263,15 @@ class UpfrontThemeExporter {
 		);
 
 		file_put_contents($style_file, stripslashes($data['styles']));
+	}
+
+	/**
+	 * This stores element styles before they're ready to be exported to files.
+	 */
+	private function _temporarily_store_export_file ($data) {
+		$stored = get_option(self::TEMP_STYLES_KEY, array());
+		$stored[] = $data;
+		update_option(self::TEMP_STYLES_KEY, $stored);
 	}
 
 	protected function renderRegion($region) {
