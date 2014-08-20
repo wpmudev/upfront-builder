@@ -48,6 +48,9 @@ class UpfrontThemeExporter {
 
 		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 
+		// Clean up the temporary styles on each load, if not doing AJAX
+		if (!is_admin() && !(defined('DOING_AJAX') && DOING_AJAX)) update_option(self::TEMP_STYLES_KEY, array());
+
 		add_action('wp_footer', array($this, 'injectDependencies'), 100);
 		add_action($ajaxPrefix . 'create-theme', array($this, 'createTheme'));
 		add_action($ajaxPrefix . 'get-themes', array($this, 'getThemesJson'));
