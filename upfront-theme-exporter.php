@@ -700,6 +700,18 @@ class UpfrontThemeExporter {
 			copy($layout, $destination_file);
 		}
 
+		// Here, we're ready to export any temporarily stored element styles
+		$styles = get_option(self::TEMP_STYLES_KEY, array());
+		if (!empty($styles)) {
+			$tmp_action = !empty($_POST['action']) ? $_POST['action'] : false;
+			if (!empty($tmp_action)) $_POST['action'] = false; // This is to fool upfront_exporter_is_creating() and ensure the path creation in element styles export
+			foreach ($styles as $style) {
+				$this->_export_element_style($form['thx-theme-slug'], $style);
+			}
+			if (!empty($tmp_action)) $_POST['action'] = $tmp_action; // Revert back, just in case
+			update_option(self::TEMP_STYLES_KEY, array());
+		}
+
 		$this->getThemesJson();
 	}
 
