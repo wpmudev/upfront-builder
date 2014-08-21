@@ -439,8 +439,17 @@ class UpfrontThemeExporter {
 		die;
 	}
 
-	protected function getThemePath() {
-		if (($this->theme === 'theme' || $this->theme === 'upfront') && !upfront_exporter_is_creating()) return '';
+	protected function getThemePath ($do_mkdir=true) {
+		if (($this->theme === 'theme' || $this->theme === 'upfront') && !upfront_exporter_is_creating()) {
+			if ($do_mkdir) $this->jsonError('Invalid theme name.', 'system_error');
+			return false;
+		}
+
+		if (empty($this->theme) || !preg_match('/^[-_a-z0-9]+$/i', $this->theme)) {
+			$this->jsonError('Invalid theme name.', 'system_error');
+			return false;
+		}
+		
 		$path = sprintf('%s%s%s%s',
 			get_theme_root(),
 			DIRECTORY_SEPARATOR,
@@ -479,7 +488,7 @@ class UpfrontThemeExporter {
 	}
 
 	protected function saveLayoutToTemplate($layout) {
-		$template = $layout['template'];
+		$template = preg_replace('/[^-_a-z0-9]/i', '', $layout['template']);
 		$content = $layout['content'];
 
 		$matches = array();
@@ -643,11 +652,13 @@ class UpfrontThemeExporter {
 			$this->jsonError('Please check required fields.', 'missing_required');
 		}
 
+		$theme_slug = preg_replace('/[^-_a-z0-9]/i', '', $form['thx-theme-slug']);
+
 		// Check if theme directory already exists
 		$theme_path = sprintf('%s%s%s',
 			get_theme_root(),
 			DIRECTORY_SEPARATOR,
-			$form['thx-theme-slug']
+			$theme_slug
 		);
 
 		if (file_exists($theme_path)) {
@@ -681,7 +692,7 @@ class UpfrontThemeExporter {
 		mkdir($theme_path.DIRECTORY_SEPARATOR.'images');
 
 		// Write functions.php to add stylesheet for theme
-		$this->createFunctionsPhp($theme_path, 'functions.php', $form['thx-theme-slug']);
+		$this->createFunctionsPhp($theme_path, 'functions.php', $theme_slug);
 
 		// Adding default layouts
 		$default_layouts_dir = sprintf(
@@ -709,7 +720,7 @@ class UpfrontThemeExporter {
 			$tmp_action = !empty($_POST['action']) ? $_POST['action'] : false;
 			if (!empty($tmp_action)) $_POST['action'] = false; // This is to fool upfront_exporter_is_creating() and ensure the path creation in element styles export
 			foreach ($styles as $style) {
-				$this->_export_element_style($form['thx-theme-slug'], $style);
+				$this->_export_element_style($theme_slug, $style);
 			}
 			if (!empty($tmp_action)) $_POST['action'] = $tmp_action; // Revert back, just in case
 			update_option(self::TEMP_STYLES_KEY, array());
