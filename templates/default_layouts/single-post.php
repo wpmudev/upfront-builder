@@ -1,66 +1,67 @@
 <?php
-$main_nav = upfront_create_region(
-        array(
-"name" => "main_nav",
-"title" => "Navigation",
-"type" => "Navigation",
-"scope" => "local"
-),
-        array(
-"background_type" => "color",
-"background_color" => "#fff"
-)
-        );
+$main_nav = upfront_create_region(array(
+	"name" => "main_nav",
+	"title" => "Navigation",
+	"type" => "wide",
+	"scope" => "local"
+), array(
+	"background_type" => "color",
+	"background_color" => "#fff"
+));
 $main_nav->add_element("PlainTxt", array(
-"columns" => "24",
-"margin_left" => "0",
-"margin_right" => "0",
-"margin_top" => "6",
-"margin_bottom" => "0",
-"id" => "default-nav-text-module",
-"rows" => 12,
-"options" => array(
-	"view_class" => "PlainTxtView",
-	"id_slug" => "plaintxt",
-	"content" => "<h3>Single post</h3>",
-	"element_id" => "default-nav-text-object",
-	"class" => "c24",
-	"type" => "PlainTxtModel",
-	"has_settings" => 1
+	"columns" => "24",
+	"margin_left" => "0",
+	"margin_right" => "0",
+	"margin_top" => "6",
+	"margin_bottom" => "0",
+	"id" => "default-nav-text-module",
+	"rows" => 12,
+	"options" => array(
+		"view_class" => "PlainTxtView",
+		"id_slug" => "plaintxt",
+		"content" => "<h3>Single Post</h3>",
+		"element_id" => "default-nav-text-object",
+		"class" => "c24",
+		"type" => "PlainTxtModel",
+		"has_settings" => 1
 	)
 ));
-
 $regions->add($main_nav);
-$content = upfront_create_region(
-        array(
-"name" => "content",
-"title" => "Content Area",
-"type" => "Content Area",
-"scope" => "local"
-),
-        array(
-"row" => 80,
-"background_type" => "color",
-"background_color" => "#c5d0db"
-)
-        );
-$content->add_element("PlainTxt", array(
-"columns" => "24",
-"margin_left" => "0",
-"margin_right" => "0",
-"margin_top" => "6",
-"margin_bottom" => "0",
-"id" => "default-content-text-module",
-"rows" => 2,
-"options" => array(
-	"view_class" => "PlainTxtView",
-	"id_slug" => "plaintxt",
-	"has_settings" => 1,
-	"content" => "<p style=\"text-align:center;\">Text element in content</p>",
-	"element_id" => "default-content-text-object",
-	"class" => "c24",
-	"type" => "PlainTxtModel"
-	)
+
+$main = upfront_create_region(array(
+	'name' => "main",
+	'title' => __("Main Area"),
+	'scope' => "local",
+	'type' => 'wide',
+	'default' => true,
+	'allow_sidebar' => true
+), array(
+	'row' => 140,
+	'background_type' => 'color',
+	'background_color' => '#c5d0db'
 ));
 
-$regions->add($content);
+$main->add_element('ThisPost', array(
+	'id' => 'default-post',
+	'columns' => 24,
+	'rows' => 20,
+	'margin_top' => 1,
+	'options' => array(
+		'post_data' => array('date'),
+		'disable_resize' => false,
+		'disable_drag' => false,
+		'layout' => array(
+			array('classes' => 'c24 clr', 'objects'=> array(array('slug' => 'title', 'classes' => 'post-part c24'))),
+			array('classes' => 'c24 clr', 'objects'=> array(array('slug' => 'date', 'classes' => ' post-part c24'))),
+			array('classes' => 'c24 clr', 'objects'=> array(array('slug' => 'contents', 'classes' => ' post-part c24')))
+		)
+	),
+	'sticky' => true
+));
+$main->add_element('Ucomment', array(
+	'id' => 'default-comment',
+	'columns' => 24,
+	'rows' => 10
+));
+
+$regions->add($main);
