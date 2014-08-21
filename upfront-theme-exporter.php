@@ -480,7 +480,7 @@ class UpfrontThemeExporter {
 			}
 		}
 
-		return $path;
+		return rtrim(realpath($path), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	}
 	protected function saveElementStyles($elementStyles) {
 		$stylePath = $this->getThemePath() . 'elementStyles.css';
