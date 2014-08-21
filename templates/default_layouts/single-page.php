@@ -28,16 +28,31 @@ $main_nav->add_element("PlainTxt", array(
 ));
 $regions->add($main_nav);
 
-
-$main->add_element('ThisPage', array(	
-	'id' => 'default-page-title',
+$main = upfront_create_region(array(
+	'name' => "main",
+	'title' => __("Main Area"),
+	'scope' => "local",
+	'type' => 'wide',
+	'default' => true,
+	'allow_sidebar' => true
+), array(
+	'row' => 140,
+	'background_type' => 'color',
+	'background_color' => '#c5d0db'
+));
+$main->add_element('ThisPost', array(
+	'id' => 'default-page',
 	'columns' => 24,
-	'rows' => 3,
-	'margin_top' => 3,
+	'rows' => 20,
+	'margin_top' => 1,
 	'options' => array(
-		'display' => 'title',
+		'post_data' => array(),
 		'disable_resize' => false,
-		'disable_drag' => false
+		'disable_drag' => false,
+		'layout' => array(
+			array('classes' => 'c24 clr', 'objects'=> array(array('slug' => 'title', 'classes' => 'post-part c24'))),
+			array('classes' => 'c24 clr', 'objects'=> array(array('slug' => 'contents', 'classes' => ' post-part c24')))
+		)
 	),
 	'sticky' => true
 ));
