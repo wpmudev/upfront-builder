@@ -24,14 +24,16 @@ class PHPON {
 			if($assoc)
 				$string .= '"' . $key . '" => ';
 
-			if(is_string($value))
-				$string .= '"' . addslashes($value) . '"';
-			else if(is_object($value) || is_array($value))
+			if(is_string($value)) {
+				//$string .= '"' . addslashes($value) . '"'; // This escapes all quotes - NOT what we want
+				$string .= '"' . addcslashes($value, '"\\') . '"'; // This escapes double quotes only.
+			} else if(is_object($value) || is_array($value)) {
 				$string .= self::stringify($value, $deep + 1);
-			else if(is_bool($value))
+			} else if(is_bool($value)) {
 				$string .= $value ? 'true' : 'false';
-			else
+			} else {
 				$string .= empty($value) && !is_numeric($value) ? "''" : $value;
+			}
 
 			array_push($elements, $string);
 		}
