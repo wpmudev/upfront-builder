@@ -327,6 +327,18 @@ class UpfrontThemeExporter {
 			$props['options'] = $this->parseProperties($module['objects'][0]->properties);
 			$props['wrapper_id'] = $moduleProperties['wrapper_id'];
 
+			// Deal with per-module breakpoint props
+			$breakpoints = !empty($moduleProperties['breakpoint'])
+				? (array)$moduleProperties['breakpoint']
+				: array()
+			;
+			if (!empty($breakpoints)) {
+				$props['breakpoint'] = array();
+				foreach($breakpoints as $bidx => $point) {
+					$props['breakpoint'][$bidx] = (array)$point;
+				}
+			}
+
 			if($nextModule && $moduleProperties['wrapper_id'] == $nextModule['wrapper_id']){
 				$props['close_wrapper'] = false;
 			}
