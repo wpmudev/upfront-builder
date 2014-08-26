@@ -595,6 +595,11 @@ class UpfrontThemeExporter {
 			if ($value === false) continue;
 			$this->themeSettings->set($property, json_encode($value));
 		}
+
+		// Responsive settings. Yeah
+		$key = "upfront_{$this->theme}_responsive_settings";
+		$resp = get_option($key);
+		if (!empty($resp)) $this->themeSettings->set("responsive", $resp);
 	}
 
 	public function updateThemeFonts($theme_fonts) {
