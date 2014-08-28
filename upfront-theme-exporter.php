@@ -105,7 +105,6 @@ class UpfrontThemeExporter {
 		// Override brute force to ensure single-something page get their specific postlayout loaded
 		$layout_cascade = $_POST['layout_cascade'];
 		if (empty($layout_cascade)) return $cascade;
-
 		return array(
 			$base_filename . $layout_cascade['item'] . '.php',
 			$base_filename . $layout_cascade['type'] . '.php'
@@ -227,11 +226,16 @@ class UpfrontThemeExporter {
 		else
 			$file = false;
 
+		$specific_layout = preg_match('/^single-page-.*/', $data['template'])
+			? preg_replace('/^single-page-/', '', $data['template'])
+			: false
+		;
 
 		$this->saveLayoutToTemplate(
 			array(
 				'template' => $data['template'],
 				'content' => $template,
+				'layout' => $specific_layout,
 				'functions' => $file
 			)
 		);
@@ -612,6 +616,23 @@ class UpfrontThemeExporter {
 		$key = "upfront_{$this->theme}_responsive_settings";
 		$resp = get_option($key);
 		if (!empty($resp)) $this->themeSettings->set("responsive", $resp);
+
+		// Specific layout settings
+		if (!empty($layout['layout'])) {
+			$pages = $this->themeSettings->get('required_pages');
+			if (!empty($pages)) {
+				$pages = json_decode($pages, true);
+			}
+			if (!is_array($pages)) $pages = array();
+			$page = $layout['layout'];
+			$name = join(' ', array_map('ucfirst', explode('-', $page)));
+			$pages[$page] = array(
+				'name' => $name,
+				'slug' => $page,
+				'layout' => $template,
+			);
+			$this->themeSettings->set('required_pages', json_encode($pages));
+		}
 	}
 
 	public function updateThemeFonts($theme_fonts) {
