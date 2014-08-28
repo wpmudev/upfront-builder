@@ -84,6 +84,7 @@ class UpfrontThemeExporter {
 		// These actions are lower priority than actions in child theme so they will be
 		// executed first.
 		add_action('upfront_get_theme_styles', array($this, 'getThemeStyles'), 5);
+		add_action('upfront_get_global_regions', array($this, 'getGlobalRegions'), 5, 2);
 		add_action('upfront_get_responsive_settings', array($this, 'getResponsiveSettings'), 5);
 		add_action('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 5, 2);
 		add_action('upfront_get_theme_colors', array($this, 'getThemeColors'), 5, 2);
@@ -132,6 +133,10 @@ class UpfrontThemeExporter {
 		$styles = array();
 
 		return $styles;
+	}
+
+	public function getGlobalRegions($scope_region, $scope_id) {
+		return array();
 	}
 
 	public function getLayoutProperties($properties) {
@@ -209,6 +214,35 @@ class UpfrontThemeExporter {
 
 		$this->theme = $data['theme'];
 
+		// Save global regions
+		$regions_as_array = json_decode(stripslashes($data['regions']), true);
+		$scopes = array();
+		foreach ( $regions_as_array as $region ){
+			if ($region['name'] == 'shadow') continue;
+			if ( $region['scope'] == 'local' ) continue;
+
+			if ( !is_array($scopes[$region['scope']]) ) $scopes[$region['scope']] = array();
+			$scopes[$region['scope']][] = $region;
+		}
+		foreach ( $scopes as $scope => $adata ) {
+			$current_scope = json_decode($this->themeSettings->get('global_regions'), true);
+			$scope_data = $adata;
+			if ( $current_scope ){ // merge with current scope if it's exist
+				foreach ( $current_scope as $current_region ){
+					$found = false;
+					foreach ( $adata as $region ){
+						if ( $region['name'] == $current_region['name'] || $region['name'] == $current_region['container'] ){
+							$found = true;
+							break;
+						}
+					}
+					if ( ! $found )
+						$scope_data[] = $current_region;
+				}
+			}
+
+			$this->themeSettings->set('global_regions', json_encode($scope_data));
+		}
 		$regions = json_decode(stripslashes($data['regions']));
 
 		$template = "<?php\n";
@@ -465,7 +499,7 @@ class UpfrontThemeExporter {
 			$this->jsonError('Invalid theme name.', 'system_error');
 			return false;
 		}
-		
+
 		$path = sprintf('%s%s%s%s',
 			get_theme_root(),
 			DIRECTORY_SEPARATOR,
