@@ -158,7 +158,7 @@ class UpfrontThemeExporter {
 	}
 
 	public function getThemeColors($colors, $args) {
-		if (isset($args['json']) && $args['json']) return json_encode(array());
+		if (isset($args['json']) && $args['json']) return '';
 		return array();
 	}
 
