@@ -720,6 +720,7 @@ class UpfrontThemeExporter {
 			'thx-theme-licence-uri' => false,
 			'thx-theme-tags' => false,
 			'thx-theme-text-domain' => false,
+			'thx-activate_theme' => false,
 		));
 
 		// Check required fields
@@ -799,6 +800,11 @@ class UpfrontThemeExporter {
 			}
 			if (!empty($tmp_action)) $_POST['action'] = $tmp_action; // Revert back, just in case
 			update_option(self::TEMP_STYLES_KEY, array());
+		}
+
+		// Activate the theme, if requested so
+		if (!empty($form['thx-activate_theme'])) {
+			switch_theme($theme_slug);
 		}
 
 		$this->getThemesJson();
