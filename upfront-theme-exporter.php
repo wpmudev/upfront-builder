@@ -634,14 +634,15 @@ class UpfrontThemeExporter {
 
 		// Save properties to settings file
 		$string_properties = array('typography', 'layout_style', 'layout_properties');
+		$raw_post_data = !empty($_POST['data']) ? stripslashes_deep($_POST['data']) : array();
 		foreach($string_properties as $property) {
-			$value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
+			$value = isset($raw_post_data[$property]) ? addcslashes($raw_post_data[$property], "'\\") : false;
 			if ($value === false) continue;
 			$this->themeSettings->set($property, $value);
 		}
 		$array_properties = array('theme_colors');
 		foreach($array_properties as $property) {
-			$value = isset($_POST['data'][$property]) ? $_POST['data'][$property] : false;
+			$value = isset($raw_post_data[$property]) ? $raw_post_data[$property] : false;
 			if ($value === false) continue;
 			$this->themeSettings->set($property, json_encode($value));
 		}
