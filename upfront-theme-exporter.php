@@ -106,10 +106,13 @@ class UpfrontThemeExporter {
 		// Override brute force to ensure single-something page get their specific postlayout loaded
 		$layout_cascade = $_POST['layout_cascade'];
 		if (empty($layout_cascade)) return $cascade;
-		return array(
+		$post_type = !empty($_POST['post_type']) ? $_POST['post_type'] : false;
+		$new_cascade = array(
 			$base_filename . $layout_cascade['item'] . '.php',
 			$base_filename . $layout_cascade['type'] . '.php'
 		);
+		if (!empty($post_type) && !in_array($post_type, array_values($layout_cascade))) $new_cascade[] = $base_filename . $post_type . '.php';
+		return $new_cascade;
 	}
 
 	// TODO this should go to upfront theme!
@@ -908,7 +911,10 @@ class UpfrontThemeExporter {
 
 
 	protected function save_post_layout( $params, $layoutData ) {
-		$file_name = $params['type'] . "-" . $params['specificity'];
+		$file_name = !empty($params['specificity'])
+			? $params['type'] . "-" . $params['specificity']
+			: $params['type'] . "-" . $params['item']
+		;
 		/*
 		$dir = trailingslashit( get_stylesheet_directory() ) . "postlayouts";
 		if (!file_exists( $dir )) {
