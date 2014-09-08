@@ -887,7 +887,7 @@ class UpfrontThemeExporter {
 
 		foreach($templates as $part => $template){
 			$out .= "//***** $part\n";
-			$out .= "?>$template<?php\n";
+			$out .= "?>$template<?php\n"; //<?
 			$out .= '$templates["' . $part . "\"] = ob_get_contents();\n";
 			$out .= "ob_clean();\n\n";
 		}
@@ -941,7 +941,7 @@ function upfront_exporter_initialize() {
 }
 
 function upfront_exporter_stylesheet_directory($stylesheet_dir) {
-	if (upfront_exporter_is_start_page()) return $stylesheet_dir;
+	if (upfront_exporter_is_start_page()) return 'upfront';
 	return get_theme_root() . DIRECTORY_SEPARATOR . upfront_exporter_get_stylesheet();
 }
 
