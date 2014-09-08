@@ -250,8 +250,13 @@ class UpfrontThemeExporter {
 
 		$template = "<?php\n";
 
-		foreach($regions as $index=>$region) {
+		foreach($regions as $region) {
 			if($region->name === 'shadow') continue;
+			if(in_array($region->name, array('header', 'footer')) && $region->scope === 'global') {
+				$template .= "include(get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '$region->name.php');\n\n";
+				$this->updateGlobalRegionTemplate($region);
+				continue;
+			}
 			$template .= $this->renderRegion($region);
 		}
 
@@ -671,6 +676,18 @@ class UpfrontThemeExporter {
 			);
 			$this->themeSettings->set('required_pages', json_encode($pages));
 		}
+	}
+
+	protected function updateGlobalRegionTemplate($region) {
+		$content = "<?php\n";
+		$content .= $this->renderRegion($region);
+
+		$layout_filepath = sprintf('%s%s.php',
+			$this->getThemePath('global-regions'),
+			$region->name
+		);
+
+		file_put_contents($layout_filepath, $content);
 	}
 
 	public function updateThemeFonts($theme_fonts) {
