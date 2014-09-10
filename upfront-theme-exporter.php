@@ -78,6 +78,7 @@ class UpfrontThemeExporter {
 
 		add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
 		add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
+		add_action('upfront_update_responsive_settings', array($this, 'updateResponsiveSettings'));
 
 		add_action('upfront_get_stylesheet_directory', array($this, 'getStylesheetDirectory'));
 		add_action('upfront_get_stylesheet', array($this, 'getStylesheet'));
@@ -696,6 +697,10 @@ class UpfrontThemeExporter {
 
 	public function updateThemeFonts($theme_fonts) {
 		$this->themeSettings->set('theme_fonts', json_encode($theme_fonts));
+	}
+
+	public function updateResponsiveSettings($responsive_settings) {
+		$this->themeSettings->set('responsive_settings', json_encode($responsive_settings));
 	}
 
 	public function updateThemeColors($theme_colors) {
