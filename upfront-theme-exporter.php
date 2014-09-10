@@ -968,3 +968,8 @@ if (upfront_exporter_is_running()) {
 	add_action('upfront-core-initialized', 'upfront_exporter_initialize');
 	add_filter('stylesheet_directory', 'upfront_exporter_stylesheet_directory', 100);
 }
+
+if (is_admin()) {
+	require_once('class_thx_admin.php');
+	Thx_Admin::serve();
+}
