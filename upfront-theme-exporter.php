@@ -5,6 +5,7 @@ Plugin URI: http://premium.wpmudev.com/
 Description: Exports upfront page layouts to theme.
 Version: 0.0.1
 Author: WPMU DEV
+Text Domain: upfront_thx
 Author URI: http://premium.wpmudev.com
 License: GPLv2 or later
 WDP ID:
@@ -39,6 +40,7 @@ class UpfrontThemeExporter {
 	var $DEFAULT_ELEMENT_STYLESHEET = 'elementStyles.css';
 
 	public function __construct() {
+
 		$this->pluginDir = dirname(__FILE__);
 		$this->pluginDirUrl = plugin_dir_url(__FILE__);
 
