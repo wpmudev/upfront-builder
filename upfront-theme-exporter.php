@@ -365,6 +365,7 @@ class UpfrontThemeExporter {
 			' . PHPON::stringify($secondary) . '
 			);';
 
+		$wrappers = $data['wrappers'];
 		foreach ($data['modules'] as $i => $m) {
 			$nextModule = false;
 			if(sizeof($data['modules']) > ($i+1))
@@ -377,6 +378,25 @@ class UpfrontThemeExporter {
 			$props['rows'] = $moduleProperties['row'] ? $moduleProperties['row'] : 10;
 			$props['options'] = $this->parseProperties($module['objects'][0]->properties);
 			$props['wrapper_id'] = $moduleProperties['wrapper_id'];
+
+			// Add new line if needed
+			foreach($wrappers as $wrapper) {
+				foreach($wrapper->properties as $property) {
+					if ($property->name === 'wrapper_id' && $property->value === $props['wrapper_id']) {
+						$module_wrapper = $wrapper;
+						break;
+					}
+				}
+			}
+
+			foreach($module_wrapper->properties as $property) {
+				if ($property->name !== 'class') continue;
+
+				if (strpos($property->value, 'clr') !== false) {
+					$props['new_line'] = 'true';
+				}
+				break;
+			}
 
 			// Deal with per-module breakpoint props
 			$breakpoints = !empty($moduleProperties['breakpoint'])
