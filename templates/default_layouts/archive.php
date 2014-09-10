@@ -1,4 +1,5 @@
 <?php
+return '<?php
 $main_nav = upfront_create_region(array(
 	"name" => "main_nav",
 	"title" => "Navigation",
@@ -57,4 +58,4 @@ $content->add_element("PlainTxt", array(
 	)
 ));
 
-$regions->add($content);
+$regions->add($content);';

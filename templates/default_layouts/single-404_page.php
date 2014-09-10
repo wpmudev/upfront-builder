@@ -1,4 +1,5 @@
 <?php
+return '<?php
 $main_nav = upfront_create_region(array(
 	"name" => "main_nav",
 	"title" => "Navigation",
@@ -29,16 +30,16 @@ $main_nav->add_element("PlainTxt", array(
 $regions->add($main_nav);
 
 $main = upfront_create_region(array(
-	'name' => "main",
-	'title' => __("Main Area"),
-	'scope' => "local",
-	'type' => 'wide',
-	'default' => true,
-	'allow_sidebar' => true
+	"name" => "main",
+	"title" => __("Main Area"),
+	"scope" => "local",
+	"type" => "wide",
+	"default" => true,
+	"allow_sidebar" => true
 ), array(
-	'row' => 140,
-	'background_type' => 'color',
-	'background_color' => '#c5d0db'
+	"row" => 140,
+	"background_type" => "color",
+	"background_color" => "#c5d0db"
 ));
 
 $main->add_element("PlainTxt", array(
@@ -60,4 +61,4 @@ $main->add_element("PlainTxt", array(
 	)
 ));
 
-$regions->add($main);
+$regions->add($main);';

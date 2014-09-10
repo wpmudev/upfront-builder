@@ -74,6 +74,8 @@ class UpfrontThemeExporter {
 		add_filter('upfront_prepare_theme_styles', array($this, 'prepareThemeStyles'), 15);
 		add_filter('upfront_prepare_typography_styles', array($this, 'prepareTypographyStyles'), 15);
 
+		add_filter('upfront_load_layout_from_database', '__return_false');
+
 		add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
 		add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
 
@@ -808,9 +810,20 @@ class UpfrontThemeExporter {
 			DIRECTORY_SEPARATOR
 		);
 		$default_layouts = glob($default_layouts_dir . '*');
+
+		$add_global_regions = isset($form['add_global_regions']) && $form['add_global_regions'];
+		$header_include = "\ninclude(get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . 'header.php');\n";
+		$footer_include = "include(get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . 'footer.php');";
+
 		foreach($default_layouts as $layout) {
 			$destination_file = str_replace($default_layouts_dir, $theme_layouts_dir, $layout);
-			copy($layout, $destination_file);
+			$destination_file = str_replace('.tpl', '', $destination_file);
+			$content = include $layout;
+			if ($add_global_regions) {
+				$content = preg_replace('#<\?php#', "<?php" . $header_include, $content);
+				$content .= "\n" . $footer_include;
+			}
+			file_put_contents($destination_file, $content);
 		}
 
 		// Here, we're ready to export any temporarily stored element styles
