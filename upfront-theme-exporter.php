@@ -249,7 +249,7 @@ class UpfrontThemeExporter {
 				}
 			}
 
-			$this->themeSettings->set('global_regions', json_encode($scope_data));
+			$this->themeSettings->set('global_regions', str_replace('\\n', '\\\\n', json_encode($scope_data)));
 		}
 		$regions = json_decode(stripslashes($data['regions']));
 
@@ -380,9 +380,9 @@ class UpfrontThemeExporter {
 				$nextModule = $this->parseProperties($data['modules'][$i+1]->properties);
 
 			$module = (array) $m;
-			
+
 			$isGroup = (isset($module['modules']) && isset($module['wrappers']));
-			
+
 			$moduleProperties = $this->parseProperties($module['properties']);
 			$props = $this->parseModuleClass($moduleProperties['class']);
 			$props['id'] = $moduleProperties['element_id'];
@@ -432,7 +432,7 @@ class UpfrontThemeExporter {
 				$this->addMenuFromElement($props);
 				$props['options']['menu_id'] = false; // Should not be set in exported layout
 			}
-			
+
 			if ($isGroup){
 				$output .= "\n" . '$' . $name . '->add_group(' . PHPON::stringify($props) . ");\n";
 				$output .= $this->renderModules($name, $module['modules'], $module['wrappers'], $props['id']);
