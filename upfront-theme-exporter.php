@@ -453,6 +453,11 @@ class UpfrontThemeExporter {
 		$menu_object = wp_get_nav_menu_object($menu_id);
 		$menu_items = wp_get_nav_menu_items($menu_id);
 
+		foreach($menu_items as $menu_item) {
+			if(strpos($menu_item->url, site_url()) === false) continue;
+			$menu_item->url = str_replace(site_url(), '%siteurl%', $menu_item->url);
+		}
+
 		$menu = array(
 			'id' => false, // Shouldn't be set
 			'slug' => $menu_object->slug,
