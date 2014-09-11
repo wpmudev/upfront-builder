@@ -329,8 +329,8 @@ class UpfrontThemeExporter {
 	}
 
 	protected function renderRegion($region) {
-		$data = (array) $region;
-		$name = str_replace('-', '_', $data['name']);
+		$data = (array)$region;
+		$name = preg_replace('/[^_a-z0-9]/i', '_', $data['name']);
 
 		$main = array(
 			'name' => $data['name'],
