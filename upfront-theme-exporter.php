@@ -852,8 +852,9 @@ class UpfrontThemeExporter {
 		$default_layouts = glob($default_layouts_dir . '*');
 
 		$add_global_regions = isset($form['add_global_regions']) && $form['add_global_regions'];
-		$header_include = "\ninclude(get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . 'header.php');\n";
-		$footer_include = "include(get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . 'footer.php');";
+		$global_regions_path = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR";
+		$header_include = "\nif (file_exists({$global_regions_path} . 'header.php')) include({$global_regions_path} . 'header.php');\n";
+		$footer_include = "if (file_exists({$global_regions_path} . 'footer.php')) include({$global_regions_path} . 'footer.php');";
 
 		foreach($default_layouts as $layout) {
 			$destination_file = str_replace($default_layouts_dir, $theme_layouts_dir, $layout);
