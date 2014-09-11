@@ -258,7 +258,8 @@ class UpfrontThemeExporter {
 		foreach($regions as $region) {
 			if($region->name === 'shadow') continue;
 			if(in_array($region->name, array('header', 'footer')) && $region->scope === 'global') {
-				$template .= "include(get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '$region->name.php');\n\n";
+				$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
+				$template .= "if (file_exists({$global_region_filename})) include({$global_region_filename});\n\n"; // <-- Check first
 				$this->updateGlobalRegionTemplate($region);
 				continue;
 			}
