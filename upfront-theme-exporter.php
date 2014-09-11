@@ -363,20 +363,31 @@ class UpfrontThemeExporter {
 		$output = '$'. $name . ' = upfront_create_region(
 			' . PHPON::stringify($main) .',
 			' . PHPON::stringify($secondary) . '
-			);';
+			);' . "\n";
 
-		$wrappers = $data['wrappers'];
-		foreach ($data['modules'] as $i => $m) {
+		$output .= $this->renderModules($name, $data['modules'], $data['wrappers']);
+
+		$output .= "\n" . '$regions->add($' . $name . ");\n\n";
+		return $output;
+	}
+
+	protected function renderModules($name, $modules, $wrappers, $group = '') {
+		$output = '';
+		foreach ($modules as $i => $m) {
 			$nextModule = false;
 			if(sizeof($data['modules']) > ($i+1))
 				$nextModule = $this->parseProperties($data['modules'][$i+1]->properties);
 
 			$module = (array) $m;
+			
+			$isGroup = (isset($module['modules']) && isset($module['wrappers']));
+			
 			$moduleProperties = $this->parseProperties($module['properties']);
 			$props = $this->parseModuleClass($moduleProperties['class']);
 			$props['id'] = $moduleProperties['element_id'];
 			$props['rows'] = $moduleProperties['row'] ? $moduleProperties['row'] : 10;
-			$props['options'] = $this->parseProperties($module['objects'][0]->properties);
+			if (!$isGroup)
+				$props['options'] = $this->parseProperties($module['objects'][0]->properties);
 			$props['wrapper_id'] = $moduleProperties['wrapper_id'];
 
 			// Add new line if needed
@@ -420,15 +431,18 @@ class UpfrontThemeExporter {
 				$this->addMenuFromElement($props);
 				$props['options']['menu_id'] = false; // Should not be set in exported layout
 			}
-
-			// This is needed since module groups are not correctly exported yet and
-			// until that is handled we're just skipping module group export.
-			if (!$type) continue;
-
-			$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
+			
+			if ($isGroup){
+				$output .= "\n" . '$' . $name . '->add_group(' . PHPON::stringify($props) . ");\n";
+				$output .= $this->renderModules($name, $module['modules'], $module['wrappers'], $props['id']);
+			}
+			else {
+				if (!empty($group)){
+					$props['group'] = $group;
+				}
+				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
+			}
 		}
-
-		$output .= "\n" . '$regions->add($' . $name . ");\n";
 		return $output;
 	}
 
