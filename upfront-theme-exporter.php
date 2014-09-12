@@ -468,7 +468,7 @@ class UpfrontThemeExporter {
 		foreach($region_lightboxes as $lightbox) {
 			$lightbox_parts = explode('#', $lightbox);
 			$lightbox = end($lightbox_parts);
-			$output .= "\nif (file_exists({$lightboxes_path} . '$lightbox.php')) include_once({$lightboxes_path} . '$lightbox.php');";
+			$output .= "\nif (file_exists({$lightboxes_path} . '$lightbox.php')) include({$lightboxes_path} . '$lightbox.php');";
 		}
 		return $output;
 	}
