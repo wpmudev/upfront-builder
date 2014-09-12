@@ -263,6 +263,10 @@ class UpfrontThemeExporter {
 				$this->updateGlobalRegionTemplate($region);
 				continue;
 			}
+			if($region->container === 'lightbox') {
+				$this->exportLightbox($region);
+				continue;
+			}
 			$template .= $this->renderRegion($region);
 		}
 
@@ -373,6 +377,7 @@ class UpfrontThemeExporter {
 	}
 
 	protected function renderModules($name, $modules, $wrappers, $group = '') {
+		$region_lightboxes = array();
 		$output = '';
 		foreach ($modules as $i => $m) {
 			$nextModule = false;
@@ -428,6 +433,19 @@ class UpfrontThemeExporter {
 
 			$type = $this->getObjectType($props['options']['view_class']);
 
+			// Check for lightboxes
+			switch($type) {
+			case 'Uimage':
+				if ($props['options']['when_clicked'] === 'lightbox') $region_lightboxes[] = $props['options']['image_link'];
+				break;
+			case 'PlainTxt':
+				$region_lightboxes += $this->getLightBoxesFromText($props);
+				break;
+			case 'Unewnavigation':
+				$region_lightboxes += $this->getLightBoxesFromMenu($props);
+				break;
+			}
+
 			if ($type === 'Unewnavigation') {
 				$this->addMenuFromElement($props);
 				$props['options']['menu_id'] = false; // Should not be set in exported layout
@@ -444,7 +462,35 @@ class UpfrontThemeExporter {
 				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
 			}
 		}
+
+		$lightboxes_path = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . 'lightboxes' . DIRECTORY_SEPARATOR";
+		$region_lightboxes = array_unique($region_lightboxes);
+		foreach($region_lightboxes as $lightbox) {
+			$lightbox_parts = explode('#', $lightbox);
+			$lightbox = end($lightbox_parts);
+			$output .= "\nif (file_exists({$lightboxes_path} . '$lightbox.php')) include_once({$lightboxes_path} . '$lightbox.php');";
+		}
 		return $output;
+	}
+
+	protected function getLightBoxesFromMenu($properties) {
+		$lightboxes = array();
+
+		$menu_id = $properties['options']['menu_id'];
+		$menu_items = wp_get_nav_menu_items($menu_id);
+		foreach($menu_items as $menu_item) {
+			if(strpos($menu_item->url, '#ltb-') === false) continue;
+			$lightboxes[] = $menu_item->url;
+		}
+
+		return $lightboxes;
+	}
+
+	protected function getLightBoxesFromText($properties) {
+		if (strpos($properties['options']['content'], 'rel="lightbox"') === false) return array();
+		$matches = array();
+		preg_match_all('#href="(.+?)" rel="lightbox"#', $properties['options']['content'], $matches);
+		return is_array($matches[1]) ? $matches[1] : array();
 	}
 
 	protected function addMenuFromElement($properties) {
@@ -729,6 +775,18 @@ class UpfrontThemeExporter {
 
 		$layout_filepath = sprintf('%s%s.php',
 			$this->getThemePath('global-regions'),
+			$region->name
+		);
+
+		file_put_contents($layout_filepath, $content);
+	}
+
+	protected function exportLightbox($region) {
+		$content = "<?php\n";
+		$content .= $this->renderRegion($region);
+
+		$layout_filepath = sprintf('%s%s.php',
+			$this->getThemePath('global-regions', 'lightboxes'),
 			$region->name
 		);
 
