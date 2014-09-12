@@ -501,6 +501,11 @@ class UpfrontThemeExporter {
 
 		foreach($menu_items as $menu_item) {
 			if(strpos($menu_item->url, site_url()) === false) continue;
+
+			// Fix lightboxes and other anchor urls
+			$menu_item->url = preg_replace('#' . get_site_url() . '/create_new/.+?(\#[A-Za-z_-]+)#', '\1', $menu_item->url);
+
+			// Fix hardcoded site url
 			$menu_item->url = str_replace(site_url(), '%siteurl%', $menu_item->url);
 		}
 
@@ -714,6 +719,9 @@ class UpfrontThemeExporter {
 				unlink($file);
 			}
 		}
+
+		// Fix lightboxes and other anchor urls
+		$content = preg_replace('#' . get_site_url() . '/create_new/.+?(\#[A-Za-z_-]+)#', '\1', $content);
 
 		// Okay, so now the imported image is hard-linked to *current* theme dir...
 		// Not what we want - the images don't have to be in the current theme, not really
