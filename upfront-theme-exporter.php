@@ -465,6 +465,10 @@ class UpfrontThemeExporter {
 
 		$lightboxes_path = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . 'lightboxes' . DIRECTORY_SEPARATOR";
 		$region_lightboxes = array_unique($region_lightboxes);
+		if (count($region_lightboxes) > 0) {
+			// Include lightbox container
+			$output .= "\nif (file_exists({$lightboxes_path} . 'lightbox.php')) include({$lightboxes_path} . 'lightbox.php');";
+		}
 		foreach($region_lightboxes as $lightbox) {
 			$lightbox_parts = explode('#', $lightbox);
 			$lightbox = end($lightbox_parts);
