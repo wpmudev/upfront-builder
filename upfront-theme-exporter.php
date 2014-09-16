@@ -171,7 +171,7 @@ class UpfrontThemeExporter {
 		if (isset($args['json']) && $args['json']) return '';
 		return array();
 	}
-	
+
 	public function getButtonPresets($presets, $args) {
 		if (isset($args['json']) && $args['json']) return '';
 		return array();
@@ -229,35 +229,6 @@ class UpfrontThemeExporter {
 
 		$this->theme = $data['theme'];
 
-		// Save global regions
-		$regions_as_array = json_decode(stripslashes($data['regions']), true);
-		$scopes = array();
-		foreach ( $regions_as_array as $region ){
-			if ($region['name'] == 'shadow') continue;
-			if ( $region['scope'] == 'local' ) continue;
-
-			if ( !is_array($scopes[$region['scope']]) ) $scopes[$region['scope']] = array();
-			$scopes[$region['scope']][] = $region;
-		}
-		foreach ( $scopes as $scope => $adata ) {
-			$current_scope = json_decode($this->themeSettings->get('global_regions'), true);
-			$scope_data = $adata;
-			if ( $current_scope ){ // merge with current scope if it's exist
-				foreach ( $current_scope as $current_region ){
-					$found = false;
-					foreach ( $adata as $region ){
-						if ( $region['name'] == $current_region['name'] || $region['name'] == $current_region['container'] ){
-							$found = true;
-							break;
-						}
-					}
-					if ( ! $found )
-						$scope_data[] = $current_region;
-				}
-			}
-
-			$this->themeSettings->set('global_regions', str_replace('\\n', '\\\\n', json_encode($scope_data)));
-		}
 		$regions = json_decode(stripslashes($data['regions']));
 
 		$template = "<?php\n";
@@ -656,91 +627,12 @@ class UpfrontThemeExporter {
 		$template = preg_replace('/[^-_a-z0-9]/i', '', $layout['template']);
 		$content = $layout['content'];
 
-		$matches = array();
-		$uploads_dir = wp_upload_dir();
-
-		// Copy all images used in layout to theme directory
 		$template_images_dir = $this->getThemePath('images', $template);
 
-		// Save file list for later
-		$original_images = preg_match('/\b' . $template . '\b/', $template_images_dir)
-			? glob($template_images_dir . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE)
-			: array()
-		;
+		// Copy all images used in layout to theme directory
+		$content = $this->exportImages($content, $template, $template_images_dir);
 
-		//preg_match_all("#[\"'](http.+?(jpg|jpeg|png|gif))[\"']#", $content, $matches); // Won't recognize escaped quotes (such as content images), and will find false positives such as "httpajpg"
-		preg_match_all("#\b(https?://.+?\.(jpg|jpeg|png|gif))\b#", $content, $matches);
-
-		$images_used_in_template = array();
-		$separator = '/';
-
-		// matches[1] containes full image urls
-		foreach ($matches[1] as $image) {
-			// Image is from a theme
-			if (strpos($image, get_theme_root_uri()) !== false) {
-				$relative_url = explode('themes/', $image);
-				$source_root = get_theme_root();
-			}
-			// Image is from uploads
-			if (strpos($image, 'uploads') !== false) {
-				$relative_url = explode('uploads/', $image);
-				$source_root = $uploads_dir['basedir'];
-			}
-			$relative_url = $relative_url[1];
-
-			// Get image filename
-			$source_path_parts = explode('/', $relative_url);
-			$image_filename = end($source_path_parts);
-
-			// Get source and destination image
-			$source_relative_path = str_replace('/', $separator, $relative_url);
-			$source_image = $source_root . $separator . $source_relative_path;
-
-			$destination_image = $template_images_dir . $image_filename;
-
-			// Copy image
-			if (file_exists($source_image)) {
-				$result = copy($source_image, $destination_image);
-			}
-			$images_used_in_template[] = $destination_image;
-
-			// Replace images url root with stylesheet uri
-			/*
-			$image_uri = sprintf("' . get_stylesheet_directory_uri() . '%simages%s%s%s%s'",
-				$separator,
-				$separator,
-				$template,
-				$separator,
-				$image_filename
-			);
-			// var_dump('image uri', $image_uri);
-
-			$content = str_replace("'" . $image . "'", $image_uri, $content);
-			$content = str_replace('"' . $image . '"', $image_uri, $content);
-			*/
-
-			$image_uri = get_stylesheet_directory_uri() . '/images/' . $template . '/' . $image_filename;
-			$content = preg_replace('/\b' . preg_quote($image, '/') . '\b/i', $image_uri, $content);
-		}
-
-		// Delete images that are not used, this is needed if template is exported from itself
-		foreach ($original_images as $file) {
-			if (in_array($file, $images_used_in_template)) continue;
-			if (is_file($file)) {
-				unlink($file);
-			}
-		}
-
-		// Fix lightboxes and other anchor urls
-		$content = preg_replace('#' . get_site_url() . '/create_new/.+?(\#[A-Za-z_-]+)#', '\1', $content);
-
-		// Okay, so now the imported image is hard-linked to *current* theme dir...
-		// Not what we want - the images don't have to be in the current theme, not really
-		// Ergo, fix - replace all the hardcoded stylesheet URIs to dynamic ones.
-		$content = str_replace(get_stylesheet_directory_uri(), '" . get_stylesheet_directory_uri() . "', $content);
-
-		// Replace all urls that reffer to current site with get_current_site
-		$content = str_replace(get_site_url(), '" . get_site_url() . "', $content);
+		$content = $this->makeUrlsRelative($content);
 
 		// Save layout to file
 		$layout_file = sprintf('%s%s.php',
@@ -779,33 +671,102 @@ class UpfrontThemeExporter {
 			if (!is_array($pages)) $pages = array();
 			$page = $layout['layout'];
 			$name = join(' ', array_map('ucfirst', explode('-', $page)));
-			$page_layout_data = array(
+			$pages[$page] = array(
 				'name' => $name,
 				'slug' => $page,
 				'layout' => $template,
 			);
-			
-			$pages[$page] = $page_layout_data;
 			$this->themeSettings->set('required_pages', json_encode($pages));
-
-			// Yeah, and now, also please do export the standard WP template too
-			$tpl_filename = "page-{$page}";
-			$tpl_filepath = sprintf('%s%s.php',
-				$this->getThemePath(),
-				$tpl_filename
-			);
-
-			// Include the template file from which we will be generating a WP page template.
-			$tpl_content = $contents = $this->template($this->pluginDir . '/templates/page-template.php', $page_layout_data);
-			// Recursive definition yay
-
-			file_put_contents($tpl_filepath, $tpl_content);
 		}
+	}
+
+	protected function makeUrlsRelative($content) {
+		// Fix lightboxes and other anchor urls
+		$content = preg_replace('#' . get_site_url() . '/create_new/.+?(\#[A-Za-z_-]+)#', '\1', $content);
+
+		// Okay, so now the imported image is hard-linked to *current* theme dir...
+		// Not what we want - the images don't have to be in the current theme, not really
+		// Ergo, fix - replace all the hardcoded stylesheet URIs to dynamic ones.
+		$content = str_replace(get_stylesheet_directory_uri(), '" . get_stylesheet_directory_uri() . "', $content);
+
+		// Replace all urls that reffer to current site with get_current_site
+		$content = str_replace(get_site_url(), '" . get_site_url() . "', $content);
+
+		return $content;
+	}
+
+	protected function exportImages($content, $template, $template_images_dir) {
+		$matches = array();
+		$uploads_dir = wp_upload_dir();
+
+		// Save file list for later
+		$original_images = preg_match('{\b' . $template . '\b}', $template_images_dir)
+			? glob($template_images_dir . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE)
+			: array()
+			;
+
+		//preg_match_all("#[\"'](http.+?(jpg|jpeg|png|gif))[\"']#", $content, $matches); // Won't recognize escaped quotes (such as content images), and will find false positives such as "httpajpg"
+		preg_match_all("#\b(https?://.+?\.(jpg|jpeg|png|gif))\b#", $content, $matches);
+
+		$images_used_in_template = array();
+		$separator = '/';
+
+		// matches[1] containes full image urls
+		foreach ($matches[1] as $image) {
+			// Image is from a theme
+			if (strpos($image, get_theme_root_uri()) !== false) {
+				$relative_url = explode('themes/', $image);
+				$source_root = get_theme_root();
+			}
+			// Image is from uploads
+			if (strpos($image, 'uploads') !== false) {
+				$relative_url = explode('uploads/', $image);
+				$source_root = $uploads_dir['basedir'];
+			}
+			$relative_url = $relative_url[1];
+
+			// Get image filename
+			$source_path_parts = explode('/', $relative_url);
+			$image_filename = end($source_path_parts);
+
+			// Get source and destination image
+			$source_relative_path = str_replace('/', $separator, $relative_url);
+			$source_image = $source_root . $separator . $source_relative_path;
+
+			$destination_image = $template_images_dir . $image_filename;
+
+			// Copy image
+			if (file_exists($source_image)) {
+				$result = copy($source_image, $destination_image);
+			}
+			$images_used_in_template[] = $destination_image;
+
+			// Replace images url root with stylesheet uri
+			$image_uri = get_stylesheet_directory_uri() . '/images/' . $template . '/' . $image_filename;
+			$content = preg_replace('/\b' . preg_quote($image, '/') . '\b/i', $image_uri, $content);
+		}
+
+		// Delete images that are not used, this is needed if template is exported from itself
+		foreach ($original_images as $file) {
+			if (in_array($file, $images_used_in_template)) continue;
+			if (is_file($file)) {
+				unlink($file);
+			}
+		}
+
+		return $content;
 	}
 
 	protected function updateGlobalRegionTemplate($region) {
 		$content = "<?php\n";
 		$content .= $this->renderRegion($region);
+
+		$template_images_dir = $this->getThemePath('images', 'global-regions', $region->name);
+
+		// Copy all images used in layout to theme directory
+		$content = $this->exportImages($content, 'global-regions' . DIRECTORY_SEPARATOR . $region->name, $template_images_dir);
+
+		$content = $this->makeUrlsRelative($content);
 
 		$layout_filepath = sprintf('%s%s.php',
 			$this->getThemePath('global-regions'),
@@ -838,7 +799,7 @@ class UpfrontThemeExporter {
 	public function updateThemeColors($theme_colors) {
 		$this->themeSettings->set('theme_colors', json_encode($theme_colors));
 	}
-	
+
 	public function updateButtonPresets($button_presets) {
 		$this->themeSettings->set('button_presets', json_encode($button_presets));
 	}
