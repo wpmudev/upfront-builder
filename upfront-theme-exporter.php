@@ -764,7 +764,7 @@ class UpfrontThemeExporter {
 		$template_images_dir = $this->getThemePath('images', 'global-regions', $region->name);
 
 		// Copy all images used in layout to theme directory
-		$content = $this->exportImages($content, 'global-regions' . DIRECTORY_SEPARATOR . $region->name, $template_images_dir);
+		$content = $this->exportImages($content, "global-regions/{$region->name}", $template_images_dir);
 
 		$content = $this->makeUrlsRelative($content);
 
