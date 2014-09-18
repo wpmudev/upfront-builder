@@ -954,10 +954,14 @@ class UpfrontThemeExporter {
 	}
 
 	public function addData($data) {
-		ob_start();
-		include dirname(__FILE__) . '/templates/testContent.php';
-		$testContent = ob_get_clean();
-
+		//ob_start();
+		//include dirname(__FILE__) . '/templates/testContent.php';
+		//$testContent = ob_get_clean();
+		$template_file = upfront_get_template_path('preview_post', trailingslashit(Upfront::get_root_dir()) . 'elements/upfront-this-post/tpl/preview_post.html');
+		$testContent = file_exists($template_file)
+			? file_get_contents($template_file)
+			: file_get_contents(dirname(__FILE__) . '/templates/testContent.php')
+		;
 		$data['exporter'] = array(
 			'url' => plugins_url('', __FILE__),
 			'testContent' => $testContent
