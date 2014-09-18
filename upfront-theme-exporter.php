@@ -96,6 +96,14 @@ class UpfrontThemeExporter {
 		add_action('upfront_get_theme_colors', array($this, 'getThemeColors'), 5, 2);
 		add_action('upfront_get_button_presets', array($this, 'getButtonPresets'), 5, 2);
 		add_action('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 5);
+
+		add_filter('upfront-this_post-unknown_post', array($this, 'prepare_preview_post'), 10, 2);
+	}
+
+	public function prepare_preview_post ($post, $data) {
+		if (empty($data['post_id']) || is_numeric($data['post_id'])) return $post;
+		if ('fake_post' !== $data['post_id']) return $post;
+		return $this->_generate_preview_post($data);
 	}
 
 	public function prepareThemeStyles($styles) {
@@ -957,14 +965,9 @@ class UpfrontThemeExporter {
 		//ob_start();
 		//include dirname(__FILE__) . '/templates/testContent.php';
 		//$testContent = ob_get_clean();
-		$template_file = upfront_get_template_path('preview_post', trailingslashit(Upfront::get_root_dir()) . 'elements/upfront-this-post/tpl/preview_post.html');
-		$testContent = file_exists($template_file)
-			? file_get_contents($template_file)
-			: file_get_contents(dirname(__FILE__) . '/templates/testContent.php')
-		;
 		$data['exporter'] = array(
 			'url' => plugins_url('', __FILE__),
-			'testContent' => $testContent
+			'testContent' => $this->_get_preview_content(),
 		);
 
 		return $data;
@@ -1071,6 +1074,33 @@ class UpfrontThemeExporter {
 		$result = file_put_contents($file_name, $contents);
 		//chmod($file_name, 0777);
 		return $file_name;
+	}
+
+	protected function _get_preview_content () {
+		$template_file = upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContent.php');
+		if (file_exists($template_file)) {
+			ob_start();
+			include($template_file);
+			$content = ob_get_clean();
+		} else $content = '<p>some test content</p>';
+		return $content;
+	}
+
+	/**
+	 * This is called to create a stub post for preview purposes.
+	 */
+	protected function _generate_preview_post ($data) {
+		$content = $this->_get_preview_content();
+		$post = new WP_Post((object)array(
+			'ID' => $data['post_id'],
+			'post_type' => (!empty($data['post_type']) ? $data['post_type'] : 'post'),
+			'post_status' => 'publish',
+			'post_title' => 'Sample Post',
+			'post_content' => $content,
+			'filter' => 'raw',
+			'post_author' => get_current_user_id()
+		));
+		return $post;
 	}
 
 }
