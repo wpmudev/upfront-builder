@@ -468,11 +468,12 @@ class UpfrontThemeExporter {
 
 		$menu_id = $properties['options']['menu_id'];
 		$menu_items = wp_get_nav_menu_items($menu_id);
-		foreach($menu_items as $menu_item) {
-			if(strpos($menu_item->url, '#ltb-') === false) continue;
-			$lightboxes[] = $menu_item->url;
-		}
-
+      if( is_array( $menu_items ) ){
+        foreach($menu_items as $menu_item) {
+          if(strpos($menu_item->url, '#ltb-') === false) continue;
+          $lightboxes[] = $menu_item->url;
+        }
+      }
 		return $lightboxes;
 	}
 
@@ -488,16 +489,17 @@ class UpfrontThemeExporter {
 
 		$menu_object = wp_get_nav_menu_object($menu_id);
 		$menu_items = wp_get_nav_menu_items($menu_id);
+        if( is_array( $menu_items ) ){
+          foreach($menu_items as $menu_item) {
+            if(strpos($menu_item->url, site_url()) === false) continue;
 
-		foreach($menu_items as $menu_item) {
-			if(strpos($menu_item->url, site_url()) === false) continue;
+            // Fix lightboxes and other anchor urls
+            $menu_item->url = preg_replace('#' . get_site_url() . '/create_new/.+?(\#[A-Za-z_-]+)#', '\1', $menu_item->url);
 
-			// Fix lightboxes and other anchor urls
-			$menu_item->url = preg_replace('#' . get_site_url() . '/create_new/.+?(\#[A-Za-z_-]+)#', '\1', $menu_item->url);
-
-			// Fix hardcoded site url
-			$menu_item->url = str_replace(site_url(), '%siteurl%', $menu_item->url);
-		}
+            // Fix hardcoded site url
+            $menu_item->url = str_replace(site_url(), '%siteurl%', $menu_item->url);
+          }
+        }
 
 		$menu = array(
 			'id' => false, // Shouldn't be set
@@ -1077,7 +1079,7 @@ class UpfrontThemeExporter {
 	}
 
 	protected function _get_preview_content () {
-		$template_file = upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContent.php');
+		$template_file = upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContent.html');
 		if (file_exists($template_file)) {
 			ob_start();
 			include($template_file);
