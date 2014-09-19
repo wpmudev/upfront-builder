@@ -102,7 +102,7 @@ class UpfrontThemeExporter {
 
 	public function prepare_preview_post ($post, $data) {
 		if (empty($data['post_id']) || is_numeric($data['post_id'])) return $post;
-		if ('fake_post' !== $data['post_id']) return $post;
+		if ( 'fake_post' !== $data['post_id'] && 'fake_styled_post' !== $data['post_id'] ) return $post;
 		return $this->_generate_preview_post($data);
 	}
 
@@ -1078,8 +1078,14 @@ class UpfrontThemeExporter {
 		return $file_name;
 	}
 
-	protected function _get_preview_content () {
-		$template_file = upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContent.html');
+  /**
+   * Returns fake post content
+   *
+   * @param string $post_id
+   * @return string
+   */
+	protected function _get_preview_content ( $post_id = "fake_post" ) {
+		$template_file = $post_id === "fake_styled_post" ? upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContentStyled.php')  : upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContent.html');
 		if (file_exists($template_file)) {
 			ob_start();
 			include($template_file);
@@ -1092,7 +1098,7 @@ class UpfrontThemeExporter {
 	 * This is called to create a stub post for preview purposes.
 	 */
 	protected function _generate_preview_post ($data) {
-		$content = $this->_get_preview_content();
+		$content = $this->_get_preview_content( $data['post_id'] );
 		$post = new WP_Post((object)array(
 			'ID' => $data['post_id'],
 			'post_type' => (!empty($data['post_type']) ? $data['post_type'] : 'post'),
