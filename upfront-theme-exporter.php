@@ -1113,6 +1113,13 @@ class UpfrontThemeExporter {
 		return $post;
 	}
 
+	private function _does_theme_export_images () {
+		return get_stylesheet() !== $this->theme
+			? $this->_theme_exports_images
+			: apply_filters('upfront-thx-theme_exports_images', $this->_theme_exports_images)
+		;
+	}
+
 }
 
 function upfront_exporter_initialize() {
