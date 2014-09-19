@@ -37,6 +37,8 @@ class UpfrontThemeExporter {
 	protected $pluginDirUrl;
 	protected $pluginDir;
 
+	private $_theme_exports_images = true; // Export images by default, for legacy themes
+
 	var $DEFAULT_ELEMENT_STYLESHEET = 'elementStyles.css';
 
 	public function __construct() {
