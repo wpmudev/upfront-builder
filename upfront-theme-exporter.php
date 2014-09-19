@@ -367,6 +367,7 @@ class UpfrontThemeExporter {
 	protected function renderModules($name, $modules, $wrappers, $group = '') {
 		$region_lightboxes = array();
 		$output = '';
+		$export_images = $this->_does_theme_export_images();
 		foreach ($modules as $i => $m) {
 			$nextModule = false;
 			if(sizeof($data['modules']) > ($i+1))
@@ -425,6 +426,10 @@ class UpfrontThemeExporter {
 			switch($type) {
 			case 'Uimage':
 				if ($props['options']['when_clicked'] === 'lightbox') $region_lightboxes[] = $props['options']['image_link'];
+				if (!$export_images && empty($props['options']['src']) && !empty($props['options']['image_status']) && 'starting' !== $props['options']['image_status']) {
+					// If we're not exporting images AND if we're dealing with zeroed-out image, update its status
+					$props['options']['image_status'] = 'starting';
+				}
 				break;
 			case 'PlainTxt':
 				$region_lightboxes += $this->getLightBoxesFromText($props);
