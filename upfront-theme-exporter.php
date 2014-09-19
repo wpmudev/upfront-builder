@@ -823,6 +823,7 @@ class UpfrontThemeExporter {
 			'name' => ucwords(str_replace('-', '_', sanitize_html_class($slug))),
 			'slug' => $slug,
 			'pages' => '',
+			'exports_images' => $this->_does_theme_export_images() ? 'true' : 'false', // Force conversion to string so it can be expanded in the template.
 		);
 
 		$contents = $this->template($this->pluginDir . '/templates/functions.php', $data);
