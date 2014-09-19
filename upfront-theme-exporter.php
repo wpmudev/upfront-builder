@@ -37,6 +37,8 @@ class UpfrontThemeExporter {
 	protected $pluginDirUrl;
 	protected $pluginDir;
 
+	private $_theme_exports_images = true; // Export images by default, for legacy themes
+
 	var $DEFAULT_ELEMENT_STYLESHEET = 'elementStyles.css';
 
 	public function __construct() {
@@ -365,6 +367,7 @@ class UpfrontThemeExporter {
 	protected function renderModules($name, $modules, $wrappers, $group = '') {
 		$region_lightboxes = array();
 		$output = '';
+		$export_images = $this->_does_theme_export_images();
 		foreach ($modules as $i => $m) {
 			$nextModule = false;
 			if(sizeof($data['modules']) > ($i+1))
@@ -423,6 +426,10 @@ class UpfrontThemeExporter {
 			switch($type) {
 			case 'Uimage':
 				if ($props['options']['when_clicked'] === 'lightbox') $region_lightboxes[] = $props['options']['image_link'];
+				if (!$export_images && empty($props['options']['src']) && !empty($props['options']['image_status']) && 'starting' !== $props['options']['image_status']) {
+					// If we're not exporting images AND if we're dealing with zeroed-out image, update its status
+					$props['options']['image_status'] = 'starting';
+				}
 				break;
 			case 'PlainTxt':
 				$region_lightboxes += $this->getLightBoxesFromText($props);
@@ -721,8 +728,51 @@ class UpfrontThemeExporter {
 		$images_used_in_template = array();
 		$separator = '/';
 
+		$export_images = $this->_does_theme_export_images();
+		$theme_ui_path = $this->getThemePath('ui');
+
 		// matches[1] containes full image urls
 		foreach ($matches[1] as $image) {
+
+			// If the exports aren't allowed...
+			if (!$export_images) {
+				$this_theme_relative_ui_root = '/' . basename($this->getThemePath(false)) . '/ui/';
+				$is_ui_image = false !== strpos($image, $this_theme_relative_ui_root);
+
+				// Lots of duplication, this could really use some refactoring :/
+				if ($is_ui_image) {
+					// ... let's deal with the UI images first ...
+					$relative_url = explode('themes/', $image);
+					$relative_url = $relative_url[1];
+					$source_root = get_theme_root();
+					$source_path_parts = explode('/', $relative_url);
+					$image_filename = end($source_path_parts);
+
+					// Get source and destination image
+					$source_relative_path = str_replace('/', $separator, $relative_url);
+					$source_image = $source_root . $separator . $source_relative_path;
+
+					$destination_image = $theme_ui_path . $image_filename;
+
+					// Copy image
+					if (file_exists($source_image)) {
+						$result = copy($source_image, $destination_image);
+					}
+					$images_used_in_template[] = $destination_image;
+
+					// Replace images url root with stylesheet uri
+					$image_uri = get_stylesheet_directory_uri() . '/images/' . $template . '/' . $image_filename;
+					$content = preg_replace('/\b' . preg_quote($image, '/') . '\b/i', $image_uri, $content);
+				} else {
+					// ... before we null out the other stuff and carry on.
+					$content = preg_replace('/\b' . preg_quote($image, '/') . '\b/i', '', $content);
+				}
+				continue;
+			}
+
+			// Alright, so frome here on, we know we have images exports allowed.
+			// So, let's export!
+
 			// Image is from a theme
 			if (strpos($image, get_theme_root_uri()) !== false) {
 				$relative_url = explode('themes/', $image);
@@ -823,6 +873,7 @@ class UpfrontThemeExporter {
 			'name' => ucwords(str_replace('-', '_', sanitize_html_class($slug))),
 			'slug' => $slug,
 			'pages' => '',
+			'exports_images' => $this->_does_theme_export_images() ? 'true' : 'false', // Force conversion to string so it can be expanded in the template.
 		);
 
 		$contents = $this->template($this->pluginDir . '/templates/functions.php', $data);
@@ -858,6 +909,7 @@ class UpfrontThemeExporter {
 			'thx-theme-tags' => false,
 			'thx-theme-text-domain' => false,
 			'thx-activate_theme' => false,
+			'thx-export_with_images' => false,
 		));
 
 		// Check required fields
@@ -902,7 +954,13 @@ class UpfrontThemeExporter {
 
 		// Add directories
 		mkdir($theme_path.DIRECTORY_SEPARATOR.'layouts');
-		mkdir($theme_path.DIRECTORY_SEPARATOR.'images');
+		mkdir($theme_path.DIRECTORY_SEPARATOR.'images'); // For general images
+		mkdir($theme_path.DIRECTORY_SEPARATOR.'ui'); // For sprites and such UI-specific images
+
+		// This is important to set *before* we create the theme
+		remove_all_filters('upfront-thx-theme_exports_images'); // This is for the duration of this request - so we don't inherit old values, whatever they are
+		$this->_theme_exports_images = !empty($form['thx-export_with_images']);
+		// Allright, good to go
 
 		// Write functions.php to add stylesheet for theme
 		$this->createFunctionsPhp($theme_path, 'functions.php', $theme_slug);
@@ -1109,6 +1167,13 @@ class UpfrontThemeExporter {
 			'post_author' => get_current_user_id()
 		));
 		return $post;
+	}
+
+	private function _does_theme_export_images () {
+		return get_stylesheet() !== $this->theme
+			? $this->_theme_exports_images
+			: apply_filters('upfront-thx-theme_exports_images', $this->_theme_exports_images)
+		;
 	}
 
 }
