@@ -859,6 +859,7 @@ class UpfrontThemeExporter {
 			'thx-theme-tags' => false,
 			'thx-theme-text-domain' => false,
 			'thx-activate_theme' => false,
+			'thx-export_with_images' => false,
 		));
 
 		// Check required fields
@@ -903,7 +904,13 @@ class UpfrontThemeExporter {
 
 		// Add directories
 		mkdir($theme_path.DIRECTORY_SEPARATOR.'layouts');
-		mkdir($theme_path.DIRECTORY_SEPARATOR.'images');
+		mkdir($theme_path.DIRECTORY_SEPARATOR.'images'); // For general images
+		mkdir($theme_path.DIRECTORY_SEPARATOR.'ui'); // For sprites and such UI-specific images
+
+		// This is important to set *before* we create the theme
+		remove_all_filters('upfront-thx-theme_exports_images'); // This is for the duration of this request - so we don't inherit old values, whatever they are
+		$this->_theme_exports_images = !empty($form['thx-export_with_images']);
+		// Allright, good to go
 
 		// Write functions.php to add stylesheet for theme
 		$this->createFunctionsPhp($theme_path, 'functions.php', $theme_slug);
