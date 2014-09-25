@@ -338,6 +338,8 @@ class UpfrontThemeExporter {
 		if (!empty($data['sub'])) $main['sub'] = $data['sub'];
 		if (!empty($data['position'])) $main['position'] = $data['position'];
 		if (!empty($data['allow_sidebar'])) $main['allow_sidebar'] = $data['allow_sidebar'];
+		if (!empty($data['restrict_to_container'])) $main['restrict_to_container'] = $data['restrict_to_container'];
+		if (!empty($data['behavior'])) $main['behavior'] = $data['behavior'];
 		$secondary = $this->parseProperties($data['properties']);
 
 		// Deal with the slider images
