@@ -99,6 +99,9 @@ class UpfrontThemeExporter {
 		add_action('upfront_get_button_presets', array($this, 'getButtonPresets'), 5, 2);
 		add_action('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 5);
 
+		// Intercept theme images loading and verify that the destination actually exists
+		add_action('wp_ajax_upfront-media-list_theme_images', array($this, 'check_theme_images_destination_exists'), 5);
+
 		add_filter('upfront-this_post-unknown_post', array($this, 'prepare_preview_post'), 10, 2);
 	}
 
@@ -815,6 +818,14 @@ class UpfrontThemeExporter {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * If a theme (UI) image has been requested, let's verify that the subdirectory actually exists.
+	 * This only applies to themes build pre-UI changeset.
+	 */
+	public function check_theme_images_destination_exists () {
+		return $this->getThemePath('ui'); // `return` in an AJAX request handler? - *Yes* because we're just augmenting the default behavior.
 	}
 
 	protected function updateGlobalRegionTemplate($region) {
