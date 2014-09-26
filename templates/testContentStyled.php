@@ -8,9 +8,7 @@
 <p>This is a layout test</p>
 <h5>Header 5</h5>
 <p>Paragraph test: 3 wolf moon <a class="#">link test</a>, <strong>strong tag test, used by WP for bold text</strong> kogi direct <i>i tag test</i>trade hoodie flexitarian umami <b>b tag test</b>selvage jean shorts brunch paleo
-<div class="ueditor-insert upfront-inserted_image-wrapper" id="ueditor-insert-variant-default">
-  <span class="uinsert-image"><img class="" src="<?php echo plugins_url('imgs/testImage-thumb.jpg', dirname(__FILE__)); ?>"></span><span class="wp-caption-text">Image floated to the left and with caption at the left</span>
-</div>
+
   cray craft beer. +1 meggings <em>em tag test, used by WP for italic text</em> crucifix VHS kogi. Raw denim Vice vegan, <a class="#">link test</a> seitan XOXO meggings irony butcher 8-bit chillwave. PBR try-hard slow-carb vinyl stumptown, polaroid pour-over Portland tattooed twee. Ethnic ennui you probably haven't heard of them, bicycle rights kitsch four loko salvia gluten-free butcher iPhone Williamsburg Tonx Pitchfork. Lomo selvage fap Williamsburg sustainable cred. Helvetica chia Tonx, polaroid butcher sartorial cray PBR.</p>
 
 <h3>List tests</h3>
@@ -42,9 +40,8 @@
   <li>Element 4</li>
 </ol>
 
-
-
-
+<div id="upfront-image-variants"></div>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid maxime nam saepe temporibus totam. Asperiores aspernatur eveniet illum quisquam repudiandae veritatis. Doloribus ea necessitatibus sit tempora totam. Eaque, recusandae voluptatem. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aliquid aperiam debitis, distinctio exercitationem facilis inventore labore minima odio provident! Accusantium deserunt dolores ea necessitatibus provident, quod saepe tempora voluptates.
 
 
 <h3>Quote tests</h3>

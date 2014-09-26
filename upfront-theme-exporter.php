@@ -79,6 +79,7 @@ class UpfrontThemeExporter {
 		add_filter('upfront_load_layout_from_database', '__return_false');
 
 		add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
+		add_action('upfront_update_post_image_variants', array($this, 'updatePostImageVariants'));
 		add_action('upfront_update_button_presets', array($this, 'updateButtonPresets'));
 		add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
 		add_action('upfront_update_responsive_settings', array($this, 'updateResponsiveSettings'));
@@ -96,6 +97,7 @@ class UpfrontThemeExporter {
 		add_action('upfront_get_responsive_settings', array($this, 'getResponsiveSettings'), 5);
 		add_action('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 5, 2);
 		add_action('upfront_get_theme_colors', array($this, 'getThemeColors'), 5, 2);
+		add_action('upfront_get_post_image_variants', array($this, 'getPostImageVariants'), 5, 2);
 		add_action('upfront_get_button_presets', array($this, 'getButtonPresets'), 5, 2);
 		add_action('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 5);
 
@@ -180,6 +182,11 @@ class UpfrontThemeExporter {
 	public function getThemeColors($colors, $args) {
 		if (isset($args['json']) && $args['json']) return '';
 		return array();
+	}
+
+	public function getPostImageVariants($variants, $args) {
+	  if (isset($args['json']) && $args['json']) return '';
+	  return array();
 	}
 
 	public function getButtonPresets($presets, $args) {
@@ -669,7 +676,7 @@ class UpfrontThemeExporter {
 			if ($value === false) continue;
 			$this->themeSettings->set($property, $value);
 		}
-		$array_properties = array('theme_colors', 'button_presets');
+		$array_properties = array('theme_colors', 'button_presets', "post_image_variants");
 		foreach($array_properties as $property) {
 			$value = isset($raw_post_data[$property]) ? $raw_post_data[$property] : false;
 			if ($value === false) continue;
@@ -865,6 +872,11 @@ class UpfrontThemeExporter {
 	public function updateButtonPresets($button_presets) {
 		$this->themeSettings->set('button_presets', json_encode($button_presets));
 	}
+
+	public function updatePostImageVariants($post_image_variant) {
+	  $this->themeSettings->set('post_image_variants', json_encode($post_image_variant));
+	}
+
 
 	public function createFunctionsPhp($themepath, $filename, $slug) {
 		if(substr($themepath, -1) != DIRECTORY_SEPARATOR)
