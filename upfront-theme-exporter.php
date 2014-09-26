@@ -101,6 +101,9 @@ class UpfrontThemeExporter {
 		add_action('upfront_get_button_presets', array($this, 'getButtonPresets'), 5, 2);
 		add_action('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 5);
 
+		// Intercept theme images loading and verify that the destination actually exists
+		add_action('wp_ajax_upfront-media-list_theme_images', array($this, 'check_theme_images_destination_exists'), 5);
+
 		add_filter('upfront-this_post-unknown_post', array($this, 'prepare_preview_post'), 10, 2);
 	}
 
@@ -725,6 +728,9 @@ class UpfrontThemeExporter {
 		$matches = array();
 		$uploads_dir = wp_upload_dir();
 
+		$_themes_root = basename(get_theme_root());
+		$_uploads_root = basename($uploads_dir['basedir']);
+
 		// Save file list for later
 		$original_images = preg_match('{\b' . $template . '\b}', $template_images_dir)
 			? glob($template_images_dir . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE)
@@ -751,7 +757,7 @@ class UpfrontThemeExporter {
 				// Lots of duplication, this could really use some refactoring :/
 				if ($is_ui_image) {
 					// ... let's deal with the UI images first ...
-					$relative_url = explode('themes/', $image);
+					$relative_url = explode("/{$_themes_root}/", $image);
 					$relative_url = $relative_url[1];
 					$source_root = get_theme_root();
 					$source_path_parts = explode('/', $relative_url);
@@ -784,12 +790,12 @@ class UpfrontThemeExporter {
 
 			// Image is from a theme
 			if (strpos($image, get_theme_root_uri()) !== false) {
-				$relative_url = explode('themes/', $image);
+				$relative_url = explode("/{$_themes_root}/", $image);
 				$source_root = get_theme_root();
 			}
 			// Image is from uploads
 			if (strpos($image, 'uploads') !== false) {
-				$relative_url = explode('uploads/', $image);
+				$relative_url = explode("/{$_uploads_root}/", $image);
 				$source_root = $uploads_dir['basedir'];
 			}
 			$relative_url = $relative_url[1];
@@ -824,6 +830,14 @@ class UpfrontThemeExporter {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * If a theme (UI) image has been requested, let's verify that the subdirectory actually exists.
+	 * This only applies to themes build pre-UI changeset.
+	 */
+	public function check_theme_images_destination_exists () {
+		return $this->getThemePath('ui'); // `return` in an AJAX request handler? - *Yes* because we're just augmenting the default behavior.
 	}
 
 	protected function updateGlobalRegionTemplate($region) {
