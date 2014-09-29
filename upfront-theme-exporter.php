@@ -350,6 +350,7 @@ class UpfrontThemeExporter {
 		if (!empty($data['allow_sidebar'])) $main['allow_sidebar'] = $data['allow_sidebar'];
 		if (!empty($data['restrict_to_container'])) $main['restrict_to_container'] = $data['restrict_to_container'];
 		if (!empty($data['behavior'])) $main['behavior'] = $data['behavior'];
+		if (!empty($data['sticky'])) $main['sticky'] = $data['sticky'];
 		$secondary = $this->parseProperties($data['properties']);
 
 		// Deal with the slider images
@@ -380,6 +381,7 @@ class UpfrontThemeExporter {
 		$region_lightboxes = array();
 		$output = '';
 		$export_images = $this->_does_theme_export_images();
+		$exported_wrappers = array();
 		foreach ($modules as $i => $m) {
 			$nextModule = false;
 			if(sizeof($data['modules']) > ($i+1))
@@ -408,12 +410,20 @@ class UpfrontThemeExporter {
 			}
 
 			foreach($module_wrapper->properties as $property) {
-				if ($property->name !== 'class') continue;
+				if ($property->name !== 'class' && $property->name !== 'breakpoint') continue;
 
-				if (strpos($property->value, 'clr') !== false) {
+				if ($property->name === 'class' && strpos($property->value, 'clr') !== false) {
 					$props['new_line'] = 'true';
 				}
-				break;
+				
+				if ($property->name === 'breakpoint' && !in_array($props['wrapper_id'], $exported_wrappers) && !empty($property->value)) {
+					// Only export the wrapper breakpoint data on the first element
+					$props['wrapper_breakpoint'] = array();
+					foreach($property->value as $bidx => $point) {
+						$props['wrapper_breakpoint'][$bidx] = (array)$point;
+					}
+					$exported_wrappers[] = $props['wrapper_id'];
+				}
 			}
 
 			// Deal with per-module breakpoint props
