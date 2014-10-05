@@ -36,6 +36,8 @@ class UpfrontThemeExporter {
 
 	protected $pluginDirUrl;
 	protected $pluginDir;
+	protected $global_regions = array();
+	protected $global_sideregions = array();
 
 	private $_theme_exports_images = true; // Export images by default, for legacy themes
 
@@ -258,11 +260,16 @@ class UpfrontThemeExporter {
 			if(in_array($region->name, array('header', 'footer')) && $region->scope === 'global') {
 				$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
 				$template .= "if (file_exists({$global_region_filename})) include({$global_region_filename});\n\n"; // <-- Check first
-				$this->updateGlobalRegionTemplate($region);
+				$this->global_regions[$region->name] = $region;
+				$this->updateGlobalRegionTemplate($region->name);
 				continue;
 			}
 			if($region->container === 'lightbox') {
 				$this->exportLightbox($region);
+				continue;
+			}
+			if(in_array($region->container, array('header', 'footer')) && $region->scope === 'global') {
+				$this->handleGlobalSideregion($region);
 				continue;
 			}
 			$template .= $this->renderRegion($region);
@@ -291,6 +298,11 @@ class UpfrontThemeExporter {
 		);
 
 		die;
+	}
+
+	protected function handleGlobalSideregion($region) {
+		$this->global_sideregions[$region->container][$region->sub] = $region;
+		if ($region->sub === 'right') $this->updateGlobalRegionTemplate($region->container);
 	}
 
 	public function exportElementStyles() {
@@ -415,7 +427,7 @@ class UpfrontThemeExporter {
 				if ($property->name === 'class' && strpos($property->value, 'clr') !== false) {
 					$props['new_line'] = 'true';
 				}
-				
+
 				if ($property->name === 'breakpoint' && !in_array($props['wrapper_id'], $exported_wrappers) && !empty($property->value)) {
 					// Only export the wrapper breakpoint data on the first element
 					$props['wrapper_breakpoint'] = array();
@@ -850,9 +862,12 @@ class UpfrontThemeExporter {
 		return $this->getThemePath('ui'); // `return` in an AJAX request handler? - *Yes* because we're just augmenting the default behavior.
 	}
 
-	protected function updateGlobalRegionTemplate($region) {
+	protected function updateGlobalRegionTemplate($region_name) {
+		$region = $this->global_regions[$region_name];
 		$content = "<?php\n";
+		if (isset($this->global_sideregions[$region->name]) && isset($this->global_sideregions[$region->name]['left'])) $content .= $this->renderRegion($this->global_sideregions[$region->name]['left']);
 		$content .= $this->renderRegion($region);
+		if (isset($this->global_sideregions[$region->name]) && isset($this->global_sideregions[$region->name]['right'])) $content .= $this->renderRegion($this->global_sideregions[$region->name]['right']);
 
 		$template_images_dir = $this->getThemePath('images', 'global-regions', $region->name);
 
