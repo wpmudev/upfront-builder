@@ -578,6 +578,7 @@ PostLayoutManager.prototype = {
          */
         view.$('.upfront-object-content').find(".upfront_edit_content_style").on("click", function(e){
             view.$('.upfront-object-content').html(Upfront.data.exporter.styledTestContent);
+            view.$('.upfront-object-content').closest(".upfront-object-view").addClass("upfront-disable-surroundings");
             new PostImageVariants({
                 contentView : view
             });
