@@ -1196,7 +1196,7 @@ class UpfrontThemeExporter {
    * @return string
    */
 	protected function _get_preview_content ( $post_id = "fake_post" ) {
-		$template_file = $post_id === "fake_styled_post" ? upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContentStyled.php')  : upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContent.html');
+		$template_file = $post_id === "fake_styled_post" ? upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContentStyled.html')  : upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContent.html');
 		if (file_exists($template_file)) {
 			ob_start();
 			include($template_file);
