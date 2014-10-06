@@ -1081,6 +1081,7 @@ class UpfrontThemeExporter {
 		$data['exporter'] = array(
 			'url' => plugins_url('', __FILE__),
 			'testContent' => $this->_get_preview_content(),
+			'styledTestContent' => $this->_get_styled_preview_content(),
 		);
 
 		return $data;
@@ -1203,6 +1204,16 @@ class UpfrontThemeExporter {
 			$content = ob_get_clean();
 		} else $content = '<p>some test content</p>';
 		return $content;
+	}
+
+	private function _get_styled_preview_content ( $post_id = "fake_styled_post" ) {
+	  $template_file =  upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContentStyled.html');
+	  if (file_exists($template_file)) {
+		ob_start();
+		include($template_file);
+		$content = ob_get_clean();
+	  } else $content = '<p>some styled test content</p>';
+	  return $content;
 	}
 
 	/**
