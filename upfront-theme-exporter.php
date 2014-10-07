@@ -67,6 +67,7 @@ class UpfrontThemeExporter {
 		add_action($ajaxPrefix . 'export-part-template', array($this, 'ajax_export_part_template'));
 
 		add_action($ajaxPrefix . 'export-element-styles', array($this, 'exportElementStyles'));
+		add_action($ajaxPrefix . 'delete-element-styles', array($this, 'deleteElementStyles'));
 
 		add_action( 'wp_enqueue_scripts', array($this,'addStyles'));
 
@@ -341,6 +342,32 @@ class UpfrontThemeExporter {
 		$stored = get_option(self::TEMP_STYLES_KEY, array());
 		$stored[] = $data;
 		update_option(self::TEMP_STYLES_KEY, $stored);
+	}
+	
+	public function deleteElementStyles() {
+		$data = $_POST['data'];
+		if (empty($data['stylename']) || empty($data['elementType'])) {
+			$this->jsonError('Some data is missing.', 'missing_data');
+		}
+
+		$stylesheet = !empty($_POST['stylesheet']) && 'upfront' !== $_POST['stylesheet']
+			? $_POST['stylesheet']
+			: false
+		;
+		
+		if (!empty($stylesheet)) $this->_delete_element_style($stylesheet, $data);
+	}
+	
+	private function _delete_element_style ($name, $data) {
+		$this->theme = $name;
+
+		$style_file = sprintf(
+			'%s%s.css',
+			$this->getThemePath('element-styles', $data['elementType']),
+			$data['stylename']
+		);
+		
+		if (is_file($style_file)) unlink($style_file);
 	}
 
 	protected function renderRegion($region) {
