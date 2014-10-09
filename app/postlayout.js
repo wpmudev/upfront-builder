@@ -1,5 +1,6 @@
 define([
-  'underscore', 'jquery', 'text!upfront/templates/image_variants.html'
+  'underscore', 'jquery', 'text!' + Upfront.themeExporter.root + 'templates/image_variants.html'
+  //'underscore', 'jquery', 'text!templates/image_variants.html'
 ], function(_, $, variant_tpl) {
 
 var PostLayoutManager = function(){
@@ -83,7 +84,7 @@ var PostImageVariant = Backbone.View.extend({
     remove_variant : function(e){
         e.preventDefault();
         e.stopPropagation();
-        ImageVariants.remove(this.model);
+        Upfront.Content.ImageVariants.remove(this.model);
         this.remove();
     },
     start_editing : function(e){
@@ -417,6 +418,7 @@ PostLayoutManager.prototype = {
 		Upfront.Events.on('post:layout:sidebarcommands', _.bind(this.addExportCommand, this));
 		Upfront.Events.on('command:layout:export_postlayout', _.bind(this.exportPostLayout, this));
 		Upfront.Events.on('post:layout:partrendered', this.setTestContent);
+		Upfront.Events.on('post:layout:style:cancel', this.cancelContentStyle);
         Upfront.Events.on('post:parttemplates:edit', _.bind(this.addTemplateExportButton, this));
 	},
 
@@ -572,18 +574,23 @@ PostLayoutManager.prototype = {
 			return;
 
 		view.$('.upfront-object-content').html(Upfront.data.exporter.testContent);
-
+        $(".sidebar-commands-theme .command-cancel").hide();
         /**
          * Start content styler on click
          */
         view.$('.upfront-object-content').find(".upfront_edit_content_style").on("click", function(e){
+            $(".sidebar-commands-theme .command-cancel").show();
             view.$('.upfront-object-content').html(Upfront.data.exporter.styledTestContent);
             view.$('.upfront-object-content').closest(".upfront-object-view").addClass("upfront-disable-surroundings");
             new PostImageVariants({
                 contentView : view
             });
         });
-	}
+	},
+    cancelContentStyle: function(){
+        $(".sidebar-commands-theme .command-cancel").hide();
+        $('.upfront-output-PostPart_contents').html(Upfront.data.exporter.testContent);
+    }
 };
 
 return new PostLayoutManager();
