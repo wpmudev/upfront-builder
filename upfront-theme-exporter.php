@@ -781,10 +781,10 @@ class UpfrontThemeExporter {
 		$_uploads_root = basename($uploads_dir['basedir']);
 
 		// Save file list for later
-		$original_images = preg_match('{\b' . $template . '\b}', $template_images_dir)
+		$original_images = preg_match('{\b' . $template . '\b}', wp_normalize_path($template_images_dir))
 			? glob($template_images_dir . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE)
 			: array()
-			;
+		;
 
 		//preg_match_all("#[\"'](http.+?(jpg|jpeg|png|gif))[\"']#", $content, $matches); // Won't recognize escaped quotes (such as content images), and will find false positives such as "httpajpg"
 		preg_match_all("#\b(https?://.+?\.(jpg|jpeg|png|gif))\b#", $content, $matches);
