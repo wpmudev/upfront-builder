@@ -18,6 +18,7 @@ var PostImageVariants =  Backbone.View.extend({
         var model = new Upfront.Models.ImageVariant();
         model.set("vid", Upfront.Util.get_unique_id("variant"));
         var variant = new PostImageVariant({ model : model});
+        variant.parent_view = this;
         variant.render();
         variant.$el.hide();
         /**
@@ -36,6 +37,7 @@ var PostImageVariants =  Backbone.View.extend({
 
         Upfront.Content.ImageVariants.each(function (model) {
             var variant = new PostImageVariant({model: model});
+	        variant.parent_view = self;
             variant.render();
             self.contentView.$el.find("#upfront-image-variants").append(variant.el);
         });
@@ -45,6 +47,7 @@ var PostImageVariants =  Backbone.View.extend({
             model.set("vid", Upfront.Util.get_unique_id("variant"));
             var variant = new PostImageVariant({model: model});
             Upfront.Content.ImageVariants.add(model);
+            variant.parent_view = self;
             variant.render();
             this.contentView.$el.find("#upfront-image-variants").append(variant.el);
         }
@@ -52,7 +55,7 @@ var PostImageVariants =  Backbone.View.extend({
         /**
          * Add new button
          */
-        var $add_new_button = $("<div class='upfront-add-image-insert-variant'>Add Image Insert Variant</div>").on("click", this.add_new_variant);
+        var $add_new_button = $("<div class='upfront-add-image-insert-variant'>Add Image Insert Variant</div>").on("click", $.proxy(this.add_new_variant, this));
         $("#upfront-image-variants").append($add_new_button);
     }
 });
@@ -183,7 +186,7 @@ var PostImageVariant = Backbone.View.extend({
 				revertDuration: 0,
                 zIndex: 100,
                 containment : 'document',
-                appendTo: 'body',
+                appendTo: self.$self,
                 delay: 50,
                 helper: 'clone',
                 start : function( event, ui ){
@@ -736,21 +739,18 @@ var PostImageVariant = Backbone.View.extend({
         }
 
     },
-    ui_right : function( ui, el ){
-        var $el = $(el),
-            $content = $el.closest(".upfront-object-view"),
-            content_width = $content.width(),
-            left = ui.position.left;
-        return content_width - left - $el.width();
-    },
     make_resizable : function(){
         var self = this,
             ge = Upfront.Behaviors.GridEditor,
             $parent = $('#upfront-image-variants'),
-            max_col = Upfront.Views.breakpoints_storage.get_breakpoints().get_active().get('columns'),
+            max_col = ge.get_class_num(this.parent_view.contentView.parent_module_view.model.get_property_value_by_name('class'), ge.grid.class),
             col_size = $parent.width()/max_col,
             $resize,
             axis, rsz_row, rsz_col, rsz_left, rsz_float;
+
+        if ( this.model.get('group').col > max_col )
+        	this.model.get('group').col = max_col;
+
         this.$self.append(this.nw_handle);
         this.$self.append(this.se_handle);
         this.$self.resizable({
