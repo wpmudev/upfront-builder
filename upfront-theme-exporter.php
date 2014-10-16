@@ -749,12 +749,27 @@ class UpfrontThemeExporter {
 			if (!is_array($pages)) $pages = array();
 			$page = $layout['layout'];
 			$name = join(' ', array_map('ucfirst', explode('-', $page)));
-			$pages[$page] = array(
+			$page_layout_data = array(
 				'name' => $name,
 				'slug' => $page,
 				'layout' => $template,
 			);
+			
+			$pages[$page] = $page_layout_data;
 			$this->themeSettings->set('required_pages', json_encode($pages));
+
+			// Yeah, and now, also please do export the standard WP template too
+			$tpl_filename = "page-{$page}";
+			$tpl_filepath = sprintf('%s%s.php',
+				$this->getThemePath(),
+				$tpl_filename
+			);
+
+			// Include the template file from which we will be generating a WP page template.
+			$tpl_content = $contents = $this->template($this->pluginDir . '/templates/page-template.php', $page_layout_data);
+			// Recursive definition yay
+
+			file_put_contents($tpl_filepath, $tpl_content);
 		}
 	}
 
