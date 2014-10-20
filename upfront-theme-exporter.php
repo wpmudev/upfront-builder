@@ -312,6 +312,11 @@ class UpfrontThemeExporter {
 			$this->jsonError('Some data is missing.', 'missing_data');
 		}
 
+		if ($data['elementType'] === 'layout') {
+			$this->themeSettings->set('layout_style', $data['styles']);
+			return;
+		}
+
 		$stylesheet = !empty($_POST['stylesheet']) && 'upfront' !== $_POST['stylesheet']
 			? $_POST['stylesheet']
 			: false
@@ -343,7 +348,7 @@ class UpfrontThemeExporter {
 		$stored[] = $data;
 		update_option(self::TEMP_STYLES_KEY, $stored);
 	}
-	
+
 	public function deleteElementStyles() {
 		$data = $_POST['data'];
 		if (empty($data['stylename']) || empty($data['elementType'])) {
@@ -354,10 +359,10 @@ class UpfrontThemeExporter {
 			? $_POST['stylesheet']
 			: false
 		;
-		
+
 		if (!empty($stylesheet)) $this->_delete_element_style($stylesheet, $data);
 	}
-	
+
 	private function _delete_element_style ($name, $data) {
 		$this->theme = $name;
 
@@ -366,7 +371,7 @@ class UpfrontThemeExporter {
 			$this->getThemePath('element-styles', $data['elementType']),
 			$data['stylename']
 		);
-		
+
 		if (is_file($style_file)) unlink($style_file);
 	}
 
@@ -754,7 +759,7 @@ class UpfrontThemeExporter {
 				'slug' => $page,
 				'layout' => $template,
 			);
-			
+
 			$pages[$page] = $page_layout_data;
 			$this->themeSettings->set('required_pages', json_encode($pages));
 
