@@ -428,8 +428,8 @@ class UpfrontThemeExporter {
 		$exported_wrappers = array();
 		foreach ($modules as $i => $m) {
 			$nextModule = false;
-			if(sizeof($data['modules']) > ($i+1))
-				$nextModule = $this->parseProperties($data['modules'][$i+1]->properties);
+			if(!empty($m['modules']) && sizeof($m['modules']) > ($i+1))
+				$nextModule = $this->parseProperties($m['modules'][$i+1]->properties);
 
 			$module = (array) $m;
 
