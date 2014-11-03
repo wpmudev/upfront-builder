@@ -307,13 +307,13 @@ class UpfrontThemeExporter {
 	}
 
 	public function exportElementStyles() {
-		$data = $_POST['data'];
+		$data = stripslashes_deep($_POST['data']);
 		if (empty($data['stylename']) || empty($data['styles']) || empty($data['elementType'])) {
 			$this->jsonError('Some data is missing.', 'missing_data');
 		}
 
 		if ($data['elementType'] === 'layout') {
-			$this->themeSettings->set('layout_style', $data['styles']);
+			$this->themeSettings->set('layout_style', addcslashes($data['styles'], "'\\"));
 			return;
 		}
 
