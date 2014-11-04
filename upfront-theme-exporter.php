@@ -428,17 +428,19 @@ class UpfrontThemeExporter {
 		$exported_wrappers = array();
 		foreach ($modules as $i => $m) {
 			$nextModule = false;
-			if(!empty($m['modules']) && sizeof($m['modules']) > ($i+1))
-				$nextModule = $this->parseProperties($m['modules'][$i+1]->properties);
-
 			$module = (array) $m;
+			
+			// What does this do?
+			if(!empty($module['modules']) && sizeof($module['modules']) > ($i+1))
+				$nextModule = $this->parseProperties($module['modules'][$i+1]->properties);
+			// And why do we have it???
 
 			$isGroup = (isset($module['modules']) && isset($module['wrappers']));
 
 			$moduleProperties = $this->parseProperties($module['properties']);
 			$props = $this->parseModuleClass($moduleProperties['class']);
 			$props['id'] = $moduleProperties['element_id'];
-			$props['rows'] = $moduleProperties['row'] ? $moduleProperties['row'] : 10;
+			$props['rows'] = !empty($moduleProperties['row']) ? $moduleProperties['row'] : 10;
 			if (!$isGroup)
 				$props['options'] = $this->parseProperties($module['objects'][0]->properties);
 			$props['wrapper_id'] = $moduleProperties['wrapper_id'];
