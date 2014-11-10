@@ -90,6 +90,9 @@ class UpfrontThemeExporter {
 		add_action('upfront_save_tab_preset', array($this, 'saveTabPreset'));
 		add_action('upfront_delete_tab_preset', array($this, 'deleteTabPreset'));
 
+		add_action('upfront_save_accordion_preset', array($this, 'saveAccordionPreset'));
+		add_action('upfront_delete_accordion_preset', array($this, 'deleteAccordionPreset'));
+
 		add_action('upfront_get_stylesheet_directory', array($this, 'getStylesheetDirectory'));
 		add_action('upfront_get_stylesheet', array($this, 'getStylesheet'));
 
@@ -101,12 +104,14 @@ class UpfrontThemeExporter {
 		add_action('upfront_get_theme_styles', array($this, 'getThemeStyles'), 5);
 		add_action('upfront_get_global_regions', array($this, 'getGlobalRegions'), 5, 2);
 		add_action('upfront_get_responsive_settings', array($this, 'getResponsiveSettings'), 5);
-		add_action('upfront_get_theme_fonts', array($this, 'getThemeFonts'), 5, 2);
-		add_action('upfront_get_theme_colors', array($this, 'getThemeColors'), 5, 2);
-		add_action('upfront_get_post_image_variants', array($this, 'getPostImageVariants'), 5, 2);
-		add_action('upfront_get_button_presets', array($this, 'getButtonPresets'), 5, 2);
-		add_action('upfront_get_tab_presets', array($this, 'getTabPresets'), 5, 2);
 		add_action('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 5);
+
+		add_action('upfront_get_theme_fonts', array($this, 'getEmptyArray'), 5, 2);
+		add_action('upfront_get_theme_colors', array($this, 'getEmptyArray'), 5, 2);
+		add_action('upfront_get_post_image_variants', array($this, 'getEmptyArray'), 5, 2);
+		add_action('upfront_get_button_presets', array($this, 'getEmptyArray'), 5, 2);
+		add_action('upfront_get_tab_presets', array($this, 'getEmptyArray'), 5, 2);
+		add_action('upfront_get_accordion_presets', array($this, 'getEmptyArray'), 5, 2);
 
 		// Intercept theme images loading and verify that the destination actually exists
 		add_action('wp_ajax_upfront-media-list_theme_images', array($this, 'check_theme_images_destination_exists'), 5);
@@ -184,27 +189,7 @@ class UpfrontThemeExporter {
 		return array();
 	}
 
-	public function getThemeFonts($fonts, $args) {
-		if (isset($args['json']) && $args['json']) return json_encode(array());
-		return array();
-	}
-
-	public function getThemeColors($colors, $args) {
-		if (isset($args['json']) && $args['json']) return '';
-		return array();
-	}
-
-	public function getPostImageVariants($variants, $args) {
-	  if (isset($args['json']) && $args['json']) return '';
-	  return array();
-	}
-
-	public function getButtonPresets($presets, $args) {
-		if (isset($args['json']) && $args['json']) return '';
-		return array();
-	}
-
-	public function getTabPresets($presets, $args) {
+	public function getEmptyArray($presets, $args) {
 		if (isset($args['json']) && $args['json']) return '';
 		return array();
 	}
@@ -977,36 +962,39 @@ class UpfrontThemeExporter {
 	}
 
 	public function saveTabPreset() {
-		if (!isset($_POST['data'])) {
-			return;
-		}
-
-		$properties = $_POST['data'];
-
-		$presets = json_decode($this->themeSettings->get('tab_presets'), true);;
-
-		$result = array();
-
-		foreach ($presets as $preset) {
-			if ($preset['id'] === $properties['id']) {
-				continue;
-			}
-			$result[] = $preset;
-		}
-
-		$result[] = $properties;
-
-		$this->themeSettings->set('tab_presets', json_encode($result));
+		$this->saveElementPreset('tab');
 	}
 
 	public function deleteTabPreset() {
+		$this->deleteElementPreset('tab');
+	}
+
+	public function saveAccordionPreset() {
+		$this->saveElementPreset('accordion');
+	}
+
+	public function deleteAccordionPreset() {
+		$this->deleteElementPreset('accordion');
+	}
+
+	public function saveElementPreset($slug) {
+		$this->updateElementPreset($slug);
+	}
+
+	public function deleteElementPreset($slug) {
+		$this->updateElementPreset($slug, $false);
+	}
+
+	protected function updateElementPreset($slug, $delete = false) {
 		if (!isset($_POST['data'])) {
 			return;
 		}
 
+		$presetProperty = $slug . '_presets';
+
 		$properties = $_POST['data'];
 
-		$presets = json_decode($this->themeSettings->get('tab_presets'), true);;
+		$presets = json_decode($this->themeSettings->get($presetProperty), true);;
 
 		$result = array();
 
@@ -1017,7 +1005,11 @@ class UpfrontThemeExporter {
 			$result[] = $preset;
 		}
 
-		$this->themeSettings->set('tab_presets', json_encode($result));
+		if (!$delete) {
+			$result[] = $properties;
+		}
+
+		$this->themeSettings->set($presetProperty, json_encode($result));
 	}
 
 	public function createFunctionsPhp($themepath, $filename, $slug) {
