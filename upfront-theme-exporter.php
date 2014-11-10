@@ -129,7 +129,7 @@ class UpfrontThemeExporter {
 	// TODO this should go to upfront theme!
 	public function getThemeLayoutCascade($cascade, $base_filename) {
 		// Override brute force to ensure single-something page get their specific postlayout loaded
-		$layout_cascade = $_POST['layout_cascade'];
+		$layout_cascade = !empty($_POST['layout_cascade']) ? $_POST['layout_cascade'] : false;
 		if (empty($layout_cascade)) return $cascade;
 		$post_type = !empty($_POST['post_type']) ? $_POST['post_type'] : false;
 		$new_cascade = array(
@@ -143,7 +143,7 @@ class UpfrontThemeExporter {
 	// TODO this should go to upfront theme!
 	public function getThemePostpartTemplatesCascade($cascade, $base_filename) {
 		// Override brute force to ensure single-something page get page specific post layout parts loaded
-		$layout_cascade = $_POST['layout_cascade'];
+		$layout_cascade = !empty($_POST['layout_cascade']) ? $_POST['layout_cascade'] : false;
 		if (empty($layout_cascade)) return $cascade;
 
 		$cascade = array(
@@ -307,13 +307,13 @@ class UpfrontThemeExporter {
 	}
 
 	public function exportElementStyles() {
-		$data = $_POST['data'];
+		$data = stripslashes_deep($_POST['data']);
 		if (empty($data['stylename']) || empty($data['styles']) || empty($data['elementType'])) {
 			$this->jsonError('Some data is missing.', 'missing_data');
 		}
 
 		if ($data['elementType'] === 'layout') {
-			$this->themeSettings->set('layout_style', $data['styles']);
+			$this->themeSettings->set('layout_style', addcslashes($data['styles'], "'\\"));
 			return;
 		}
 
@@ -405,7 +405,7 @@ class UpfrontThemeExporter {
 				// copy file to theme folder
 				$file = basename($source);
 				$destination = $this->getThemePath('images') . $file;
-				copy($source, $destination);
+				@copy($source, $destination);
 				$secondary['background_slider_images'][$idx] = "/images/{$file}";
 			}
 		}
@@ -428,17 +428,19 @@ class UpfrontThemeExporter {
 		$exported_wrappers = array();
 		foreach ($modules as $i => $m) {
 			$nextModule = false;
-			if(sizeof($data['modules']) > ($i+1))
-				$nextModule = $this->parseProperties($data['modules'][$i+1]->properties);
-
 			$module = (array) $m;
+			
+			// What does this do?
+			if(!empty($module['modules']) && sizeof($module['modules']) > ($i+1))
+				$nextModule = $this->parseProperties($module['modules'][$i+1]->properties);
+			// And why do we have it???
 
 			$isGroup = (isset($module['modules']) && isset($module['wrappers']));
 
 			$moduleProperties = $this->parseProperties($module['properties']);
 			$props = $this->parseModuleClass($moduleProperties['class']);
 			$props['id'] = $moduleProperties['element_id'];
-			$props['rows'] = $moduleProperties['row'] ? $moduleProperties['row'] : 10;
+			$props['rows'] = !empty($moduleProperties['row']) ? $moduleProperties['row'] : 10;
 			if (!$isGroup)
 				$props['options'] = $this->parseProperties($module['objects'][0]->properties);
 			$props['wrapper_id'] = $moduleProperties['wrapper_id'];
@@ -486,7 +488,9 @@ class UpfrontThemeExporter {
 				$props['close_wrapper'] = false;
 			}
 
-			$type = $this->getObjectType($props['options']['view_class']);
+			$type = $this->getObjectType(
+				(!empty($props['options']['view_class']) ? $props['options']['view_class'] : false)
+			);
 
 			// Check for lightboxes
 			switch($type) {
