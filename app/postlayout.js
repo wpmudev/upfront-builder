@@ -749,21 +749,24 @@ var PostImageVariant = Backbone.View.extend({
             padding_right = content_view.model.get_property_value_by_name('padding_right'),
             max_col = parent_col - padding_left - padding_right,
             col_size = $parent.width()/max_col,
+            group = this.model.get('group'),
             $resize,
             axis, rsz_row, rsz_col, rsz_left, rsz_float;
 
-        if ( this.model.get('group').col > max_col )
-        	this.model.get('group').col = max_col;
+        if ( group.col > max_col ) {
+        	group.col = max_col;
+        	Upfront.Util.grid.update_class(this.$self, ge.grid.class, group.col);
+        }
         
         padding_left = padding_left ? parseInt(padding_left) : 0;
         padding_right = padding_right ? parseInt(padding_right) : 0;
         
-        if ( this.model.get('group').float == 'left' && padding_left > 0 )
-        	this.$self.css('margin-left', ( padding_left - Math.abs(this.model.get('group').margin_left) ) * col_size);
-        else if ( this.model.get('group').float == 'right' && padding_right > 0 )
-        	this.$self.css('margin-right', ( padding_right - Math.abs(this.model.get('group').margin_right) ) * col_size);
-        else if ( this.model.get('group').float == 'none' && padding_left > 0 )
-        	this.$self.css('margin-left', ( padding_left - Math.abs(this.model.get('group').margin_left) + Math.abs(this.model.get('group').left) ) * col_size);
+        if ( group.float == 'left' && padding_left > 0 )
+        	this.$self.css('margin-left', ( padding_left - Math.abs(group.margin_left) ) * col_size);
+        else if ( group.float == 'right' && padding_right > 0 )
+        	this.$self.css('margin-right', ( padding_right - Math.abs(group.margin_right) ) * col_size);
+        else if ( group.float == 'none' && padding_left > 0 )
+        	this.$self.css('margin-left', ( padding_left - Math.abs(group.margin_left) + Math.abs(group.left) ) * col_size);
 
         this.$self.append(this.nw_handle);
         this.$self.append(this.se_handle);
@@ -1116,6 +1119,7 @@ PostLayoutManager.prototype = {
         view.$('.upfront-object-content').find(".upfront_edit_content_style").on("click", function(e){
             $(".sidebar-commands-theme .command-cancel").show();
             view.$('.upfront-object-content .post_content').html(Upfront.data.exporter.styledTestContent);
+            view.$('.upfront-object').addClass("upfront-editing-content-style");
             view.$('.upfront-object-content').closest(".upfront-object-view").addClass("upfront-disable-surroundings");
             new PostImageVariants({
                 contentView : view
