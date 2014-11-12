@@ -437,9 +437,6 @@ var PostImageVariant = Backbone.View.extend({
 						width: drop_col*col_size,
 						height: this_pos.height
 					});
-	            	
-	            	//console.log({top: drop_top, left: drop_left, col: drop_col, order: drop_order, clear: drop_clear}, {top: other_drop_top, left: other_drop_left, order: other_drop_order, clear: other_drop_clear})
-	            	
                 },
                 stop : function(event, ui){
                     event.stopPropagation();
@@ -861,8 +858,6 @@ var PostImageVariant = Backbone.View.extend({
 				else {
                     rsz_float = "none";
                 }
-            	
-            	console.log(rsz_left, rsz_col, rsz_max_col, padding_left, max_col, padding_right, rsz_float)
                 
                 $resize.css({
 					height: rsz_row*ge.baseline,
@@ -906,15 +901,12 @@ var PostImageVariant = Backbone.View.extend({
 	            	Upfront.Util.grid.update_class($this, ge.grid.left_margin_class, 0);
 	                self.model.get("group").left = 0;
 	           	}
-	           	console.log(rsz_float, rsz_margin_left, rsz_left, rsz_col, rsz_margin_right, rsz_row)
                 
                 $resize.remove();
                 
                 var margin_left = ( rsz_float == 'left' && rsz_margin_left <= 0 ? ( padding_left - Math.abs(rsz_margin_left) ) * col_size : 0 );
                 if ( rsz_float == 'none' )
 					margin_left = ( padding_left - Math.abs(rsz_margin_left) + rsz_left ) * col_size;
-				
-				console.log(self.model.get("group"))
 
                 $this.css({
                 	float: rsz_float,
