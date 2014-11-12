@@ -96,7 +96,7 @@ var PostImageVariant = Backbone.View.extend({
     			data.left_cls = grid.left_margin_class + data.left;
     			if ( data.top )
 	    			data.top_cls = grid.top_margin_class + data.top;
-	    		data.clear_cls = data.clear ? 'clr' : '';
+	    		data.clear_cls = ( ( _.isString(data.clear) && data.clear.toLowerCase() === 'true' ) || ( !_.isString(data.clear) && data.clear ) ) ? 'clr' : '';
     		};
     	apply_classes( model_data.group );
     	apply_classes( model_data.image );
@@ -486,6 +486,7 @@ var PostImageVariant = Backbone.View.extend({
                   	$('.upfront-drop').remove();
 
                     $this.resizable("option", "disabled", false);
+                    self.render_model_data();
                 }
             };
 
@@ -705,6 +706,7 @@ var PostImageVariant = Backbone.View.extend({
 	                    clear: "",
 	                    visibility: ""
 	                });
+	                self.render_model_data();
                 }
             };
         /**
@@ -744,19 +746,20 @@ var PostImageVariant = Backbone.View.extend({
             parent_col = ge.get_class_num(content_view.parent_module_view.model.get_property_value_by_name('class'), ge.grid.class),
             padding_left = content_view.model.get_property_value_by_name('padding_left'),
             padding_right = content_view.model.get_property_value_by_name('padding_right'),
-            max_col = parent_col - padding_left - padding_right,
-            col_size = $parent.width()/max_col,
+            max_col = parent_col,
             group = this.model.get('group'),
             $resize,
-            axis, rsz_row, rsz_col, rsz_left, rsz_float;
-
-        if ( group.col > max_col ) {
-        	group.col = max_col;
-        	Upfront.Util.grid.update_class(this.$self, ge.grid.class, group.col);
-        }
-        
+            col_size, axis, rsz_row, rsz_col, rsz_left, rsz_float;
+            
         padding_left = padding_left ? parseInt(padding_left) : 0;
         padding_right = padding_right ? parseInt(padding_right) : 0;
+        max_col = max_col - padding_left - padding_right;
+        col_size = $parent.width()/max_col;
+
+        if ( group.col > max_col + Math.abs(group.margin_left) + Math.abs(group.margin_right) ) {
+        	group.col = max_col + Math.abs(group.margin_left) + Math.abs(group.margin_right);
+        	Upfront.Util.grid.update_class(this.$self, ge.grid.class, group.col);
+        }
         
         if ( group.float == 'left' && padding_left > 0 )
         	this.$self.css('margin-left', ( padding_left - Math.abs(group.margin_left) ) * col_size);
@@ -921,6 +924,7 @@ var PostImageVariant = Backbone.View.extend({
                     clear: "",
                     visibility: ""
                 });
+                self.render_model_data();
             }
         });
     },
