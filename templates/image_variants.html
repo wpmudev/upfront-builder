@@ -5,10 +5,10 @@
 	        <div class="ueditor-insert-variant-group {{group.width_cls}} {{group.left_cls}}" style="min-height: {{group.height}}px;float:{{group.float}}">
 	            <input class="image-variant-label" type="text" value="{{label}}"/>
 	            <div class="ueditor-insert-variant-wrap">
-	                <div class="upfront-wrapper ueditor-insert-variant-image {{image.width_cls}} {{image.left_cls}} {{image.top_cls}} {{image.clear_cls}}" style="height: {{image.height}}px;">
+	                <div class="upfront-wrapper ueditor-insert-variant-image {{image.width_cls}} {{image.left_cls}} {{image.top_cls}} {[if( image.clear === true ) { ]} {{image.clear_cls}} {[ } ]} " style="height: {{image.height}}px;">
 	                    <div class="ueditor-insert-variant-image-inside"></div>
 	                </div>
-	                <span class="upfront-wrapper ueditor-insert-variant-caption {{caption.width_cls}} {{caption.left_cls}} {{caption.top_cls}} {{caption.clear_cls}}" style="height: {{caption.height}}px;">Type your caption here ...</span>
+	                <span class="upfront-wrapper ueditor-insert-variant-caption {{caption.width_cls}} {{caption.left_cls}} {{caption.top_cls}} {[if( caption.clear === true) { ]} {{caption.clear_cls}} {[ } ]}" style="height: {{caption.height}}px;">Type your caption here ...</span>
 	            </div>
 	            <div class="upfront_edit_image_insert">Edit Image Insert</div>
 	        </div>
