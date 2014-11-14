@@ -1176,6 +1176,7 @@ class UpfrontThemeExporter {
 		$data['exporter'] = array(
 			'url' => plugins_url('', __FILE__),
 			'testContent' => $this->_get_preview_content(),
+			'postTestContent' => $this->_get_preview_content( null, true ),
 			'styledTestContent' => $this->_get_styled_preview_content(),
 		);
 
@@ -1289,10 +1290,12 @@ class UpfrontThemeExporter {
    * Returns fake post content
    *
    * @param string $post_id
+   * @param bool $post if it's a post post_type or not
    * @return string
    */
-	protected function _get_preview_content ( $post_id = "fake_post" ) {
-		$template_file = $post_id === "fake_styled_post" ? upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContentStyled.html')  : upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContent.html');
+	protected function _get_preview_content ( $post_id = "fake_post", $post = false ) {
+		$test_content_file = $post ? '/templates/tpl/postTestContent.html' : '/templates/tpl/testContent.html';
+		$template_file = $post_id === "fake_styled_post" ? upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/tpl/testContentStyled.html')  : upfront_get_template_path('preview_post', dirname(__FILE__) . $test_content_file);
 		if (file_exists($template_file)) {
 			ob_start();
 			include($template_file);
@@ -1302,7 +1305,7 @@ class UpfrontThemeExporter {
 	}
 
 	private function _get_styled_preview_content ( $post_id = "fake_styled_post" ) {
-	  $template_file =  upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/testContentStyled.html');
+	  $template_file =  upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/tpl/testContentStyled.html');
 	  if (file_exists($template_file)) {
 		ob_start();
 		include($template_file);
