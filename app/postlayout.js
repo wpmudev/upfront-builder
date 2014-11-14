@@ -743,7 +743,7 @@ define([
                 ge = Upfront.Behaviors.GridEditor,
                 $parent = $('#upfront-image-variants'),
                 content_view = this.parent_view.contentView,
-                parent_col = ge.get_class_num(content_view.parent_module_view.model.get_property_value_by_name('class'), ge.grid.class),
+                parent_col = content_view.parent_module_view.model ? ge.get_class_num(content_view.parent_module_view.model.get_property_value_by_name('class'), ge.grid.class) : 24,
                 padding_left = content_view.model.get_property_value_by_name('padding_left'),
                 padding_right = content_view.model.get_property_value_by_name('padding_right'),
                 max_col = parent_col,
@@ -1097,23 +1097,24 @@ define([
                 return;
 
             view.$('.upfront-object-content .post_content').html(Upfront.data.exporter.testContent);
-            $(".sidebar-commands-theme .command-cancel").hide();
             /**
              * Start content styler on click
              */
             $(document).on("click", ".upfront_edit_content_style", function(e){
-                $(".sidebar-commands-theme .command-cancel").show();
                 view.$('.upfront-object-content .post_content').html(Upfront.data.exporter.styledTestContent);
                 view.$('.upfront-object').addClass("upfront-editing-content-style");
                 view.$('.upfront-object-content').closest(".upfront-object-view").addClass("upfront-disable-surroundings");
                 new PostImageVariants({
                     contentView : view
                 });
+                Upfront.Application.MODE.POSTCONTENT_STYLE = true;
             });
         },
         cancelContentStyle: function(){
-            $(".sidebar-commands-theme .command-cancel").hide();
+            if( !Upfront.Application.is_post_content_style()  ) return;
+
             $('.upfront-output-PostPart_contents .post_content').html(Upfront.data.exporter.testContent);
+            Upfront.Application.MODE.POSTCONTENT_STYLE = false;
         }
     };
 
