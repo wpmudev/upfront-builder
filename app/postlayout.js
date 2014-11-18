@@ -1,7 +1,7 @@
 define([
     'underscore',
     'jquery',
-    'post_image',
+    Upfront.themeExporter.root + 'app/post_image.js',
     'text!' + Upfront.themeExporter.root + 'templates/tpl/post_design.html'
     //'underscore', 'jquery', 'text!templates/image_variants.html'
 ], function(_, $, post_image, post_design_tpl) {
