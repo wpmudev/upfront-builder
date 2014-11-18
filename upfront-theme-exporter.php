@@ -373,6 +373,8 @@ class UpfrontThemeExporter {
 		$data = (array)$region;
 		$name = preg_replace('/[^_a-z0-9]/i', '_', $data['name']);
 
+		$data['type'] = isset( $data['type'] ) ? $data['type'] : "";
+		$data['scope'] = isset( $data['scope'] ) ? $data['scope'] : "";
 		$main = array(
 			'name' => $data['name'],
 			'title' => $data['title'],
@@ -607,7 +609,7 @@ class UpfrontThemeExporter {
 		$parsed = array();
 		if (empty($props)) return $parsed;
 		foreach($props as $p){
-			$parsed[$p->name] = $p->value;
+			$parsed[$p->name] = isset( $p->value ) ? $p->value : "";
 		}
 		return $parsed;
 	}
