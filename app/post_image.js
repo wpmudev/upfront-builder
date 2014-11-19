@@ -922,6 +922,7 @@ var PostImageVariant = Backbone.View.extend({
                     clear: "",
                     visibility: ""
                 });
+                $this.removeClass('ueditor-insert-float-left ueditor-insert-float-right ueditor-insert-float-none').addClass('ueditor-insert-float-' + rsz_float);
                 self.render_model_data();
             }
         });
