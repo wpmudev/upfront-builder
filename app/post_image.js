@@ -1,10 +1,9 @@
-;(function($){
+define([
+    'underscore',
+    'jquery',
+    'text!' + Upfront.themeExporter.root + 'templates/tpl/image_variants.html',
+], function(_, $, variant_tpl){
 
-    var deps = [
-        'text!' + Upfront.themeExporter.root + 'templates/tpl/image_variants.html',
-    ];
-
-    define("post_image", deps, function(variant_tpl){
 var PostImageVariants =  Backbone.View.extend({
     initialize: function( options ) {
         this.contentView = options.contentView;
@@ -942,6 +941,4 @@ var PostImageVariant = Backbone.View.extend({
             PostImageVariant: PostImageVariant,
             PostImageVariants: PostImageVariants
         };
-    }); //End require
-
-}(jQuery));
+}); //End require
