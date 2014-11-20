@@ -21,8 +21,8 @@ define([
         },
         on_click: function( e ){
             e.preventDefault();
-            Upfront.Events.trigger('post:layout:post:style:cancel');
             postLayoutManager.exportPostLayout();
+            Upfront.Events.trigger('post:layout:post:style:cancel');
         }
     });
 
@@ -118,11 +118,9 @@ define([
                 var message = "<h4>Layout successfully exported in the following file:</h4>";
                 message += response.file;
                 Upfront.Views.Editor.notify( message );
-                //saveDialog.close();
                 editor.postView.postLayout = layoutData.postLayout;
-                editor.postView.render();
+                editor.postView.editor.render();
                 Upfront.Application.start(Upfront.Application.mode.last);
-
             });
         },
         exportPartTemplate: function(){
@@ -215,7 +213,7 @@ define([
                 new post_image.PostImageVariants({
                     contentView : self.view
                 });
-                Upfront.Application.MODE.POSTCONTENT_STYLE = true;
+                Upfront.Application.set_post_content_style();
             });
         },
         cancelPostContentStyle: function(){
@@ -223,7 +221,7 @@ define([
             $('.upfront-output-PostPart_contents').closest(".upfront-object-view").removeClass("upfront-disable-surroundings");
             //$('.upfront-output-PostPart_contents .post_content').html(Upfront.data.exporter.postTestContent);
             this._setPostTestContent();
-            Upfront.Application.MODE.POSTCONTENT_STYLE = false;
+            Upfront.Application.set_post_content_style(false);
         }
     };
 
