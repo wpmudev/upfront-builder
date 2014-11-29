@@ -500,6 +500,9 @@ class UpfrontThemeExporter {
 			case 'PlainTxt':
 				$region_lightboxes += $this->getLightBoxesFromText($props);
 				break;
+			case 'Button':
+				$region_lightboxes[] = $this->getLightBoxesFromButton($props);
+				break;
 			case 'Unewnavigation':
 				$region_lightboxes += $this->getLightBoxesFromMenu($props);
 				break;
@@ -521,6 +524,11 @@ class UpfrontThemeExporter {
 				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
 			}
 		}
+		ob_start();
+
+		var_dump($region_lightboxes);
+
+		file_put_contents('debug_d.txt', file_get_contents('debug_d.txt')."\n\r".ob_get_clean());
 
 		$lightboxes_path = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . 'lightboxes' . DIRECTORY_SEPARATOR";
 		$region_lightboxes = array_unique($region_lightboxes);
@@ -555,6 +563,13 @@ class UpfrontThemeExporter {
 		$matches = array();
 		preg_match_all('#href="(.+?)" rel="lightbox"#', $properties['options']['content'], $matches);
 		return is_array($matches[1]) ? $matches[1] : array();
+	}
+
+	protected function getLightBoxesFromButton($properties) {
+
+		if (strpos($properties['options']['href'], '#ltb-') === false) return array();
+		else
+			return $properties['options']['href'];
 	}
 
 	protected function addMenuFromElement($properties) {
@@ -932,6 +947,9 @@ class UpfrontThemeExporter {
 	}
 
 	protected function exportLightbox($region) {
+		ob_start();
+
+		
 		$content = "<?php\n";
 		$content .= $this->renderRegion($region);
 
