@@ -498,13 +498,13 @@ class UpfrontThemeExporter {
 				}
 				break;
 			case 'PlainTxt':
-				$region_lightboxes += $this->getLightBoxesFromText($props);
+				$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromText($props));
 				break;
-			/*case 'Button':
-				$region_lightboxes[] = $this->getLightBoxesFromButton($props);
-				break;*/
+			case 'Button':
+				$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromButton($props));
+				break;
 			case 'Unewnavigation':
-				$region_lightboxes += $this->getLightBoxesFromMenu($props);
+				$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromMenu($props));
 				break;
 			}
 
@@ -524,13 +524,18 @@ class UpfrontThemeExporter {
 				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
 			}
 		}
-
+		
 		$lightboxes_path = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . 'lightboxes' . DIRECTORY_SEPARATOR";
 		$region_lightboxes = array_unique($region_lightboxes);
 		if (count($region_lightboxes) > 0) {
 			// Include lightbox container
 			$output .= "\nif (file_exists({$lightboxes_path} . 'lightbox.php')) include({$lightboxes_path} . 'lightbox.php');";
 		}
+		/*ob_start();
+			var_dump($region_lightboxes);
+		file_put_contents('debug_d.txt', file_get_contents('debug_d.txt')."\n\r".ob_get_clean());
+		*/
+
 		foreach($region_lightboxes as $lightbox) {
 			$lightbox_parts = explode('#', $lightbox);
 			$lightbox = end($lightbox_parts);
@@ -554,19 +559,25 @@ class UpfrontThemeExporter {
 	}
 
 	protected function getLightBoxesFromText($properties) {
-		if (strpos($properties['options']['content'], 'rel="lightbox"') === false) return array();
+		if (strpos($properties['options']['content'], 'href="#ltb-"') === false) return array();
 		$matches = array();
-		preg_match_all('#href="(.+?)" rel="lightbox"#', $properties['options']['content'], $matches);
+		preg_match_all('#href="(\#ltb-.+?)"#', $properties['options']['content'], $matches);
+
+		/*if(is_array($matches[1]))
+			foreach($matches[1] as $match)
+				if(strpos($match, '#ltb-') === false)
+					unset($match);
+		*/
 		return is_array($matches[1]) ? $matches[1] : array();
 	}
 
 	protected function getLightBoxesFromButton($properties) {
-		return array();
-		/*
-		if (strpos($properties['options']['href'], '#ltb-') === false) return array();
+		
+		if (strpos($properties['options']['href'], '#ltb-') === false) 
+			return array();
 		else
-			return $properties['options']['href'];
-			*/
+			return array($properties['options']['href']);
+			
 	}
 
 	protected function addMenuFromElement($properties) {
