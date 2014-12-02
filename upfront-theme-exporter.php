@@ -531,10 +531,6 @@ class UpfrontThemeExporter {
 			// Include lightbox container
 			$output .= "\nif (file_exists({$lightboxes_path} . 'lightbox.php')) include({$lightboxes_path} . 'lightbox.php');";
 		}
-		/*ob_start();
-			var_dump($region_lightboxes);
-		file_put_contents('debug_d.txt', file_get_contents('debug_d.txt')."\n\r".ob_get_clean());
-		*/
 
 		foreach($region_lightboxes as $lightbox) {
 			$lightbox_parts = explode('#', $lightbox);
@@ -559,15 +555,18 @@ class UpfrontThemeExporter {
 	}
 
 	protected function getLightBoxesFromText($properties) {
-		if (strpos($properties['options']['content'], 'href="#ltb-"') === false) return array();
+
+		if (strpos($properties['options']['content'], '#ltb-') === false) 
+			return array();
+
 		$matches = array();
 		preg_match_all('#href="(\#ltb-.+?)"#', $properties['options']['content'], $matches);
 
-		/*if(is_array($matches[1]))
+		if(is_array($matches[1]))
 			foreach($matches[1] as $match)
 				if(strpos($match, '#ltb-') === false)
 					unset($match);
-		*/
+		
 		return is_array($matches[1]) ? $matches[1] : array();
 	}
 
