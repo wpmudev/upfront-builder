@@ -709,7 +709,7 @@ class UpfrontThemeExporter {
 
 		$segments = func_get_args();
 
-		if ($segments[0] === false) {
+		if ( isset( $segments[0] ) && $segments[0] === false) {
 			$create = false;
 			array_splice($segments, 0, 1);
 		}
