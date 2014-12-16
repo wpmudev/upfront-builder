@@ -786,7 +786,7 @@ class UpfrontThemeExporter {
 			$this->themeSettings->set('required_pages', json_encode($pages));
 
 			// Yeah, and now, also please do export the standard WP template too
-			$tpl_filename = "page-{$page}";
+			$tpl_filename = "page_tpl-{$page}";
 			$tpl_filepath = sprintf('%s%s.php',
 				$this->getThemePath(),
 				$tpl_filename
