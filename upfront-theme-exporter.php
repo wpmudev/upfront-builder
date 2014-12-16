@@ -1092,7 +1092,11 @@ class UpfrontThemeExporter {
 			$this->jsonError('Please check required fields.', 'missing_required');
 		}
 
-		$theme_slug = preg_replace('/[^-_a-z0-9]/i', '', $form['thx-theme-slug']);
+		$theme_slug = $this->_validate_theme_slug($form['thx-theme-slug']);
+		if (empty($theme_slug)) {
+			$this->jsonError('Your chosen theme slug is invalid, please try another.', 'missing_required');
+		}
+
 
 		// Check if theme directory already exists
 		$theme_path = sprintf('%s%s%s',
@@ -1362,6 +1366,14 @@ class UpfrontThemeExporter {
 		return get_stylesheet() !== $this->theme
 			? $this->_theme_exports_images
 			: apply_filters('upfront-thx-theme_exports_images', $this->_theme_exports_images)
+		;
+	}
+
+	private function _validate_theme_slug ($slug) {
+		$slug = preg_replace('/[^-_a-z0-9]/i', '', $slug);
+		return $this->_is_valid_slug($slug)	&& $this->_is_not_declared_slug($slug)
+			? $slug
+			: false
 		;
 	}
 
