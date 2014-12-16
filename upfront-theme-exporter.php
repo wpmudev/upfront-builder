@@ -1365,6 +1365,13 @@ class UpfrontThemeExporter {
 		;
 	}
 
+	private function _is_not_declared_slug ($slug) {
+		$functions = get_defined_functions();
+		if (!empty($functions['user']) && in_array($slug, $functions['user'])) return false;
+		if (!empty($functions['internal']) && in_array($slug, $functions['internal'])) return false;
+		if (in_array($slug, get_declared_classes())) return false;
+		return true;
+	}
 }
 
 function upfront_exporter_initialize() {
