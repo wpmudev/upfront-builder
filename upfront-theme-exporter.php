@@ -96,6 +96,10 @@ class UpfrontThemeExporter {
 		add_action('upfront_get_stylesheet_directory', array($this, 'getStylesheetDirectory'));
 		add_action('upfront_get_stylesheet', array($this, 'getStylesheet'));
 
+		add_action('upfront_upload_icon_font', array($this, 'uploadIconFont'));
+		add_action('upfront_update_active_icon_font', array($this, 'updateActiveIconFont'));
+
+
 		// This set of actions will force child theme class to load data from theme files
 		// since child theme class is also hooked into this actions and loads data from
 		// theme files if data is empty. So all these actions will reset data to empty.
@@ -107,6 +111,7 @@ class UpfrontThemeExporter {
 		add_action('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 5);
 
 		add_action('upfront_get_theme_fonts', array($this, 'getEmptyArray'), 5, 2);
+		add_action('upfront_get_icon_fonts', array($this, 'getEmptyArray'), 5, 2);
 		add_action('upfront_get_theme_colors', array($this, 'getEmptyArray'), 5, 2);
 		add_action('upfront_get_post_image_variants', array($this, 'getEmptyArray'), 5, 2);
 		add_action('upfront_get_button_presets', array($this, 'getEmptyArray'), 5, 2);
@@ -196,6 +201,110 @@ class UpfrontThemeExporter {
 
 	public function getStylesheet($stylesheet) {
 		return upfront_exporter_get_stylesheet();
+	}
+
+	public function uploadIconFont() {
+		$options = array(
+			'upload_dir' => $this->getThemePath('icon-fonts'),
+			'upload_url' => 'get_stylesheet/icon-fonts', // whatever
+			'param_name' => 'media',
+		);
+
+		$filename = $_FILES['media']['name'];
+		// Remove file first if it already exists, this will allow simple update of iconfont files
+		if (file_exists($this->getThemePath('icon-fonts') . $filename)) {
+			unlink($this->getThemePath('icon-fonts') . $filename);
+		}
+
+		$uploadHandler = new UploadHandler($options, false);
+		$result = $uploadHandler->post(false);
+
+		if (isset($result['media'][0]->error)) {
+			$out = new Upfront_JsonResponse_Error(array(
+				'message' => 'Font file failed to upload.'
+			));
+			status_header($out->get_status());
+			header("Content-type: " . $out->get_content_type() . "; charset=utf-8");
+			die($out->get_output());
+			return;
+		}
+
+		$fonts = json_decode($this->themeSettings->get('icon_fonts'), true);
+		$name_parts = explode('.', $result['media'][0]->name);
+
+		// Reserve 'icomoon' family for UpFont
+		if ($name_parts[0] === 'icomoon') {
+			$out = new Upfront_JsonResponse_Error(array(
+				'message' => 'Please rename font. Default Upfront font is called "icomoon".'
+			));
+			status_header($out->get_status());
+			header("Content-type: " . $out->get_content_type() . "; charset=utf-8");
+			die($out->get_output());
+			return;
+		}
+
+		$font_added = false;
+		$new_fonts = array();
+
+		if (!is_array($fonts)) {
+			$fonts = array();
+		}
+
+		foreach($fonts as $font) {
+			// Check if font is already added, just another file uploaded (e.g.: woff added now adding eot)
+			if ($font['family'] === $name_parts[0]) {
+				$font['files'][$name_parts[1]] = $result['media'][0]->name;
+				$font_added = true;
+			}
+			$new_fonts[] = $font;
+		}
+
+		if (!$font_added) {
+			// Add new font
+			$font = array(
+				'name' => $name_parts[0],
+				'family' => $name_parts[0],
+				'files' => array(),
+				'type' => 'theme-defined',// default, theme-defined or user-defined ->
+																	// 'default' is only UpFont from Upfront theme,
+																	// 'theme-defined' come with theme
+																	// 'user-defined' are uploaded by theme user
+				'active' => false
+			);
+			$font['files'][$name_parts[1]] = $result['media'][0]->name;
+			$new_fonts[] = $font;
+		}
+
+		$this->themeSettings->set('icon_fonts', json_encode($new_fonts));
+		$out = new Upfront_JsonResponse_Success(array(
+			'font' => end($new_fonts)
+		));
+		status_header($out->get_status());
+		header("Content-type: " . $out->get_content_type() . "; charset=utf-8");
+		die($out->get_output());
+	}
+
+	public function updateActiveIconFont() {
+		if (!isset($_POST['family'])) {
+			return;
+		}
+
+		$family = $_POST['family'];
+
+		$fonts = json_decode($this->themeSettings->get('icon_fonts'), true);;
+
+		$result = array();
+
+		foreach ($fonts as $font) {
+			if ($font['family'] === $family) {
+				$font['active'] = true;
+			} else {
+				$font['active'] = false;
+			}
+			$result[] = $font;
+		}
+
+		$this->themeSettings->set('icon_fonts', json_encode($result));
 	}
 
 	public function getStylesheetDirectory($stylesheetDirectory) {
