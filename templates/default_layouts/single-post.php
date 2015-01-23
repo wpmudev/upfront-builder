@@ -20,15 +20,15 @@ $main->add_element("ThisPost", array(
 	"margin_top" => 1,
 	"options" => array(
 		"post_data" => array("date"),
-		"disable_resize" => false,
-		"disable_drag" => false,
 		"layout" => array(
 			array("classes" => "c24 clr", "objects"=> array(array("slug" => "title", "classes" => "post-part c24"))),
 			array("classes" => "c24 clr", "objects"=> array(array("slug" => "date", "classes" => " post-part c24"))),
 			array("classes" => "c24 clr", "objects"=> array(array("slug" => "contents", "classes" => " post-part c24")))
 		)
 	),
-	"sticky" => true
+	"sticky" => true,
+    "disable_resize" => true,
+    "disable_drag" => false,
 ));
 $main->add_element("Ucomment", array(
 	"id" => "default-comment",

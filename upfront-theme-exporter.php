@@ -549,6 +549,13 @@ class UpfrontThemeExporter {
 			if (!$isGroup)
 				$props['options'] = $this->parseProperties($module['objects'][0]->properties);
 			$props['wrapper_id'] = $moduleProperties['wrapper_id'];
+            
+            if(isset($moduleProperties['disable_resize']))
+                $props['disable_resize'] = $moduleProperties['disable_resize'];
+            if(isset($moduleProperties['disable_drag']))
+                $props['disable_drag'] = $moduleProperties['disable_drag'];
+            if(isset($moduleProperties['sticky']))
+                $props['sticky'] = $moduleProperties['sticky'];
 
 			// Add new line if needed
 			foreach($wrappers as $wrapper) {
