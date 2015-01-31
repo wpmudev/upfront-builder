@@ -39,7 +39,7 @@ define([
         if(!result)
           return;
 
-        var url = result.models[0].get('original_url').replace(document.location.origin, '');
+        var url = result.models[0].get('original_url');//.replace(document.location.origin, '');
         editor.editor.insert('url("' + url + '")');
         editor.editor.focus();
       });
