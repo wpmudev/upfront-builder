@@ -439,8 +439,10 @@ class UpfrontThemeExporter {
 			$this->getThemePath('element-styles', $data['elementType']),
 			$data['stylename']
 		);
+		$style = stripslashes($data['styles']);
+		$style = $this->makeUrlsPassiveRelative($style);
 
-		file_put_contents($style_file, stripslashes($data['styles']));
+		file_put_contents($style_file, $style);
 	}
 
 	/**
@@ -929,6 +931,18 @@ class UpfrontThemeExporter {
 		$content = str_replace(get_site_url(), '" . get_site_url() . "', $content);
 
 		return $content;
+	}
+
+	/**
+	 * This will relativize URLs for *passive* (non-PHP) stuffs
+	 * @param  string $content Content to process
+	 * @return string Content with URLs parsed.
+	 */
+	protected function makeUrlsPassiveRelative ($content) {
+		$base = preg_quote(get_stylesheet_directory_uri(), '/');
+		$rpl = Upfront_ChildTheme::THEME_BASE_URL_MACRO;
+
+		return preg_replace("/{$base}/", $rpl, $content);
 	}
 
 	protected function exportImages($content, $template, $template_images_dir) {
