@@ -642,7 +642,7 @@ class UpfrontThemeExporter {
 				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
 			}
 		}
-		
+
 		$lightboxes_path = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . 'lightboxes' . DIRECTORY_SEPARATOR";
 		$region_lightboxes = array_unique($region_lightboxes);
 		if (count($region_lightboxes) > 0) {
@@ -674,7 +674,7 @@ class UpfrontThemeExporter {
 
 	protected function getLightBoxesFromText($properties) {
 
-		if (strpos($properties['options']['content'], '#ltb-') === false) 
+		if (strpos($properties['options']['content'], '#ltb-') === false)
 			return array();
 
 		$matches = array();
@@ -684,17 +684,17 @@ class UpfrontThemeExporter {
 			foreach($matches[1] as $match)
 				if(strpos($match, '#ltb-') === false)
 					unset($match);
-		
+
 		return is_array($matches[1]) ? $matches[1] : array();
 	}
 
 	protected function getLightBoxesFromButton($properties) {
-		
-		if (strpos($properties['options']['href'], '#ltb-') === false) 
+
+		if (strpos($properties['options']['href'], '#ltb-') === false)
 			return array();
 		else
 			return array($properties['options']['href']);
-			
+
 	}
 
 	protected function addMenuFromElement($properties) {
@@ -1086,7 +1086,7 @@ class UpfrontThemeExporter {
 	protected function exportLightbox($region) {
 		ob_start();
 
-		
+
 		$content = "<?php\n";
 		$content .= $this->renderRegion($region);
 
@@ -1099,6 +1099,10 @@ class UpfrontThemeExporter {
 	}
 
 	public function updateThemeFonts($theme_fonts) {
+		if (upfront_exporter_is_start_page()) {
+			update_option('upfront_new-theme_fonts', json_encode($theme_fonts));
+			return;
+		}
 		$this->themeSettings->set('theme_fonts', json_encode($theme_fonts));
 	}
 
@@ -1317,6 +1321,11 @@ class UpfrontThemeExporter {
 			if (!empty($tmp_action)) $_POST['action'] = $tmp_action; // Revert back, just in case
 			update_option(self::TEMP_STYLES_KEY, array());
 		}
+		if (get_option('upfront_new-theme_fonts') !== '') {
+			$this->themeSettings = new Upfront_Theme_Settings($theme_path . DIRECTORY_SEPARATOR . 'settings.php');
+			$this->themeSettings->set('theme_fonts', get_option('upfront_new-theme_fonts'));
+		}
+		delete_option('upfront_new-theme_fonts', '');
 
 		// Activate the theme, if requested so
 		if (!empty($form['thx-activate_theme'])) {
