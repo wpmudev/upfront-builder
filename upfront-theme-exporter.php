@@ -41,8 +41,6 @@ class UpfrontThemeExporter {
 
 	private $_theme_exports_images = true; // Export images by default, for legacy themes
 
-	var $DEFAULT_ELEMENT_STYLESHEET = 'elementStyles.css';
-
 	public function __construct() {
 
 		$this->pluginDir = dirname(__FILE__);
@@ -416,6 +414,10 @@ class UpfrontThemeExporter {
 		}
 
 		if ($data['elementType'] === 'layout') {
+			if (upfront_exporter_is_start_page()) {
+				update_option('upfront_new-layout_style', addcslashes($data['styles'], "'\\"));
+				return;
+			}
 			$this->themeSettings->set('layout_style', addcslashes($data['styles'], "'\\"));
 			return;
 		}
@@ -455,6 +457,10 @@ class UpfrontThemeExporter {
 	}
 
 	public function deleteElementStyles() {
+		if (upfront_exporter_is_creating()) {
+			$this->jsonError('Can\'t do that before theme is created.');
+		}
+
 		$data = $_POST['data'];
 		if (empty($data['stylename']) || empty($data['elementType'])) {
 			$this->jsonError('Some data is missing.', 'missing_data');
@@ -551,7 +557,7 @@ class UpfrontThemeExporter {
 			if (!$isGroup)
 				$props['options'] = $this->parseProperties($module['objects'][0]->properties);
 			$props['wrapper_id'] = $moduleProperties['wrapper_id'];
-            
+
             if(isset($moduleProperties['disable_resize']))
                 $props['disable_resize'] = $moduleProperties['disable_resize'];
             if(isset($moduleProperties['disable_drag']))
@@ -722,7 +728,11 @@ class UpfrontThemeExporter {
 			'items' => $menu_items
 		);
 
-		$menus = json_decode($this->themeSettings->get('menus'));
+		if (upfront_exporter_is_start_page()) {
+			$menus = json_decode(get_option('upfront_new-menus'));
+		} else {
+			$menus = json_decode($this->themeSettings->get('menus'));
+		}
 
 		if (is_null($menus)) $menus = array();
 
@@ -738,6 +748,10 @@ class UpfrontThemeExporter {
 
 		if ($updated === false) $menus[] = $menu;
 
+		if (upfront_exporter_is_start_page()) {
+			update_option('upfront_new-menus', json_encode($menus));
+			return;
+		}
 		$this->themeSettings->set('menus', json_encode($menus));
 	}
 
@@ -780,12 +794,6 @@ class UpfrontThemeExporter {
 		}
 
 		$this->theme = $data['theme'];
-
-		$elementStyles = $data['layout']['elementStyles'];
-		if (!empty($elementStyles)) {
-			// Let's save the default styles directly
-			//$this->saveElementStyles($elementStyles);
-		}
 
 		foreach($data['layout']['layouts'] as $index=>$layout) {
 			$this->saveLayoutToTemplate(
@@ -840,10 +848,6 @@ class UpfrontThemeExporter {
 		}
 
 		return rtrim(realpath($path), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-	}
-	protected function saveElementStyles($elementStyles) {
-		$stylePath = $this->getThemePath() . 'elementStyles.css';
-		file_put_contents($stylePath, $elementStyles);
 	}
 
 	protected function saveLayoutToTemplate($layout) {
@@ -1111,14 +1115,26 @@ class UpfrontThemeExporter {
 	}
 
 	public function updateThemeColors($theme_colors) {
+		if (upfront_exporter_is_start_page()) {
+			update_option('upfront_new-theme_colors', json_encode($theme_colors));
+			return;
+		}
 		$this->themeSettings->set('theme_colors', json_encode($theme_colors));
 	}
 
 	public function updateButtonPresets($button_presets) {
+		if (upfront_exporter_is_start_page()) {
+			update_option('upfront_new-button_presets', json_encode($button_presets));
+			return;
+		}
 		$this->themeSettings->set('button_presets', json_encode($button_presets));
 	}
 
 	public function updatePostImageVariants($post_image_variant) {
+		if (upfront_exporter_is_start_page()) {
+			update_option('upfront_new-post_image_variants', json_encode($post_image_variant));
+			return;
+		}
 	  $this->themeSettings->set('post_image_variants', json_encode($post_image_variant));
 	}
 
@@ -1155,7 +1171,11 @@ class UpfrontThemeExporter {
 
 		$properties = $_POST['data'];
 
-		$presets = json_decode($this->themeSettings->get($presetProperty), true);;
+		if (upfront_exporter_is_start_page()) {
+			$presets = json_decode(get_option('upfront_new-' . $presetProperty), true);
+		} else {
+			$presets = json_decode($this->themeSettings->get($presetProperty), true);
+		}
 
 		$result = array();
 
@@ -1170,6 +1190,10 @@ class UpfrontThemeExporter {
 			$result[] = $properties;
 		}
 
+		if (upfront_exporter_is_start_page()) {
+			update_option('upfront_new-' . $presetProperty, json_encode($result));
+			return;
+		}
 		$this->themeSettings->set($presetProperty, json_encode($result));
 	}
 
@@ -1321,11 +1345,17 @@ class UpfrontThemeExporter {
 			if (!empty($tmp_action)) $_POST['action'] = $tmp_action; // Revert back, just in case
 			update_option(self::TEMP_STYLES_KEY, array());
 		}
-		if (get_option('upfront_new-theme_fonts') !== '') {
-			$this->themeSettings = new Upfront_Theme_Settings($theme_path . DIRECTORY_SEPARATOR . 'settings.php');
-			$this->themeSettings->set('theme_fonts', get_option('upfront_new-theme_fonts'));
+
+		$this->themeSettings = new Upfront_Theme_Settings($theme_path . DIRECTORY_SEPARATOR . 'settings.php');
+
+		$settings_options = array('theme_fonts', 'layout_style', 'theme_colors', 'button_presets', 'post_image_variants', 'accordion_presets', 'tab_presets', 'menus');
+		foreach ($settings_options as $option) {
+			$option_value = get_option('upfront_new-' . $option, null);
+			if ($option_value !== '' && is_null($option_value) === false) {
+				$this->themeSettings->set($option, $option_value);
+			}
+			delete_option('upfront_new-' . $option);
 		}
-		delete_option('upfront_new-theme_fonts', '');
 
 		// Activate the theme, if requested so
 		if (!empty($form['thx-activate_theme'])) {
