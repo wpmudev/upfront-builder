@@ -930,17 +930,18 @@ class UpfrontThemeExporter {
 		}
 	}
 
-	protected function makeUrlsRelative($content) {
+	protected function makeUrlsRelative($content, $quote='"') {
+		if (!in_array($quote, array('"', "'"))) $quote = '"';
 		// Fix lightboxes and other anchor urls
 		$content = preg_replace('#' . get_site_url() . '/create_new/.+?(\#[A-Za-z_-]+)#', '\1', $content);
 
 		// Okay, so now the imported image is hard-linked to *current* theme dir...
 		// Not what we want - the images don't have to be in the current theme, not really
 		// Ergo, fix - replace all the hardcoded stylesheet URIs to dynamic ones.
-		$content = str_replace(get_stylesheet_directory_uri(), '" . get_stylesheet_directory_uri() . "', $content);
+		$content = str_replace(get_stylesheet_directory_uri(), $quote . ' . get_stylesheet_directory_uri() . ' . $quote, $content);
 
 		// Replace all urls that reffer to current site with get_current_site
-		$content = str_replace(get_site_url(), '" . get_site_url() . "', $content);
+		$content = str_replace(get_site_url(), $quote . ' . get_site_url() . ' . $quote, $content);
 
 		return $content;
 	}
