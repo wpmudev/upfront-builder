@@ -612,24 +612,29 @@ class UpfrontThemeExporter {
 				(!empty($props['options']['view_class']) ? $props['options']['view_class'] : false)
 			);
 
+			// Check for hardcoded emails
+			if ('Ucontact' == $type && !empty($props['options']['form_email_to']) && preg_match('/@/', $props['options']['form_email_to'])) {
+				$props['options']['form_email_to'] = '';
+			}
+
 			// Check for lightboxes
 			switch($type) {
-			case 'Uimage':
-				if ($props['options']['when_clicked'] === 'lightbox') $region_lightboxes[] = $props['options']['image_link'];
-				if (!$export_images && empty($props['options']['src']) && !empty($props['options']['image_status']) && 'starting' !== $props['options']['image_status']) {
-					// If we're not exporting images AND if we're dealing with zeroed-out image, update its status
-					$props['options']['image_status'] = 'starting';
-				}
-				break;
-			case 'PlainTxt':
-				$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromText($props));
-				break;
-			case 'Button':
-				$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromButton($props));
-				break;
-			case 'Unewnavigation':
-				$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromMenu($props));
-				break;
+				case 'Uimage':
+					if ($props['options']['when_clicked'] === 'lightbox') $region_lightboxes[] = $props['options']['image_link'];
+					if (!$export_images && empty($props['options']['src']) && !empty($props['options']['image_status']) && 'starting' !== $props['options']['image_status']) {
+						// If we're not exporting images AND if we're dealing with zeroed-out image, update its status
+						$props['options']['image_status'] = 'starting';
+					}
+					break;
+				case 'PlainTxt':
+					$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromText($props));
+					break;
+				case 'Button':
+					$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromButton($props));
+					break;
+				case 'Unewnavigation':
+					$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromMenu($props));
+					break;
 			}
 
 			if ($type === 'Unewnavigation') {
@@ -640,8 +645,7 @@ class UpfrontThemeExporter {
 			if ($isGroup){
 				$output .= "\n" . '$' . $name . '->add_group(' . PHPON::stringify($props) . ");\n";
 				$output .= $this->renderModules($name, $module['modules'], $module['wrappers'], $props['id']);
-			}
-			else {
+			} else {
 				if (!empty($group)){
 					$props['group'] = $group;
 				}
