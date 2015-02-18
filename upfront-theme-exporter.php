@@ -553,17 +553,13 @@ class UpfrontThemeExporter {
 			$moduleProperties = $this->parseProperties($module['properties']);
 			$props = $this->parseModuleClass($moduleProperties['class']);
 			$props['id'] = $moduleProperties['element_id'];
-			$props['rows'] = !empty($moduleProperties['row']) ? $moduleProperties['row'] : 10;
 			if (!$isGroup)
 				$props['options'] = $this->parseProperties($module['objects'][0]->properties);
-			$props['wrapper_id'] = $moduleProperties['wrapper_id'];
-
-            if(isset($moduleProperties['disable_resize']))
-                $props['disable_resize'] = $moduleProperties['disable_resize'];
-            if(isset($moduleProperties['disable_drag']))
-                $props['disable_drag'] = $moduleProperties['disable_drag'];
-            if(isset($moduleProperties['sticky']))
-                $props['sticky'] = $moduleProperties['sticky'];
+            
+            foreach($moduleProperties as $property => $value){
+                if ( !in_array($property, array('class', 'element_id', 'breakpoint', 'has_settings')) )
+                    $props[$property] = $value;
+            }
 
 			// Add new line if needed
 			foreach($wrappers as $wrapper) {
