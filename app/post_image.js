@@ -751,7 +751,8 @@ var PostImageVariant = Backbone.View.extend({
         padding_left = padding_left ? parseInt(padding_left) : 0;
         padding_right = padding_right ? parseInt(padding_right) : 0;
         max_col = max_col - padding_left - padding_right;
-        col_size = $parent.width()/max_col;
+        //col_size = $parent.width()/max_col;
+        col_size = ge.col_size;
 
         if ( group.col > max_col + Math.abs(group.margin_left) + Math.abs(group.margin_right) ) {
             group.col = max_col + Math.abs(group.margin_left) + Math.abs(group.margin_right);
@@ -774,7 +775,7 @@ var PostImageVariant = Backbone.View.extend({
                 nw: '.upfront-resize-handle-nw',
                 se: '.upfront-resize-handle-se'
             },
-            minHeight: 50,
+            minHeight: 20,
             minWidth: 45,
             containment: "document",
             ghost: true,
@@ -865,6 +866,7 @@ var PostImageVariant = Backbone.View.extend({
                     minWidth: rsz_col*col_size,
                     maxWidth: rsz_col*col_size,
                 });
+                console.log(col_size, rsz_max_col, rsz_col, rsz_row, rsz_left)
                 if(axis == 'nw') {
                     $resize.css({
                         top: $this.offset().top,
