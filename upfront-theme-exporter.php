@@ -371,7 +371,13 @@ class UpfrontThemeExporter {
 				continue;
 			}
 			if($region->scope === 'global' && ($region->container && $region->name != $region->container)) {
-				$this->handleGlobalSideregion($region);
+				$handle = $this->handleGlobalSideregion($region, $regions);
+				if ( !$handle ) {
+					$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
+					$template .= "\$region_container = '$region->container';\n";
+					$template .= "\$region_sub = '$region->sub';\n";
+					$template .= "if (file_exists({$global_region_filename})) include({$global_region_filename});\n\n"; // <-- Check first
+				}
 				continue;
 			}
 			$template .= $this->renderRegion($region);
@@ -406,9 +412,22 @@ class UpfrontThemeExporter {
 		die;
 	}
 
-	protected function handleGlobalSideregion($region) {
-		$this->global_sideregions[$region->container][$region->sub] = $region;
-		//if ($region->sub === 'right') $this->updateGlobalRegionTemplate($region->container);
+	protected function handleGlobalSideregion($region, $regions = array()) {
+		// Check if the container is global, otherwise, export itself
+		$has_container = false;
+		foreach ( $regions as $reg ) {
+			if ( $region->container == $reg->name && $reg->scope === 'global' ){
+				$has_container = true;
+				break;
+			}
+		}
+		if ( !empty($regions) && !$has_container ) {
+			$this->global_regions[$region->name] = $region;
+		}
+		else {
+			$this->global_sideregions[$region->container][$region->sub] = $region;
+		}
+		return $has_container;
 	}
 
 	public function exportElementStyles() {
@@ -490,7 +509,7 @@ class UpfrontThemeExporter {
 		if (is_file($style_file)) unlink($style_file);
 	}
 
-	protected function renderRegion($region) {
+	protected function renderRegion($region, $use_var = false) {
 		$data = (array)$region;
 		$name = preg_replace('/[^_a-z0-9]/i', '_', $data['name']);
 
@@ -503,10 +522,16 @@ class UpfrontThemeExporter {
 			'scope' => $data['scope']
 		);
 
-		if (!empty($data['container']) && $data['name'] !== $data['container']) $main['container'] = $data['container'];
-		else $main['container'] = $data['name'];
-
-		if (!empty($data['sub'])) $main['sub'] = $data['sub'];
+		if ( $use_var ){ // just pass a variable string, the variable will be defined before this method call, to allow the use of sidebar region globally
+			$main['container'] = "\${$name}_container";
+			$main['sub'] = "\${$name}_sub";
+		}
+		else {
+			if (!empty($data['container']) && $data['name'] !== $data['container']) $main['container'] = $data['container'];
+			else $main['container'] = $data['name'];
+	
+			if (!empty($data['sub'])) $main['sub'] = $data['sub'];
+		}
 		if (!empty($data['position'])) $main['position'] = $data['position'];
 		if (!empty($data['allow_sidebar'])) $main['allow_sidebar'] = $data['allow_sidebar'];
 		if (!empty($data['restrict_to_container'])) $main['restrict_to_container'] = $data['restrict_to_container'];
@@ -527,7 +552,13 @@ class UpfrontThemeExporter {
 			}
 		}
 
-		$output = '$'. $name . ' = upfront_create_region(
+		$output = '';
+		if ( $use_var ){
+			$output .= '$' . $name . '_container = ( !empty($region_container) ? $region_container : "' . ( !empty($data['container']) ? $data['container'] : '' ) . '" );' . "\n";
+			$output .= '$' . $name . '_sub = ( !empty($region_sub) ? $region_sub: "' . ( !empty($data['sub']) ? $data['sub'] : '' ) . '" );' . "\n\n";
+		}
+
+		$output .= '$'. $name . ' = upfront_create_region(
 			' . PHPON::stringify($main) .',
 			' . PHPON::stringify($secondary) . '
 			);' . "\n";
@@ -1080,10 +1111,11 @@ class UpfrontThemeExporter {
 
 	protected function updateGlobalRegionTemplate($region_name) {
 		$region = $this->global_regions[$region_name];
+		$is_main = ( !$region->container || $region->name == $region->container );
 		$content = "<?php\n";
 		$render_before = array();
 		$render_after = array();
-		if (isset($this->global_sideregions[$region->name])) {
+		if ($is_main && isset($this->global_sideregions[$region->name])) {
 			foreach ($this->global_sideregions[$region->name] as $sub => $sub_region){
 				if ($sub == 'left' || $sub == 'top')
 					$render_before[] = $this->renderRegion($sub_region);
@@ -1093,7 +1125,7 @@ class UpfrontThemeExporter {
 		}
 		
 		$content .= join('', $render_before);
-		$content .= $this->renderRegion($region);
+		$content .= $this->renderRegion($region, !$is_main);
 		$content .= join('', $render_after);
 
 		$template_images_dir = $this->getThemePath('images', 'global-regions', $region->name);
