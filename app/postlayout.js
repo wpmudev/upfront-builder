@@ -96,8 +96,20 @@ define([
                     loading: "Saving post layout...",
                     done: "Thank you for waiting",
                     fixed: false
-                })
-                ;
+                }),
+
+                // So this bit here is for the post type heuristics
+                layout_info = Upfront.Application.current_subapplication.get_layout_data().layout,
+                overall_layout_type = (layout_info || {type: false}).type,
+                overall_layout_item = (layout_info || {item: false}).item
+            ;
+
+            // Check if we need to overwrite the post_type, which is possible
+            // e.g. on pre-existing single page default layouts
+            if (overall_layout_type && overall_layout_item && overall_layout_type + "-" + post_type !== overall_layout_item) {
+                post_type = overall_layout_item.replace(new RegExp(overall_layout_type + "-"), '');
+            }
+            // Okay, so we're now set
 
             var layoutData = {
                 postLayout: editor.exportPostLayout(),
