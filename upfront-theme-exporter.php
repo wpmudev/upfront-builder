@@ -145,6 +145,7 @@ class UpfrontThemeExporter {
 		if (empty($layout_cascade)) return $cascade;
 		$post_type = !empty($_POST['post_type']) ? $_POST['post_type'] : false;
 		$new_cascade = array(
+			trailingslashit(wp_normalize_path(dirname($base_filename))) . $layout_cascade['item'] . '.php', // So... make sure this goes first, that's the most likely candidate
 			$base_filename . $layout_cascade['item'] . '.php',
 			$base_filename . $layout_cascade['type'] . '.php'
 		);
