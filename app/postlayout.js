@@ -95,20 +95,12 @@ define([
                     loading: "Saving post layout...",
                     done: "Thank you for waiting",
                     fixed: false
-                }),
-
-                // So this bit here is for the post type heuristics
-                layout_info = Upfront.Application.current_subapplication.get_layout_data().layout,
-                overall_layout_type = (layout_info || {type: false}).type,
-                overall_layout_item = (layout_info || {item: false}).item
+                })
             ;
 
             // Check if we need to overwrite the post_type, which is possible
             // e.g. on pre-existing single page default layouts
-            if (overall_layout_type && overall_layout_item && overall_layout_type + "-" + post_type !== overall_layout_item) {
-                post_type = overall_layout_item.replace(new RegExp(overall_layout_type + "-"), '');
-            }
-            // Okay, so we're now set
+            post_type = this.fetch_type(post_type);
 
             var layoutData = {
                 postLayout: editor.exportPostLayout(),
@@ -135,56 +127,29 @@ define([
             });
         },
         exportPartTemplate: function(){
-            console.log('Export!');
-
             var self = this,
                 editor = Upfront.Application.PostLayoutEditor.templateEditor,
-                saveDialog = new Upfront.Views.Editor.SaveDialog({
-                    question: 'Do you wish to export the template just for this post or all the post of this type?',
-                    thisPostButton: 'This post only',
-                    allPostsButton: 'All posts of this type'
-                })
-                ;
+                tpl = editor.ace.getValue(),
+                postView = Upfront.Application.PostLayoutEditor.postView,
+                postPart = editor.postPart,
+                element = postView.property('type'),
+                id = this.fetch_type(postView.editor.post.get('post_type'))
+            ;
 
-            saveDialog.render();
-            saveDialog.on('closed', function(){
-                saveDialog.remove();
-                saveDialog = false;
+            Upfront.Util.post({
+                action: 'upfront_thx-export-part-template',
+                part: postPart,
+                tpl: tpl,
+                type: element,
+                id: id
+            }).done(function(response){
+                postView.partTemplates[editor.postPart] = tpl;
+                postView.model.trigger('template:' + editor.postPart);
+                editor.close();
+                Upfront.Views.Editor.notify("Part template exported in file " + response.filename);
             });
+        },
 
-            saveDialog.on('save', function(type) {
-                var me = this,
-                    tpl = editor.ace.getValue(),
-                    postView = Upfront.Application.PostLayoutEditor.postView,
-                    postPart = editor.postPart,
-                    element = postView.property('type'),
-                    id
-                    ;
-
-                if(type == 'this-post'){
-                    if(element == 'UpostsModel')
-                        id = postView.property('element_id').replace('uposts-object-', '');
-                    else
-                        id = postView.editor.postId;
-                }
-                else
-                    id = postView.editor.post.get('post_type');
-
-                Upfront.Util.post({
-                    action: 'upfront_thx-export-part-template',
-                    part: postPart,
-                    tpl: tpl,
-                    type: element,
-                    id: id
-                })
-                    .done(function(response){
-                        postView.partTemplates[editor.postPart] = tpl;
-                        postView.model.trigger('template:' + editor.postPart);
-                        editor.close();
-                        saveDialog.close();
-                        Upfront.Views.Editor.notify("Part template exported in file " + response.filename);
-                    })
-                ;
         fetch_type: function (fallback) {
             // So this bit here is for the post type heuristics
             var layout_info = Upfront.Application.current_subapplication.get_layout_data().layout,
