@@ -246,7 +246,7 @@ define([
             $('.upfront-output-PostPart_contents').closest(".upfront-object-view").removeClass("upfront-disable-surroundings");
             //$('.upfront-output-PostPart_contents .post_content').html(Upfront.data.exporter.postTestContent);
             this._setPostTestContent();
-            Upfront.Application.set_post_content_style(false);
+            Upfront.Application.set_post_content_style();
         }
     };
 
