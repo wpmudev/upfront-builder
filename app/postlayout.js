@@ -185,8 +185,22 @@ define([
                         Upfront.Views.Editor.notify("Part template exported in file " + response.filename);
                     })
                 ;
+        fetch_type: function (fallback) {
+            // So this bit here is for the post type heuristics
+            var layout_info = Upfront.Application.current_subapplication.get_layout_data().layout,
+                overall_layout_type = (layout_info || {type: false}).type,
+                overall_layout_item = (layout_info || {item: false}).item,
+                post_type = fallback
+            ;
 
-            });
+            // Check if we need to overwrite the post_type, which is possible
+            // e.g. on pre-existing single page default layouts
+            if (overall_layout_type && overall_layout_item && overall_layout_type + "-" + post_type !== overall_layout_item) {
+                post_type = overall_layout_item.replace(new RegExp(overall_layout_type + "-"), '');
+            }
+            // Okay, so we're now set
+
+            return post_type;
         },
 
         setTestContent: function(view){
