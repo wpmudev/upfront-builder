@@ -65,29 +65,28 @@ define([
 */
         addTemplateExportButton: function(){
             var me = this,
-                exportButton = $('<a href="#" class="upfront-export-postpart">Export</a>'),
+                exportButton = $('<button class="upfront-export-postpart">Export</button>'),
                 editorBody = $('#upfront_code-editor').find('.upfront-css-body')
-                ;
+            ;
 
-            if(!editorBody.find('.upfront-export-postpart').length)
+            editorBody
+                .find('button')
+                .remove()
+            ;
+
+            if(!editorBody.find('.upfront-export-postpart').length) {
                 editorBody.append(exportButton);
-            exportButton.on('click', function(e){
+            }
+
+            exportButton.off('click').on('click', function(e){
                 e.preventDefault();
                 me.exportPartTemplate();
             });
-
-            console.log('Export button');
-
         },
         exportPostLayout: function(){
             Upfront.Events.trigger("command:layout:export_postlayout");
             var self = this,
                 editor = Upfront.Application.PostLayoutEditor,
-                saveDialog = new Upfront.Views.Editor.SaveDialog({
-                    question: 'Do you wish to export the post layout just for this post or apply it to all posts?',
-                    thisPostButton: 'This post only',
-                    allPostsButton: 'All posts of this type'
-                });
                 elementType = editor.postView.property('type'),
                 specificity = editor.postView.property('post_type') ? editor.postView.property('post_type') : "post" ,
                 post_type = editor.postView.editor.post.get('post_type'),
