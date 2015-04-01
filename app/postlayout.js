@@ -39,13 +39,12 @@ define([
                 },50);
             }
 
-            Upfront.Events.on('post:layout:sidebarcommands', _.bind(this.addExportCommand, this));
-            //Upfront.Events.on('command:layout:export_postlayout', _.bind(this.exportPostLayout, this));
             Upfront.Events.on('post:layout:partrendered',_.bind(this.setTestContent, this) );
             Upfront.Events.on('post:layout:post:style:cancel', _.bind(this.cancelPostContentStyle, this));
             Upfront.Events.on('post:parttemplates:edit', _.bind(this.addTemplateExportButton, this));
         },
 
+/*
         addExportCommand: function(){
             if( Upfront.Application.PostLayoutEditor.postView.editor.post.get("post_type") === "post" ) return;
             var commands = Upfront.Application.sidebar.sidebar_commands.control.commands,
@@ -63,6 +62,7 @@ define([
                 wrapped.splice(wrapped.length - 1, 0, new Command());
 
         },
+*/
         addTemplateExportButton: function(){
             var me = this,
                 exportButton = $('<a href="#" class="upfront-export-postpart">Export</a>'),
