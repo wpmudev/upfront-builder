@@ -579,10 +579,9 @@ class UpfrontThemeExporter {
 			$nextModule = false;
 			$module = (array) $m;
 
-			// What does this do?
-			if(!empty($module['modules']) && sizeof($module['modules']) > ($i+1))
-				$nextModule = $this->parseProperties($module['modules'][$i+1]->properties);
-			// And why do we have it???
+			// Looking for next module, so that we can compare their wrapper_id to see if we need to add close_wrapper property
+			if(!empty($modules) && sizeof($modules) > ($i+1))
+				$nextModule = $this->parseProperties($modules[$i+1]->properties);
 
 			$isGroup = (isset($module['modules']) && isset($module['wrappers']));
 
