@@ -1,0 +1,101 @@
+# Copyright (C) 2015 WPMU DEV
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Upfront Theme Exporter 0.0.1\n"
+"Report-Msgid-Bugs-To: "
+"http://wordpress.org/support/plugin/upfront-theme-exporter\n"
+"POT-Creation-Date: 2015-04-20 05:35:13+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: grunt-wp-i18n 0.4.9\n"
+
+#: lib/class_thx_admin.php:37
+msgid ""
+"Upfront Exporter requires Pretty Permalinks to work. Please enable them <a "
+"href=\"%s\">here</a>"
+msgstr ""
+
+#: upfront-theme-exporter.php:188
+msgid "Create New Theme"
+msgstr ""
+
+#: upfront-theme-exporter.php:306
+msgid "Please rename font. Default Upfront font is called \"icomoon\"."
+msgstr ""
+
+#: upfront-theme-exporter.php:421 upfront-theme-exporter.php:897
+msgid "Theme & template must be choosen."
+msgstr ""
+
+#: upfront-theme-exporter.php:506 upfront-theme-exporter.php:559
+msgid "Some data is missing."
+msgstr ""
+
+#: upfront-theme-exporter.php:554
+msgid "Can't do that before theme is created."
+msgstr ""
+
+#: upfront-theme-exporter.php:915 upfront-theme-exporter.php:920
+msgid "Invalid theme name."
+msgstr ""
+
+#: upfront-theme-exporter.php:936
+msgid "Theme root does not exists."
+msgstr ""
+
+#: upfront-theme-exporter.php:1375
+msgid "Please check required fields."
+msgstr ""
+
+#: upfront-theme-exporter.php:1380
+msgid "Your chosen theme slug is invalid, please try another."
+msgstr ""
+
+#: upfront-theme-exporter.php:1392
+msgid "Theme with that directory name already exists."
+msgstr ""
+
+#: upfront-theme-exporter.php:1520
+msgid "Not all required data sent."
+msgstr ""
+
+#: upfront-theme-exporter.php:1581
+msgid "No layout data or cascade sent."
+msgstr ""
+
+#: upfront-theme-exporter.php:1621
+msgid "some test content"
+msgstr ""
+
+#: upfront-theme-exporter.php:1631
+msgid "some styled test content"
+msgstr ""
+
+#: upfront-theme-exporter.php:1644
+msgid "Sample Post"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Upfront Theme Exporter"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://premium.wpmudev.com/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Exports upfront page layouts to theme."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "WPMU DEV"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://premium.wpmudev.com"
+msgstr ""
