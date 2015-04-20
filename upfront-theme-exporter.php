@@ -28,8 +28,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-include_once 'util.php';
-include_once 'phpon.php';
+require_once dirname(__FILE__) . '/lib/util.php';
+include_once dirname(__FILE__) . '/lib/phpon.php';
 
 class UpfrontThemeExporter {
 
@@ -76,8 +76,8 @@ class UpfrontThemeExporter {
 	 */
 	private function _add_global_hooks () {
 		add_action('upfront-admin_bar-process', array($this, 'add_toolbar_item'), 10, 2);
-		if (is_admin()) {
-			require_once('class_thx_admin.php');
+		if (is_admin() && !(defined('DOING_AJAX') && DOING_AJAX)) {
+			require_once(dirname(__FILE__) . '/lib/class_thx_admin.php');
 			Thx_Admin::serve();
 		}
 	}

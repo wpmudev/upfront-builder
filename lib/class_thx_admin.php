@@ -34,7 +34,7 @@ class Thx_Admin {
 	private function _permalink_setup_check_notice () {
 		if (get_option('permalink_structure')) return false;
 		$msg = sprintf(
-			__('Upfront Exporter requires Pretty Permalinks to work. Please enable them <a href="%s">here</a>', 'upfront_thx'),
+			__('Upfront Exporter requires Pretty Permalinks to work. Please enable them <a href="%s">here</a>', UpfrontThemeExporter::DOMAIN),
 			admin_url('/options-permalink.php')
 		);
 		return $msg;
