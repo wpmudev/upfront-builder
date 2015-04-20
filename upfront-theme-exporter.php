@@ -34,6 +34,7 @@ include_once dirname(__FILE__) . '/lib/phpon.php';
 class UpfrontThemeExporter {
 
 	const TEMP_STYLES_KEY = 'uf-thx-temporary_styles';
+	const DOMAIN = 'upfront_thx';
 
 	protected $pluginDirUrl;
 	protected $pluginDir;
@@ -80,6 +81,11 @@ class UpfrontThemeExporter {
 			require_once(dirname(__FILE__) . '/lib/class_thx_admin.php');
 			Thx_Admin::serve();
 		}
+		$this->_load_textdomain();
+	}
+
+	private function _load_textdomain () {
+		load_plugin_textdomain(self::DOMAIN, false, dirname(plugin_basename(__FILE__)) . '/languages');
 	}
 
 	/**
@@ -184,7 +190,7 @@ class UpfrontThemeExporter {
 
 		$toolbar->add_menu(array(
 			'id' => 'upfront-create-theme',
-			'title' => __('Create New Theme', 'upfront_thx'),
+			'title' => __('Create New Theme', self::DOMAIN),
 			'href' => home_url('/create_new/theme'),
 			'meta' => array( 'class' => 'upfront-create_theme' )
 		));
@@ -302,7 +308,7 @@ class UpfrontThemeExporter {
 		// Reserve 'icomoon' family for UpFont
 		if ($name_parts[0] === 'icomoon') {
 			$out = new Upfront_JsonResponse_Error(array(
-				'message' => 'Please rename font. Default Upfront font is called "icomoon".'
+				'message' => __('Please rename font. Default Upfront font is called "icomoon".', self::DOMAIN),
 			));
 			status_header($out->get_status());
 			header("Content-type: " . $out->get_content_type() . "; charset=utf-8");
@@ -417,7 +423,7 @@ class UpfrontThemeExporter {
 	public function exportLayout() {
 		$data = $_POST['data'];
 		if (empty($data['theme']) || empty($data['template'])) {
-			$this->jsonError('Theme & template must be choosen.', 'missing_data');
+			$this->jsonError(__('Theme & template must be choosen.', self::DOMAIN), 'missing_data');
 		}
 
 		$this->theme = $data['theme'];
@@ -502,7 +508,7 @@ class UpfrontThemeExporter {
 	public function exportElementStyles() {
 		$data = stripslashes_deep($_POST['data']);
 		if (empty($data['stylename']) || empty($data['styles']) || empty($data['elementType'])) {
-			$this->jsonError('Some data is missing.', 'missing_data');
+			$this->jsonError(__('Some data is missing.', self::DOMAIN), 'missing_data');
 		}
 
 		if ($data['elementType'] === 'layout') {
@@ -550,12 +556,12 @@ class UpfrontThemeExporter {
 
 	public function deleteElementStyles() {
 		if (upfront_exporter_is_creating()) {
-			$this->jsonError('Can\'t do that before theme is created.');
+			$this->jsonError(__('Can\'t do that before theme is created.', self::DOMAIN));
 		}
 
 		$data = $_POST['data'];
 		if (empty($data['stylename']) || empty($data['elementType'])) {
-			$this->jsonError('Some data is missing.', 'missing_data');
+			$this->jsonError(__('Some data is missing.', self::DOMAIN), 'missing_data');
 		}
 
 		$stylesheet = !empty($_POST['stylesheet']) && 'upfront' !== $_POST['stylesheet']
@@ -893,7 +899,7 @@ class UpfrontThemeExporter {
 		$data = $_POST['data'];
 
 		if (empty($data['theme']) || empty($data['template'])) {
-			$this->jsonError('Theme & template must be choosen.', 'missing_data');
+			$this->jsonError(__('Theme & template must be choosen.', self::DOMAIN), 'missing_data');
 		}
 
 		$this->theme = $data['theme'];
@@ -911,12 +917,12 @@ class UpfrontThemeExporter {
 
 	protected function getThemePath ($do_mkdir=true) {
 		if (($this->theme === 'theme' || $this->theme === 'upfront') && !upfront_exporter_is_creating()) {
-			if ($do_mkdir) $this->jsonError('Invalid theme name.', 'system_error');
+			if ($do_mkdir) $this->jsonError(__('Invalid theme name.', self::DOMAIN), 'system_error');
 			return false;
 		}
 
 		if (empty($this->theme) || !preg_match('/^[-_a-z0-9]+$/i', $this->theme)) {
-			$this->jsonError('Invalid theme name.', 'system_error');
+			$this->jsonError(__('Invalid theme name.', self::DOMAIN), 'system_error');
 			return false;
 		}
 
@@ -932,7 +938,7 @@ class UpfrontThemeExporter {
 			$create = false;
 		} else {
 			if (!file_exists($path)) {
-				$this->jsonError('Theme root does not exists.', 'system_error');
+				$this->jsonError(__('Theme root does not exists.', self::DOMAIN), 'system_error');
 			}
 		}
 
@@ -1259,7 +1265,7 @@ class UpfrontThemeExporter {
 			update_option('upfront_new-post_image_variants', json_encode($post_image_variant));
 			return;
 		}
-	  $this->themeSettings->set('post_image_variants', json_encode($post_image_variant));
+		$this->themeSettings->set('post_image_variants', json_encode($post_image_variant));
 	}
 
 	public function saveTabPreset() {
@@ -1371,12 +1377,12 @@ class UpfrontThemeExporter {
 
 		// Check required fields
 		if (empty($form['thx-theme-slug']) || empty($form['thx-theme-name']) || empty($form['thx-theme-template'])) {
-			$this->jsonError('Please check required fields.', 'missing_required');
+			$this->jsonError(__('Please check required fields.', self::DOMAIN), 'missing_required');
 		}
 
 		$theme_slug = $this->_validate_theme_slug($form['thx-theme-slug']);
 		if (empty($theme_slug)) {
-			$this->jsonError('Your chosen theme slug is invalid, please try another.', 'missing_required');
+			$this->jsonError(__('Your chosen theme slug is invalid, please try another.', self::DOMAIN), 'missing_required');
 		}
 
 
@@ -1388,7 +1394,7 @@ class UpfrontThemeExporter {
 		);
 
 		if (file_exists($theme_path)) {
-			$this->jsonError('Theme with that directory name already exists.', 'theme_exists');
+			$this->jsonError(__('Theme with that directory name already exists.', self::DOMAIN), 'theme_exists');
 		}
 
 		mkdir($theme_path);
@@ -1516,7 +1522,7 @@ class UpfrontThemeExporter {
 		$id = isset($_POST['id']) ? $_POST['id'] : false;
 
 		if(!$tpl || !$type || !$part || !$id)
-			$this->jsonError('Not all required data sent.');
+			$this->jsonError(__('Not all required data sent.', self::DOMAIN));
 
 		if($type == 'UpostsModel')
 			$type = 'archive';
@@ -1577,11 +1583,10 @@ class UpfrontThemeExporter {
 	public function ajax_export_post_layout() {
 		$layoutData = isset($_POST['layoutData']) ? $_POST['layoutData'] : false;
 		$params = isset($_POST['params']) ? $_POST['params'] : false;
-		if(!$layoutData || !$params )
-				$this->jsonError('No layout data or cascade sent.');
+		if(!$layoutData || !$params ) $this->jsonError(__('No layout data or cascade sent.', self::DOMAIN));
 
 		wp_send_json(array(
-				"file" => $this->save_post_layout( $params, $layoutData ),
+			"file" => $this->save_post_layout( $params, $layoutData ),
 		));
 	}
 
@@ -1591,13 +1596,7 @@ class UpfrontThemeExporter {
 			? $params['type'] . "-" . $params['specificity']
 			: $params['type'] . "-" . $params['item']
 		;
-		/*
-		$dir = trailingslashit( get_stylesheet_directory() ) . "postlayouts";
-		if (!file_exists( $dir )) {
-				mkdir( $dir );
-		}
-		$file_name = $dir . DIRECTORY_SEPARATOR . $file_name . ".php";
-		*/
+		
 		$file_name = sprintf(
 			'%s%s.php',
 			$this->getThemePath('postlayouts'),
@@ -1606,7 +1605,7 @@ class UpfrontThemeExporter {
 
 		$contents = "<?php return " .  PHPON::stringify( $layoutData ) . ";";
 		$result = file_put_contents($file_name, $contents);
-		//chmod($file_name, 0777);
+
 		return $file_name;
 	}
 
@@ -1624,7 +1623,7 @@ class UpfrontThemeExporter {
 			ob_start();
 			include($template_file);
 			$content = ob_get_clean();
-		} else $content = '<p>some test content</p>';
+		} else $content = '<p>' . __('some test content', self::DOMAIN) . '</p>';
 		return $content;
 	}
 
@@ -1634,7 +1633,7 @@ class UpfrontThemeExporter {
 		ob_start();
 		include($template_file);
 		$content = ob_get_clean();
-	  } else $content = '<p>some styled test content</p>';
+	  } else $content = '<p>' . __('some styled test content', self::DOMAIN) . '</p>';
 	  return $content;
 	}
 
@@ -1647,7 +1646,7 @@ class UpfrontThemeExporter {
 			'ID' => $data['post_id'],
 			'post_type' => (!empty($data['post_type']) ? $data['post_type'] : 'post'),
 			'post_status' => 'publish',
-			'post_title' => 'Sample Post',
+			'post_title' => __('Sample Post', self::DOMAIN),
 			'post_content' => $content,
 			'filter' => 'raw',
 			'post_author' => get_current_user_id()
