@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 include_once 'util.php';
 include_once 'phpon.php';
+
 class UpfrontThemeExporter {
 
 	const TEMP_STYLES_KEY = 'uf-thx-temporary_styles';
@@ -41,20 +42,70 @@ class UpfrontThemeExporter {
 
 	private $_theme_exports_images = true; // Export images by default, for legacy themes
 
-	public function __construct() {
-
+	/**
+	 * Just basic, context-free bootstrap here.
+	 */
+	private function __construct() {
 		$this->pluginDir = dirname(__FILE__);
 		$this->pluginDirUrl = plugin_dir_url(__FILE__);
+	}
 
+	/**
+	 * Boot point.
+	 */
+	public static function serve () {
+		$me = new self;
+		$me->_add_hooks();
+	}
+
+	/**
+	 * This is where we dispatch the context-sensitive/global hooks.
+	 */
+	private function _add_hooks () {
+		// Just dispatch specific scope hooks.
+		if (upfront_exporter_is_running()) {
+			$this->_add_exporter_hooks();
+		}
+
+		$this->_add_global_hooks();
+	}
+
+	/**
+	 * These hooks will *always* trigger.
+	 * No need to wait for the rest of Upfront, set our stuff up right now.
+	 */
+	private function _add_global_hooks () {
+		add_action('upfront-admin_bar-process', array($this, 'add_toolbar_item'), 10, 2);
+		if (is_admin()) {
+			require_once('class_thx_admin.php');
+			Thx_Admin::serve();
+		}
+	}
+
+	/**
+	 * Now, this is exporter-specific.
+	 * Wait until Upfront is ready and set us up.
+	 */
+	private function _add_exporter_hooks () {
+		add_action('upfront-core-initialized', array($this, 'exporter_init'));
+	}
+
+	/**
+	 * Set up exporter context in Upfront core boot hook handler.
+	 * This is where all the exporter context-sensitive stuff happens.
+	 * Fires when the rest of the Upfront is already initialized.
+	 */
+	public function exporter_init () {
 		$this->theme = upfront_exporter_get_stylesheet();
-
 		$this->themeSettings = new Upfront_Theme_Settings($this->getThemePath(false) . 'settings.php');
-
-		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 
 		// Clean up the temporary styles on each load, if not doing AJAX
 		if (!is_admin() && !(defined('DOING_AJAX') && DOING_AJAX) && is_user_logged_in()) update_option(self::TEMP_STYLES_KEY, array());
+		
+		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 
+		add_filter('stylesheet_directory', array($this, 'process_stylesheet_directory'), 100);
+		
 		add_action('wp_footer', array($this, 'injectDependencies'), 100);
 		add_action($ajaxPrefix . 'create-theme', array($this, 'createTheme'));
 		add_action($ajaxPrefix . 'get-themes', array($this, 'getThemesJson'));
@@ -120,6 +171,23 @@ class UpfrontThemeExporter {
 		add_action('wp_ajax_upfront-media-list_theme_images', array($this, 'check_theme_images_destination_exists'), 5);
 
 		add_filter('upfront-this_post-unknown_post', array($this, 'prepare_preview_post'), 10, 2);
+	}
+
+	public function process_stylesheet_directory ($style_dir) {
+		if (upfront_exporter_is_start_page()) return 'upfront';
+		return get_theme_root() . DIRECTORY_SEPARATOR . upfront_exporter_get_stylesheet();
+	}
+
+	public function add_toolbar_item ($toolbar, $item) {
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) return false;
+		if (empty($item['meta'])) return false; // Only actual boot item has meta set
+
+		$toolbar->add_menu(array(
+			'id' => 'upfront-create-theme',
+			'title' => __('Create New Theme', 'upfront_thx'),
+			'href' => home_url('/create_new/theme'),
+			'meta' => array( 'class' => 'upfront-create_theme' )
+		));
 	}
 
 	public function prepare_preview_post ($post, $data) {
@@ -1685,21 +1753,4 @@ class UpfrontThemeExporter {
 
 }
 
-function upfront_exporter_initialize() {
-	new UpfrontThemeExporter();
-}
-
-function upfront_exporter_stylesheet_directory($stylesheet_dir) {
-	if (upfront_exporter_is_start_page()) return 'upfront';
-	return get_theme_root() . DIRECTORY_SEPARATOR . upfront_exporter_get_stylesheet();
-}
-
-if (upfront_exporter_is_running()) {
-	add_action('upfront-core-initialized', 'upfront_exporter_initialize');
-	add_filter('stylesheet_directory', 'upfront_exporter_stylesheet_directory', 100);
-}
-
-if (is_admin()) {
-	require_once('class_thx_admin.php');
-	Thx_Admin::serve();
-}
+UpfrontThemeExporter::serve();
