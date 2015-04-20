@@ -1,0 +1,8 @@
+{
+  "name": "upfront-theme-exporter",
+  "description": "Tools for Upfront Theme Exporter",
+  "devDependencies": {
+  	"grunt-cli": "~0.1.13",
+    "grunt-wp-i18n": "^0.4.9"
+  }
+}
