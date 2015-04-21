@@ -1,6 +1,6 @@
       <script type="text/javascript">
         Upfront.themeExporter = {
-          root: '<?php echo $this->pluginDirUrl ?>',
+          root: '<?php echo $this->_plugin_dir_url ?>',
           includes: '<?php echo includes_url() ?>js/',
           themes: <?php echo json_encode($themes) ?>,
           templates: [
@@ -10,4 +10,4 @@
           currentTheme: '<?php echo wp_get_theme()->get_stylesheet() ?>'
         };
       </script>
-      <script src="<?php echo $this->pluginDirUrl ?>app/main.js"></script>
+      <script src="<?php echo $this->_plugin_dir_url ?>app/main.js"></script>
