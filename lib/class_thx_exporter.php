@@ -31,8 +31,11 @@ class Thx_Exporter {
 	}
 
 	private function _set_up_theme_settings () {
-		$settings_file = $this->_fs->get_path('settings.php');
-		$settings_file = $settings_file ? $settings_file : 'settings.php';
+		$settings_file = empty($this->_theme) || in_array($this->_theme, array('upfront', 'theme'))
+			? $this->_fs->get_path('settings.php')
+			: $this->_fs->get_path('settings.php', false)
+		;
+		//$settings_file = $settings_file ? $settings_file : 'settings.php'; // Do NOT auto-init the settings file!!!
 		
 		$settings = new Upfront_Theme_Settings($settings_file);
 		$this->_theme_settings = $settings;
