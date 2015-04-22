@@ -322,7 +322,7 @@ class Thx_Exporter {
 	}
 
 	public function getStylesheetDirectory($stylesheetDirectory) {
-		return $this->_fs->path(array(
+		return $this->_fs->get_path(array(
 			upfront_exporter_get_stylesheet()
 		));
 	}
