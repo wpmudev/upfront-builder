@@ -33,7 +33,13 @@ class Thx_Exporter {
 	private function _set_up_theme_settings () {
 		$settings_file = $this->_fs->get_path('settings.php');
 		$settings_file = $settings_file ? $settings_file : 'settings.php';
-		$this->_theme_settings = new Upfront_Theme_Settings($settings_file);
+		
+		$settings = new Upfront_Theme_Settings($settings_file);
+		$this->_theme_settings = $settings;
+
+		// Override the child theme settings
+		$theme = Upfront_ChildTheme::get_instance();
+		$theme->set_theme_settings($settings);
 	}
 
 	public static function serve () {
@@ -98,6 +104,9 @@ class Thx_Exporter {
 		add_action('upfront_update_active_icon_font', array($this, 'updateActiveIconFont'));
 
 
+// ALL OF THESE ARE DISABLED NOW
+// ... because we're overriding the child's theme settings instead
+		/*
 		// This set of actions will force child theme class to load data from theme files
 		// since child theme class is also hooked into this actions and loads data from
 		// theme files if data is empty. So all these actions will reset data to empty.
@@ -115,6 +124,7 @@ class Thx_Exporter {
 		add_action('upfront_get_button_presets', array($this, 'getEmptyArray'), 5, 2);
 		add_action('upfront_get_tab_presets', array($this, 'getEmptyArray'), 5, 2);
 		add_action('upfront_get_accordion_presets', array($this, 'getEmptyArray'), 5, 2);
+		*/
 
 		// Intercept theme images loading and verify that the destination actually exists
 		add_action('wp_ajax_upfront-media-list_theme_images', array($this, 'check_theme_images_destination_exists'), 5);
