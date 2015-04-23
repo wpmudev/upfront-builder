@@ -223,17 +223,20 @@ class Thx_Exporter {
 	}
 
 	public function uploadIconFont() {
+		$font_path = $this->_fs->get_path('icon-fonts', false);
 		$options = array(
-			'upload_dir' => $this->getThemePath('icon-fonts'),
+			'upload_dir' => $font_path,
 			'upload_url' => 'get_stylesheet/icon-fonts', // whatever
 			'param_name' => 'media',
 		);
 
 		$filename = $_FILES['media']['name'];
+		
 		// Remove file first if it already exists, this will allow simple update of iconfont files
-		if (file_exists($this->getThemePath('icon-fonts') . $filename)) {
-			unlink($this->getThemePath('icon-fonts') . $filename);
-		}
+		$this->_fs->drop(array(
+			'icon-fonts',
+			$filename
+		));
 
 		$uploadHandler = new UploadHandler($options, false);
 		$result = $uploadHandler->post(false);
@@ -561,7 +564,7 @@ class Thx_Exporter {
 				if (empty($source)) continue;
 				// copy file to theme folder
 				$file = basename($source);
-				$destination = $this->getThemePath('images') . $file;
+				$destination = $this->_fs->get_path('images') . $file;
 				@copy($source, $destination);
 				$secondary['background_slider_images'][$idx] = "/images/{$file}";
 			}
@@ -855,55 +858,17 @@ class Thx_Exporter {
 		die;
 	}
 
-	protected function getThemePath ($do_mkdir=true) {
-		if (($this->_theme === 'theme' || $this->_theme === 'upfront') && !upfront_exporter_is_creating()) {
-			if ($do_mkdir) $this->jsonError(__('Invalid theme name.', UpfrontThemeExporter::DOMAIN), 'system_error');
-			return false;
-		}
-
-		if (empty($this->_theme) || !preg_match('/^[-_a-z0-9]+$/i', $this->_theme)) {
-			$this->jsonError(__('Invalid theme name.', UpfrontThemeExporter::DOMAIN), 'system_error');
-			return false;
-		}
-
-		$path = sprintf('%s%s%s%s',
-			get_theme_root(),
-			DIRECTORY_SEPARATOR,
-			$this->_theme,
-			DIRECTORY_SEPARATOR
-		);
-
-		$create = true;
-		if (upfront_exporter_is_creating()) {
-			$create = false;
-		} else {
-			if (!file_exists($path)) {
-				$this->jsonError(__('Theme root does not exists.', UpfrontThemeExporter::DOMAIN), 'system_error');
-			}
-		}
-
-		$segments = func_get_args();
-
-		if ( isset( $segments[0] ) && $segments[0] === false) {
-			$create = false;
-			array_splice($segments, 0, 1);
-		}
-
-		foreach($segments as $segment) {
-			$path .= $segment . DIRECTORY_SEPARATOR;
-			if (file_exists($path) === false && $create) {
-				mkdir($path);
-			}
-		}
-
-		return rtrim(realpath($path), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-	}
-
 	protected function saveLayoutToTemplate($layout) {
 		$template = preg_replace('/[^-_a-z0-9]/i', '', $layout['template']);
 		$content = $layout['content'];
 
-		$template_images_dir = $this->getThemePath('images', $template);
+		//$template_images_dir = $this->getThemePath('images', $template);
+		$template_images_dir_args = array(
+			'images',
+			$template,
+		);
+		$this->_fs->mkdir_p($template_images_dir_args);
+		$template_images_dir = $this->_fs->get_path($template_images_dir_args);
 
 		// Copy all images used in layout to theme directory
 		$content = $this->exportImages($content, $template, $template_images_dir);
@@ -1009,6 +974,8 @@ class Thx_Exporter {
 
 		$_themes_root = basename(get_theme_root());
 		$_uploads_root = basename($uploads_dir['basedir']);
+
+		$template_images_dir = trailingslashit(rtrim($template_images_dir, '/'));
 
 		// Save file list for later
 		$original_images = preg_match('{\b' . $template . '\b}', wp_normalize_path($template_images_dir))
@@ -1116,7 +1083,11 @@ class Thx_Exporter {
 	 * This only applies to themes build pre-UI changeset.
 	 */
 	public function check_theme_images_destination_exists () {
-		return $this->getThemePath('ui'); // `return` in an AJAX request handler? - *Yes* because we're just augmenting the default behavior.
+		$path = $this->_fs->get_path('ui', false);
+		if (!$this->_fs->exists($path)) {
+			$this->_fs->mkdir($path);
+		}
+		return $path; // `return` in an AJAX request handler? - *Yes* because we're just augmenting the default behavior.
 	}
 
 	protected function updateGlobalRegionTemplate($region_name) {
