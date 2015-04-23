@@ -104,6 +104,51 @@ abstract class iThx_Fs {
 
 		return $success;
 	}
+
+	/**
+	 * Test if a path is within the root directory.
+	 *
+	 * @param string $fscheck Path to check
+	 *
+	 * @return bool
+	 */
+	public function within_root ($fspath) {
+		return $this->_within($fspath, $this->_root_path);
+	}
+
+	/**
+	 * Test if a path is within the theme directory
+	 *
+	 * @param string $fspath Path to check
+	 *
+	 * @return bool
+	 */
+	public function within_theme ($fspath) {
+		return $this->_within($fspath, $this->_theme_path);
+	}
+
+	/**
+	 * Helper for path ahcnorage checking.
+	 * Compares two paths and determines if the first one is a subdirectory of the second one.
+	 *
+	 * Uses `realpath` internally, so can't check non-existing paths.
+	 *
+	 * @param string $fscheck Path to check
+	 * @param string $fsroot Root path to check against
+	 *
+	 * @return bool
+	 */
+	protected function _within ($fscheck, $fsroot) {
+		if (empty($fscheck) || empty($fsroot)) return false;
+		
+		$cfscheck = wp_normalize_path(realpath($fscheck));
+		$cfsroot = wp_normalize_path(realpath($fsroot));
+		if (empty($fscheck) || empty($fsroot)) return false;
+
+		$is_root = preg_match('/^' . preg_quote($cfsroot, '/') . '/', $cfscheck);
+
+		return $is_root;
+	}
 }
 
 
