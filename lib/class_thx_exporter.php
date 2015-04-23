@@ -183,6 +183,7 @@ class Thx_Exporter {
 		);
 	}
 
+/*
 	public function getThemeStyles($styles) {
 		if (upfront_exporter_is_start_page()) {
 			// Provide empty defaults
@@ -193,10 +194,10 @@ class Thx_Exporter {
 
 		return $styles;
 	}
-
 	public function getGlobalRegions($scope_region, $scope_id) {
 		return array();
 	}
+
 
 	public function getLayoutProperties($properties) {
 		if (upfront_exporter_is_start_page()) {
@@ -215,6 +216,7 @@ class Thx_Exporter {
 		if (isset($args['json']) && $args['json']) return '';
 		return array();
 	}
+*/
 
 	public function getStylesheet($stylesheet) {
 		return upfront_exporter_get_stylesheet();
