@@ -149,6 +149,42 @@ abstract class iThx_Fs {
 
 		return $is_root;
 	}
+
+	/**
+	 * Sanitizes a path fragment.
+	 * Fragment here means either a directory name, of file name.
+	 * No paths - to escape paths, see `_escape_path`
+	 *
+	 * @param string $frag Path fragment
+	 *
+	 * @return string Clean path fragment
+	 */
+	protected function _escape_fragment ($frag) {
+		if (!stristr($frag, '.')) return preg_replace('/[^-_:a-z0-9]/i', '', $frag); // We have a colon here because we could be dealing with Win
+
+		// We have a dot. Let's treat this
+		
+		$parts = explode('.', $frag);
+		if (count($parts) > 2) return ''; // Don't allow multiple extensions, or multiple dots at all
+
+		return $this->_escape_fragment($parts[0]) . '.' . $this->_escape_fragment($parts[1]);
+	}
+
+	/**
+	 * Sanitizes a full path.
+	 * Uses `_escape_fragment` to sanitize each path fragment in turn.
+	 *
+	 * @param string $fspath Path to sanitize
+	 *
+	 * @return string Sanitized path
+	 */
+	protected function _escape_path ($fspath) {
+		$fspath = wp_normalize_path($fspath);
+		$parts = explode('/', $fspath);
+		$parts = array_values(array_filter(array_map(array($this, '_escape_fragment'), $parts)));
+
+		return join('/', $parts);
+	}
 }
 
 
