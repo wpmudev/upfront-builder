@@ -25,8 +25,13 @@ abstract class iThx_Fs {
 		if (!empty($theme)) $this->set_theme($theme);
 	}
 
+	/**
+	 * Sets up internal names which are used in FS resolution.
+	 *
+	 * @param string $theme Theme name
+	 */
 	public function set_theme ($theme) {
-		$this->_theme_name = $theme;
+		$this->_theme_name = $this->_escape_fragment($theme);
 		$this->_root_path = get_theme_root();
 		$this->_theme_path = false;
 		if (!empty($this->_theme_name)) {
@@ -36,6 +41,17 @@ abstract class iThx_Fs {
 		}
 	}
 
+	/**
+	 * Constructs a path.
+	 * It will always work on relative path fragment.
+	 * Constructed path can be theme-based or relative.
+	 * "Relative" in this context means "not based on current theme root path".
+	 *
+	 * @param mixed $parts Relative path fragment - can be a string or array of path fragments.
+	 * @param bool $relative Relative flag - (bool)false means that the current root path will be prepended to other fragments. Defaults to true.
+	 *
+	 * @return string Constructed path
+	 */
 	public function construct_path ($parts, $relative=true) {
 		if (empty($parts)) return false;
 		if (!is_array($parts)) $parts = array($parts);
@@ -45,8 +61,27 @@ abstract class iThx_Fs {
 		return join('/', $parts);
 	}
 
-	public function construct_theme_path ($parts) { return $this->construct_path($parts, false); }
+	/**
+	 * Constructs a theme rooted path.
+	 * Wrapper for `$this->_construct_path($parts, false)`
+	 *
+	 * @param mixed $parts Relative path fragments
+	 *
+	 * @return string Constructed theme rooted path.
+	 */
+	public function construct_theme_path ($parts) {
+		return $this->construct_path($parts, false);
+	}
 
+	/**
+	 * Get theme path string from relative path fragments.
+	 * Optionally (and by default) check for its existence.
+	 *
+	 * @param mixed $path Relative path fragments
+	 * @param bool $check_existence (optional) Check for path existence too. Default to true.
+	 *
+	 * @return mixed Path string, or (bool)false on failure
+	 */
 	public function get_path ($path, $check_existence=true) {
 		$fspath = $this->construct_theme_path($path);
 		if (empty($fspath)) return false;
@@ -58,6 +93,13 @@ abstract class iThx_Fs {
 		return $fspath;
 	}
 
+	/**
+	 * Get current path root.
+	 * This will either be a theme path or root path,
+	 * depending on whether the actual theme has been set.
+	 *
+	 * @return string Root path
+	 */
 	public function get_root_path () {
 		return !empty($this->_theme_path)
 			? $this->_theme_path
@@ -65,39 +107,90 @@ abstract class iThx_Fs {
 		;
 	}
 	
+	/**
+	 * Write to a file within theme-relative path.
+	 *
+	 * @param mixed $path Theme-relative path fragments
+	 * @param string $content The actual content to write
+	 *
+	 * @return bool
+	 */
 	public function write ($path, $content) {
 		$path = $this->get_path($path, false);
 
 		if (empty($path)) return false;
 
+		$path = $this->_escape_path($path);
+		if (!$this->within_theme(dirname($path))) return false;
+
 		return file_put_contents($path, $content);
 	}
 
+	/**
+	 * Delete a file within theme-relative path.
+	 *
+	 * @param mixed $path Theme-relative path fragments
+	 *
+	 * @return bool
+	 */
 	public function drop ($path) {
 		$path = $this->get_path($path);
 
 		if (empty($path)) return false;
+		if (!$this->within_theme($path)) return false;
 
 		return unlink($path);
 	}
 	
+	/**
+	 * Check filesystem path for existence.
+	 *
+	 * @param string $fspath Full path to a file
+	 *
+	 * @return bool
+	 */
 	public function exists ($fspath) {
 		if (empty($fspath)) return false;
 		return file_exists($fspath);
 	}
 	
-	public function mkdir ($dirpath) {
-		if (empty($dirpath) || $this->exists($dirpath)) return false;
-		return mkdir($dirpath);
+	/**
+	 * Create a directory indicated by filesystem path argument.
+	 *
+	 * @param string $fspath Full path to a new directory
+	 *
+	 * @return bool
+	 */
+	public function mkdir ($fspath) {
+		if (empty($fspath) || $this->exists($fspath)) return false;
+
+		$fspath = $this->_escape_path($fspath);
+		if (!$this->within_root(dirname($fspath))) return false; // This is also used to create child theme path, so check root
+		
+		return mkdir($fspath);
 	}
 
+	/**
+	 * Create a directory tree within current theme root.
+	 *
+	 * @param array $parts Path fragments relative to current theme root
+	 *
+	 * @return bool
+	 */
 	public function mkdir_p ($parts) {
 		$path = $this->get_root_path();
 		$success = true;
 
 		foreach ($parts as $part) {
-			$path = $this->construct_path($part, true);
+			$part = $this->_escape_fragment($part);
+			$path = $this->construct_path(array($path, $part), true);
 			if ($this->exists($path)) continue;
+
+			if (!$this->within_theme(dirname($path))) {
+				$success = false;
+				break;
+			}
+
 			$success = $this->mkdir($path);
 			if (!$success) break;
 		}
