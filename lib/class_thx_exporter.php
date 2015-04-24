@@ -435,7 +435,6 @@ class Thx_Exporter {
 		;
 		if (!empty($stylesheet)) $this->_export_element_style($stylesheet, $data);
 		else $this->_temporarily_store_export_file($data);
-		$this->_json->out(__('Exported', UpfrontThemeExporter::DOMAIN));
 	}
 
 	/**
