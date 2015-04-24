@@ -47,7 +47,7 @@ class Thx_Json {
 	 *
 	 * @return strng Stringified PHP value
 	 */
-	public function stringify ($object, $deep=0) {
+	public function stringify_php ($object, $deep=0) {
 
 		/// EXPERIMENTAL!!!
 		/// Using `var_export` here seems to be producing *excellent* results!
@@ -84,7 +84,7 @@ class Thx_Json {
 				//$string .= '"' . addslashes($value) . '"'; // This escapes all quotes - NOT what we want
 				$string .= '"' . addcslashes($value, '"\\') . '"'; // This escapes double quotes only.
 			} else if(is_object($value) || is_array($value)) {
-				$string .= $this->stringify($value, $deep + 1);
+				$string .= $this->stringify_php($value, $deep + 1);
 			} else if(is_bool($value)) {
 				$string .= $value ? 'true' : 'false';
 			} else {
@@ -100,7 +100,7 @@ class Thx_Json {
 		return 'array(' . $linebreak . implode($separator, $elements) . $linebreak . ')';
 	}
 
-	public function parse ($string){
+	public function parse_php ($string){
 		//..someday we will have this done
 	}
 

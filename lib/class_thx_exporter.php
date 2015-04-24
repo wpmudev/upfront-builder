@@ -26,10 +26,14 @@ class Thx_Exporter {
 		$this->_plugin_dir_url = plugin_dir_url(dirname(__FILE__));
 
 		$this->_theme = upfront_exporter_get_stylesheet();
+		
 		require_once (dirname(__FILE__) . '/class_thx_fs.php');
 		$this->_fs = Thx_Fs::get($this->_theme);
 		
 		$this->_set_up_theme_settings();
+
+		require_once (dirname(__FILE__) . '/class_thx_json.php');
+		$this->_json = new Thx_Json;
 	}
 
 	private function _set_up_theme_settings () {
@@ -343,8 +347,8 @@ class Thx_Exporter {
 
 		foreach($regions as $region) {
 			if($region->name === 'shadow') continue;
-			if($region->scope === 'global' && (!$region->container || $region->name == $region->container)) {
-				$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
+			if(!empty($region->scope) && $region->scope === 'global' && (!$region->container || $region->name == $region->container)) {
+				$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . '" . Thx_Fs::PATH_REGIONS . "' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
 				$template .= "if (file_exists({$global_region_filename})) include({$global_region_filename});\n\n"; // <-- Check first
 				$this->_global_regions[$region->name] = $region;
 				//$this->updateGlobalRegionTemplate($region->name);
@@ -354,10 +358,10 @@ class Thx_Exporter {
 				$this->exportLightbox($region);
 				continue;
 			}
-			if($region->scope === 'global' && ($region->container && $region->name != $region->container)) {
+			if(!empty($region->scope) && $region->scope === 'global' && ($region->container && $region->name != $region->container)) {
 				$handle = $this->handleGlobalSideregion($region, $regions);
 				if ( !$handle ) {
-					$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
+					$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . '" . Thx_Fs::PATH_REGIONS . "' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
 					$template .= "\$region_container = '$region->container';\n";
 					$template .= "\$region_sub = '$region->sub';\n";
 					$template .= "if (file_exists({$global_region_filename})) include({$global_region_filename});\n\n"; // <-- Check first
@@ -435,6 +439,7 @@ class Thx_Exporter {
 		;
 		if (!empty($stylesheet)) $this->_export_element_style($stylesheet, $data);
 		else $this->_temporarily_store_export_file($data);
+		$this->_json->out(__('Exported', UpfrontThemeExporter::DOMAIN));
 	}
 
 	/**
@@ -542,8 +547,8 @@ class Thx_Exporter {
 		}
 
 		$output .= '$'. $name . ' = upfront_create_region(
-			' . $this->_json->stringify($main) .',
-			' . $this->_json->stringify($secondary) . '
+			' . $this->_json->stringify_php($main) .',
+			' . $this->_json->stringify_php($secondary) . '
 			);' . "\n";
 
 		$output .= $this->renderModules($name, $data['modules'], $data['wrappers']);
@@ -656,13 +661,13 @@ class Thx_Exporter {
 			}
 
 			if ($isGroup){
-				$output .= "\n" . '$' . $name . '->add_group(' . $this->_json->stringify($props) . ");\n";
+				$output .= "\n" . '$' . $name . '->add_group(' . $this->_json->stringify_php($props) . ");\n";
 				$output .= $this->renderModules($name, $module['modules'], $module['wrappers'], $props['id']);
 			} else {
 				if (!empty($group)){
 					$props['group'] = $group;
 				}
-				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . $this->_json->stringify($props) . ");\n";
+				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . $this->_json->stringify_php($props) . ");\n";
 			}
 		}
 
@@ -1457,7 +1462,7 @@ class Thx_Exporter {
 			: $params['type'] . "-" . $params['item']
 		;
 		
-		$contents = "<?php return " .  $this->_json->stringify( $layoutData ) . ";";
+		$contents = "<?php return " .  $this->_json->stringify_php( $layoutData ) . ";";
 
 		$file_path_parts = array(
 			Thx_Fs::PATH_POSTLAYOUTS,
