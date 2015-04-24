@@ -343,8 +343,8 @@ class Thx_Exporter {
 
 		foreach($regions as $region) {
 			if($region->name === 'shadow') continue;
-			if(!empty($region->scope) && $region->scope === 'global' && (!$region->container || $region->name == $region->container)) {
-				$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . '" . Thx_Fs::PATH_REGIONS . "' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
+			if($region->scope === 'global' && (!$region->container || $region->name == $region->container)) {
+				$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
 				$template .= "if (file_exists({$global_region_filename})) include({$global_region_filename});\n\n"; // <-- Check first
 				$this->_global_regions[$region->name] = $region;
 				//$this->updateGlobalRegionTemplate($region->name);
@@ -354,10 +354,10 @@ class Thx_Exporter {
 				$this->exportLightbox($region);
 				continue;
 			}
-			if(!empty($region->scope) && $region->scope === 'global' && ($region->container && $region->name != $region->container)) {
+			if($region->scope === 'global' && ($region->container && $region->name != $region->container)) {
 				$handle = $this->handleGlobalSideregion($region, $regions);
 				if ( !$handle ) {
-					$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . '" . Thx_Fs::PATH_REGIONS . "' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
+					$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
 					$template .= "\$region_container = '$region->container';\n";
 					$template .= "\$region_sub = '$region->sub';\n";
 					$template .= "if (file_exists({$global_region_filename})) include({$global_region_filename});\n\n"; // <-- Check first
