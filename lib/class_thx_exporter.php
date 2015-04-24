@@ -8,7 +8,9 @@ class Thx_Exporter {
 	private $_plugin_dir;
 
 	private $_fs;
+	private $_json;
 	private $_theme_settings;
+
 	private $_theme;
 
 	protected $_global_regions = array();
@@ -24,10 +26,14 @@ class Thx_Exporter {
 		$this->_plugin_dir_url = plugin_dir_url(dirname(__FILE__));
 
 		$this->_theme = upfront_exporter_get_stylesheet();
+		
 		require_once (dirname(__FILE__) . '/class_thx_fs.php');
 		$this->_fs = Thx_Fs::get($this->_theme);
 		
 		$this->_set_up_theme_settings();
+
+		require_once (dirname(__FILE__) . '/class_thx_json.php');
+		$this->_json = new Thx_Json;
 	}
 
 	private function _set_up_theme_settings () {
@@ -183,50 +189,15 @@ class Thx_Exporter {
 		);
 	}
 
-/*
-	public function getThemeStyles($styles) {
-		if (upfront_exporter_is_start_page()) {
-			// Provide empty defaults
-			return array('plain_text' => array());
-		}
-
-		$styles = array();
-
-		return $styles;
-	}
-	public function getGlobalRegions($scope_region, $scope_id) {
-		return array();
-	}
-
-
-	public function getLayoutProperties($properties) {
-		if (upfront_exporter_is_start_page()) {
-			// Provide empty defaults
-			return array('typography' => array());
-		}
-
-		return array();
-	}
-
-	public function getResponsiveSettings($settings) {
-		return array();
-	}
-
-	public function getEmptyArray($presets, $args) {
-		if (isset($args['json']) && $args['json']) return '';
-		return array();
-	}
-*/
-
 	public function getStylesheet($stylesheet) {
 		return upfront_exporter_get_stylesheet();
 	}
 
 	public function uploadIconFont() {
-		$font_path = $this->_fs->get_path('icon-fonts', false);
+		$font_path = $this->_fs->get_path(Thx_Fs::PATH_ICONS, false);
 		$options = array(
 			'upload_dir' => $font_path,
-			'upload_url' => 'get_stylesheet/icon-fonts', // whatever
+			'upload_url' => 'get_stylesheet/' . Thx_Fs::PATH_ICONS, // whatever
 			'param_name' => 'media',
 		);
 
@@ -234,7 +205,7 @@ class Thx_Exporter {
 		
 		// Remove file first if it already exists, this will allow simple update of iconfont files
 		$this->_fs->drop(array(
-			'icon-fonts',
+			Thx_Fs::PATH_ICONS,
 			$filename
 		));
 
@@ -343,7 +314,7 @@ class Thx_Exporter {
 	}
 
 	public function getThemesJson() {
-		wp_send_json($this->getThemes());
+		$this->_json->out($this->getThemes());
 	}
 
 	protected function getThemes() {
@@ -361,15 +332,10 @@ class Thx_Exporter {
 		return $themes;
 	}
 
-	protected function jsonError($message, $code='generic_error') {
-		status_header(400);
-		wp_send_json(array('error' => array('message' => $message, 'code' => $code)));
-	}
-
 	public function exportLayout() {
 		$data = $_POST['data'];
 		if (empty($data['theme']) || empty($data['template'])) {
-			$this->jsonError(__('Theme & template must be choosen.', UpfrontThemeExporter::DOMAIN), 'missing_data');
+			$this->_json->error_msg(__('Theme & template must be choosen.', UpfrontThemeExporter::DOMAIN), 'missing_data');
 		}
 
 		$this->_theme = $data['theme'];
@@ -381,8 +347,8 @@ class Thx_Exporter {
 
 		foreach($regions as $region) {
 			if($region->name === 'shadow') continue;
-			if($region->scope === 'global' && (!$region->container || $region->name == $region->container)) {
-				$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
+			if(!empty($region->scope) && $region->scope === 'global' && (!$region->container || $region->name == $region->container)) {
+				$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . '" . Thx_Fs::PATH_REGIONS . "' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
 				$template .= "if (file_exists({$global_region_filename})) include({$global_region_filename});\n\n"; // <-- Check first
 				$this->_global_regions[$region->name] = $region;
 				//$this->updateGlobalRegionTemplate($region->name);
@@ -392,10 +358,10 @@ class Thx_Exporter {
 				$this->exportLightbox($region);
 				continue;
 			}
-			if($region->scope === 'global' && ($region->container && $region->name != $region->container)) {
+			if(!empty($region->scope) && $region->scope === 'global' && ($region->container && $region->name != $region->container)) {
 				$handle = $this->handleGlobalSideregion($region, $regions);
 				if ( !$handle ) {
-					$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
+					$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . '" . Thx_Fs::PATH_REGIONS . "' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
 					$template .= "\$region_container = '$region->container';\n";
 					$template .= "\$region_sub = '$region->sub';\n";
 					$template .= "if (file_exists({$global_region_filename})) include({$global_region_filename});\n\n"; // <-- Check first
@@ -455,7 +421,7 @@ class Thx_Exporter {
 	public function exportElementStyles() {
 		$data = stripslashes_deep($_POST['data']);
 		if (empty($data['stylename']) || empty($data['styles']) || empty($data['elementType'])) {
-			$this->jsonError(__('Some data is missing.', UpfrontThemeExporter::DOMAIN), 'missing_data');
+			$this->_json->error_msg(__('Some data is missing.', UpfrontThemeExporter::DOMAIN), 'missing_data');
 		}
 
 		if ($data['elementType'] === 'layout') {
@@ -473,6 +439,7 @@ class Thx_Exporter {
 		;
 		if (!empty($stylesheet)) $this->_export_element_style($stylesheet, $data);
 		else $this->_temporarily_store_export_file($data);
+		$this->_json->out(__('Exported', UpfrontThemeExporter::DOMAIN));
 	}
 
 	/**
@@ -483,11 +450,14 @@ class Thx_Exporter {
 		$style = stripslashes($data['styles']);
 		$style = $this->makeUrlsPassiveRelative($style);
 
-		$this->_fs->write(array(
-			'element-styles', 
+		$path = array(
+			Thx_Fs::PATH_STYLES, 
 			$data['elementType'],
-			$data['stylename'] . '.css'
-		), $style);
+		);
+		$this->_fs->mkdir_p($path);
+
+		$path[] = $data['stylename'] . '.css';
+		$this->_fs->write($path, $style);
 	}
 
 	/**
@@ -501,12 +471,12 @@ class Thx_Exporter {
 
 	public function deleteElementStyles() {
 		if (upfront_exporter_is_creating()) {
-			$this->jsonError(__('Can\'t do that before theme is created.', UpfrontThemeExporter::DOMAIN));
+			$this->_json->error_msg(__('Can\'t do that before theme is created.', UpfrontThemeExporter::DOMAIN));
 		}
 
 		$data = $_POST['data'];
 		if (empty($data['stylename']) || empty($data['elementType'])) {
-			$this->jsonError(__('Some data is missing.', UpfrontThemeExporter::DOMAIN), 'missing_data');
+			$this->_json->error_msg(__('Some data is missing.', UpfrontThemeExporter::DOMAIN), 'missing_data');
 		}
 
 		$stylesheet = !empty($_POST['stylesheet']) && 'upfront' !== $_POST['stylesheet']
@@ -521,7 +491,7 @@ class Thx_Exporter {
 		$this->_theme = $name;
 
 		$this->_fs->drop(array(
-			'element-styles', 
+			Thx_Fs::PATH_STYLES, 
 			$data['elementType'],
 			$data['stylename']
 		));
@@ -577,8 +547,8 @@ class Thx_Exporter {
 		}
 
 		$output .= '$'. $name . ' = upfront_create_region(
-			' . PHPON::stringify($main) .',
-			' . PHPON::stringify($secondary) . '
+			' . $this->_json->stringify($main) .',
+			' . $this->_json->stringify($secondary) . '
 			);' . "\n";
 
 		$output .= $this->renderModules($name, $data['modules'], $data['wrappers']);
@@ -691,13 +661,13 @@ class Thx_Exporter {
 			}
 
 			if ($isGroup){
-				$output .= "\n" . '$' . $name . '->add_group(' . PHPON::stringify($props) . ");\n";
+				$output .= "\n" . '$' . $name . '->add_group(' . $this->_json->stringify($props) . ");\n";
 				$output .= $this->renderModules($name, $module['modules'], $module['wrappers'], $props['id']);
 			} else {
 				if (!empty($group)){
 					$props['group'] = $group;
 				}
-				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . PHPON::stringify($props) . ");\n";
+				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . $this->_json->stringify($props) . ");\n";
 			}
 		}
 
@@ -842,7 +812,7 @@ class Thx_Exporter {
 		$data = $_POST['data'];
 
 		if (empty($data['theme']) || empty($data['template'])) {
-			$this->jsonError(__('Theme & template must be choosen.', UpfrontThemeExporter::DOMAIN), 'missing_data');
+			$this->_json->error_msg(__('Theme & template must be choosen.', UpfrontThemeExporter::DOMAIN), 'missing_data');
 		}
 
 		$this->_theme = $data['theme'];
@@ -864,7 +834,7 @@ class Thx_Exporter {
 
 		//$template_images_dir = $this->getThemePath('images', $template);
 		$template_images_dir_args = array(
-			'images',
+			Thx_Fs::PATH_IMAGES,
 			$template,
 		);
 		$this->_fs->mkdir_p($template_images_dir_args);
@@ -877,7 +847,7 @@ class Thx_Exporter {
 
 		// Save layout to file
 		$result = $this->_fs->write(array(
-			'layouts',
+			Thx_Fs::PATH_LAYOUTS,
 			"{$template}.php"
 		), $content);
 
@@ -990,14 +960,14 @@ class Thx_Exporter {
 		$separator = '/';
 
 		$export_images = $this->_does_theme_export_images();
-		$theme_ui_path = $this->_fs->get_path('ui');
+		$theme_ui_path = $this->_fs->get_path(Thx_Fs::PATH_UI);
 
 		// matches[1] containes full image urls
 		foreach ($matches[1] as $image) {
 
 			// If the exports aren't allowed...
 			if (!$export_images) {
-				$this_theme_relative_ui_root = '/' . basename($this->_fs->get_root_path()) . '/ui/';
+				$this_theme_relative_ui_root = '/' . basename($this->_fs->get_root_path()) . '/' . Thx_Fs::PATH_UI . '/';
 				$is_ui_image = false !== strpos($image, $this_theme_relative_ui_root);
 
 				// Lots of duplication, this could really use some refactoring :/
@@ -1083,7 +1053,7 @@ class Thx_Exporter {
 	 * This only applies to themes build pre-UI changeset.
 	 */
 	public function check_theme_images_destination_exists () {
-		$path = $this->_fs->get_path('ui', false);
+		$path = $this->_fs->get_path(Thx_Fs::PATH_UI, false);
 		if (!$this->_fs->exists($path)) {
 			$this->_fs->mkdir($path);
 		}
@@ -1110,27 +1080,30 @@ class Thx_Exporter {
 		$content .= join('', $render_after);
 
 		// Start with global region creation
-		$greg_root = $this->_fs->construct_theme_path('global-regions');
+		$greg_root = $this->_fs->construct_theme_path(Thx_Fs::PATH_REGIONS);
 		if (!$this->_fs->exists($greg_root)) $this->_fs->mkdir($greg_root);
 
-		//$template_images_dir = $this->getThemePath('images', 'global-regions', $region->name);
-		$template_images_dir = $this->_fs->mkdir_p(array('images', 'global-regions', $region->name));
+		$template_images_dir = $this->_fs->mkdir_p(array(
+			Thx_Fs::PATH_IMAGES, 
+			Thx_Fs::PATH_REGIONS, 
+			$region->name
+		));
 
 		// Copy all images used in layout to theme directory
-		$content = $this->exportImages($content, "global-regions/{$region->name}", $template_images_dir);
+		$content = $this->exportImages($content, Thx_Fs::PATH_REGIONS . '/' . $region->name, $template_images_dir);
 
 		$content = $this->makeUrlsRelative($content);
 
 		$this->_fs->write(array(
-			'global-regions',
+			Thx_Fs::PATH_REGIONS,
 			"{$region->name}.php",
 		), $content);
 	}
 
 	protected function exportLightbox($region) {
 		$this->_fs->mkdir_p(array(
-			'global-regions',
-			'lightboxes',
+			Thx_Fs::PATH_REGIONS,
+			Thx_Fs::PATH_LIGHTBOXES,
 		));
 
 		ob_start();
@@ -1139,8 +1112,8 @@ class Thx_Exporter {
 		$content .= $this->renderRegion($region);
 
 		$this->_fs->write(array(
-			'global-regions',
-			'lightboxes',
+			Thx_Fs::PATH_REGIONS,
+			Thx_Fs::PATH_LIGHTBOXES,
 			"{$region->name}.php",
 		), $content);
 	}
@@ -1288,12 +1261,12 @@ class Thx_Exporter {
 
 		// Check required fields
 		if (empty($form['thx-theme-slug']) || empty($form['thx-theme-name']) || empty($form['thx-theme-template'])) {
-			$this->jsonError(__('Please check required fields.', UpfrontThemeExporter::DOMAIN), 'missing_required');
+			$this->_json->error_msg(__('Please check required fields.', UpfrontThemeExporter::DOMAIN), 'missing_required');
 		}
 
 		$theme_slug = $this->_validate_theme_slug($form['thx-theme-slug']);
 		if (empty($theme_slug)) {
-			$this->jsonError(__('Your chosen theme slug is invalid, please try another.', UpfrontThemeExporter::DOMAIN), 'missing_required');
+			$this->_json->error_msg(__('Your chosen theme slug is invalid, please try another.', UpfrontThemeExporter::DOMAIN), 'missing_required');
 		}
 
 
@@ -1301,7 +1274,7 @@ class Thx_Exporter {
 		$this->_fs->set_theme($theme_slug);
 		$theme_path = $this->_fs->get_root_path();
 		if (file_exists($theme_path)) {
-			$this->jsonError(__('Theme with that directory name already exists.', UpfrontThemeExporter::DOMAIN), 'theme_exists');
+			$this->_json->error_msg(__('Theme with that directory name already exists.', UpfrontThemeExporter::DOMAIN), 'theme_exists');
 		}
 		$this->_fs->mkdir($theme_path);
 
@@ -1328,9 +1301,9 @@ class Thx_Exporter {
 		), $stylesheet_header);
 
 		// Add directories
-		$this->_fs->mkdir($this->_fs->get_path('layouts', false));
-		$this->_fs->mkdir($this->_fs->get_path('images', false));
-		$this->_fs->mkdir($this->_fs->get_path('ui', false));
+		$this->_fs->mkdir($this->_fs->get_path(Thx_Fs::PATH_LAYOUTS, false));
+		$this->_fs->mkdir($this->_fs->get_path(Thx_Fs::PATH_IMAGES, false));
+		$this->_fs->mkdir($this->_fs->get_path(Thx_Fs::PATH_UI, false));
 
 		// This is important to set *before* we create the theme
 		remove_all_filters('upfront-thx-theme_exports_images'); // This is for the duration of this request - so we don't inherit old values, whatever they are
@@ -1347,7 +1320,7 @@ class Thx_Exporter {
 			'default_layouts',
 		)));
 		$theme_layouts_dir = trailingslashit($this->_fs->construct_path(array(
-			'layouts'
+			Thx_Fs::PATH_LAYOUTS
 		)));
 		$default_layouts = glob($default_layouts_dir . '*');
 		$add_global_regions = isset($form['add_global_regions']) && $form['add_global_regions'];
@@ -1422,7 +1395,7 @@ class Thx_Exporter {
 		$id = isset($_POST['id']) ? $_POST['id'] : false;
 
 		if(!$tpl || !$type || !$part || !$id)
-			$this->jsonError(__('Not all required data sent.', UpfrontThemeExporter::DOMAIN));
+			$this->_json->error_msg(__('Not all required data sent.', UpfrontThemeExporter::DOMAIN));
 
 		if($type == 'UpostsModel')
 			$type = 'archive';
@@ -1431,19 +1404,21 @@ class Thx_Exporter {
 
 		$filename = $this->export_post_part_template($type, $id, $part, $tpl);
 
-		wp_send_json(array('filename' => $filename));
+		$this->_json->out(array('filename' => $filename));
 	}
 
 	protected function export_post_part_template($type, $id, $part, $tpl){
 		$file_path_parts = array(
-			'templates',
-			'postparts',
-			"{$type}-{$id}.php"
+			Thx_Fs::PATH_TEMPLATES,
+			Thx_Fs::PATH_POSTPARTS,
 		);
+		$this->_fs->mkdir_p($file_path_parts);
+
+		$file_path_parts[] = "{$type}-{$id}.php";
 		$file_path = $this->_fs->get_path($file_path_parts, false);
 		
 		$templates = array();
-		if(file_exists($filePath)) $templates = require $file_path;
+		if($this->_fs->exists($file_path)) $templates = require $file_path;
 
 		$templates[$part] = $tpl;
 
@@ -1451,7 +1426,7 @@ class Thx_Exporter {
 
 		$this->_fs->write($file_path_parts, $output);
 
-		return $filePath;
+		return $file_path;
 	}
 
 	protected function generate_exported_templates($templates){
@@ -1473,9 +1448,9 @@ class Thx_Exporter {
 	public function ajax_export_post_layout() {
 		$layoutData = isset($_POST['layoutData']) ? $_POST['layoutData'] : false;
 		$params = isset($_POST['params']) ? $_POST['params'] : false;
-		if(!$layoutData || !$params ) $this->jsonError(__('No layout data or cascade sent.', UpfrontThemeExporter::DOMAIN));
+		if(!$layoutData || !$params ) $this->_json->error_msg(__('No layout data or cascade sent.', UpfrontThemeExporter::DOMAIN));
 
-		wp_send_json(array(
+		$this->_json->out(array(
 			"file" => $this->save_post_layout( $params, $layoutData ),
 		));
 	}
@@ -1487,13 +1462,18 @@ class Thx_Exporter {
 			: $params['type'] . "-" . $params['item']
 		;
 		
-		$contents = "<?php return " .  PHPON::stringify( $layoutData ) . ";";
+		$contents = "<?php return " .  $this->_json->stringify( $layoutData ) . ";";
 
 		$file_path_parts = array(
-			'postlayouts',
+			Thx_Fs::PATH_POSTLAYOUTS,
 			"{$file_name}.php",
 		);
 		$file_name = $this->_fs->get_path($file_path_parts, false);
+
+		if (!$this->_fs->exists(dirname($file_name))) {
+			$this->_fs->mkdir(dirname($file_name));
+		}
+
 		$this->_fs->write($file_path_parts, $contents);
 		return $file_name;
 	}
