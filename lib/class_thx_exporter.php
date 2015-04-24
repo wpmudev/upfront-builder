@@ -26,14 +26,10 @@ class Thx_Exporter {
 		$this->_plugin_dir_url = plugin_dir_url(dirname(__FILE__));
 
 		$this->_theme = upfront_exporter_get_stylesheet();
-		
 		require_once (dirname(__FILE__) . '/class_thx_fs.php');
 		$this->_fs = Thx_Fs::get($this->_theme);
 		
 		$this->_set_up_theme_settings();
-
-		require_once (dirname(__FILE__) . '/class_thx_json.php');
-		$this->_json = new Thx_Json;
 	}
 
 	private function _set_up_theme_settings () {
