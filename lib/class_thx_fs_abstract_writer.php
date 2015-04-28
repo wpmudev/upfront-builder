@@ -1,5 +1,7 @@
 <?php
 
+if (!class_exists('Thx_Sanitize')) require_once(dirname(__FILE__) . '/class_thx_sanitize.php');
+
 abstract class Thx_Fs_AbstractWriter {
 
 	protected $_theme_name;
@@ -238,7 +240,7 @@ abstract class Thx_Fs_AbstractWriter {
 	 * @return string Clean path fragment
 	 */
 	protected function _escape_fragment ($frag) {
-		if (!stristr($frag, '.')) return preg_replace('/[^-_:a-z0-9]/i', '', $frag); // We have a colon here because we could be dealing with Win
+		if (!stristr($frag, '.')) return Thx_Sanitize::path_fragment($frag);
 
 		// We have a dot. Let's treat this
 		

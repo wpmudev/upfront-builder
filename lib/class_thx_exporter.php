@@ -27,6 +27,8 @@ class Thx_Exporter {
 
 		$this->_theme = upfront_exporter_get_stylesheet();
 		
+		require_once (dirname(__FILE__) . '/class_thx_sanitize.php');
+		
 		require_once (dirname(__FILE__) . '/class_thx_fs.php');
 		$this->_fs = Thx_Fs::get($this->_theme);
 		
@@ -66,51 +68,54 @@ class Thx_Exporter {
 		// Clean up the temporary styles on each load, if not doing AJAX
 		if (!is_admin() && !(defined('DOING_AJAX') && DOING_AJAX) && is_user_logged_in()) update_option(self::TEMP_STYLES_KEY, array());
 		
-		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 
 		add_filter('stylesheet_directory', array($this, 'process_stylesheet_directory'), 100);
 		
-		add_action('wp_footer', array($this, 'injectDependencies'), 100);
-		add_action($ajaxPrefix . 'create-theme', array($this, 'createTheme'));
-		add_action($ajaxPrefix . 'get-themes', array($this, 'getThemesJson'));
+		add_action('wp_footer', array($this, 'inject_dependencies'), 100);
+		add_filter('upfront_data', array($this, 'add_data'));
+		add_action( 'wp_enqueue_scripts', array($this,'add_styles'));
+		
+		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 
-		add_action($ajaxPrefix . 'export-layout', array($this, 'exportLayout'));
-		add_action($ajaxPrefix . 'export-post-layout', array($this, 'ajax_export_post_layout'));
+		add_action($ajaxPrefix . 'create-theme', array($this, 'json_create_theme'));
+		add_action($ajaxPrefix . 'get-themes', array($this, 'json_get_themes'));
 
-		add_action($ajaxPrefix . 'export-part-template', array($this, 'ajax_export_part_template'));
+		add_action($ajaxPrefix . 'export-layout', array($this, 'json_export_layout'));
+		add_action($ajaxPrefix . 'export-post-layout', array($this, 'json_export_post_layout'));
 
-		add_action($ajaxPrefix . 'export-element-styles', array($this, 'exportElementStyles'));
-		add_action($ajaxPrefix . 'delete-element-styles', array($this, 'deleteElementStyles'));
+		add_action($ajaxPrefix . 'export-part-template', array($this, 'json_export_part_template'));
 
-		add_action( 'wp_enqueue_scripts', array($this,'addStyles'));
+		add_action($ajaxPrefix . 'export-element-styles', array($this, 'json_export_element_styles'));
+		add_action($ajaxPrefix . 'delete-element-styles', array($this, 'json_delete_element_styles'));
 
-		add_filter('upfront_data', array($this, 'addData'));
+		add_filter('upfront_theme_layout_cascade', array($this, 'get_theme_layout_cascade'), 10, 2);
+		add_filter('upfront_theme_postpart_templates_cascade', array($this, 'get_theme_postpart_templates_cascade'), 10, 2);
 
-		add_filter('upfront_theme_layout_cascade', array($this, 'getThemeLayoutCascade'), 10, 2);
-		add_filter('upfront_theme_postpart_templates_cascade', array($this, 'getThemePostpartTemplatesCascade'), 10, 2);
-
-		add_filter('upfront_prepare_theme_styles', array($this, 'prepareThemeStyles'), 15);
-		add_filter('upfront_prepare_typography_styles', array($this, 'prepareTypographyStyles'), 15);
-
+		add_filter('upfront_prepare_theme_styles', '__return_empty_string', 15);
+		add_filter('upfront_prepare_typography_styles', '__return_empty_string', 15);
 		add_filter('upfront_load_layout_from_database', '__return_false');
 
-		add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
-		add_action('upfront_update_post_image_variants', array($this, 'updatePostImageVariants'));
-		add_action('upfront_update_button_presets', array($this, 'updateButtonPresets'));
-		add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
-		add_action('upfront_update_responsive_settings', array($this, 'updateResponsiveSettings'));
+		add_action('upfront_update_theme_colors', array($this, 'update_theme_colors'));
+		add_action('upfront_update_post_image_variants', array($this, 'update_post_image_variants'));
+		add_action('upfront_update_theme_fonts', array($this, 'update_theme_fonts'));
+		add_action('upfront_update_responsive_settings', array($this, 'update_responsive_settings'));
 
+		add_action('upfront_update_button_presets', array($this, 'update_button_presets'));
+		add_action('init', array($this, 'dispatch_preset_handling'), 99);
+		/*
+// These are disabled in favor of unified preset handling dispatching above
 		add_action('upfront_save_tab_preset', array($this, 'saveTabPreset'));
-		add_action('upfront_delete_tab_preset', array($this, 'deleteTabPreset'));
-
 		add_action('upfront_save_accordion_preset', array($this, 'saveAccordionPreset'));
+
+		add_action('upfront_delete_tab_preset', array($this, 'deleteTabPreset'));
 		add_action('upfront_delete_accordion_preset', array($this, 'deleteAccordionPreset'));
+		*/
+	
+		add_action('upfront_get_stylesheet_directory', array($this, 'get_stylesheet_directory'));
+		add_action('upfront_get_stylesheet', array($this, 'get_stylesheet'));
 
-		add_action('upfront_get_stylesheet_directory', array($this, 'getStylesheetDirectory'));
-		add_action('upfront_get_stylesheet', array($this, 'getStylesheet'));
-
-		add_action('upfront_upload_icon_font', array($this, 'uploadIconFont'));
-		add_action('upfront_update_active_icon_font', array($this, 'updateActiveIconFont'));
+		add_action('upfront_upload_icon_font', array($this, 'upload_icon_font'));
+		add_action('upfront_update_active_icon_font', array($this, 'update_active_icon_font'));
 
 
 // ALL OF THESE ARE DISABLED NOW
@@ -141,6 +146,23 @@ class Thx_Exporter {
 		add_filter('upfront-this_post-unknown_post', array($this, 'prepare_preview_post'), 10, 2);
 	}
 
+	/**
+	 * Dispatch preset handling.
+	 * Intercepts particular preset server save/delete operations and delegate to
+	 * unified preset ops handlers.
+	 */
+	public function dispatch_preset_handling () {
+		$registry = Upfront_PresetServer_Registry::get_instance();
+		$preset_servers = $registry->get_all();
+		if (empty($preset_servers)) return false;
+
+		foreach (array_keys($preset_servers) as $server) {
+			add_action("upfront_save_{$server}_preset", array($this, 'save_preset'), 10, 2);
+			add_action("upfront_delete_{$server}_preset", array($this, 'delete_preset'), 10, 2);
+		}
+
+	}
+
 	public function process_stylesheet_directory ($style_dir) {
 		if (upfront_exporter_is_start_page()) return 'upfront';
 		return get_theme_root() . DIRECTORY_SEPARATOR . upfront_exporter_get_stylesheet();
@@ -152,18 +174,8 @@ class Thx_Exporter {
 		return $this->_generate_preview_post($data);
 	}
 
-	public function prepareThemeStyles($styles) {
-		// In editor mode this would load element styles to main stylesheet. In builder mode
-		// don't load any since styles are gonna be loaded each separately.
-		return '';
-	}
-
-	public function prepareTypographyStyles($styles) {
-		return '';
-	}
-
 	// TODO this should go to upfront theme!
-	public function getThemeLayoutCascade($cascade, $base_filename) {
+	public function get_theme_layout_cascade ($cascade, $base_filename) {
 		// Override brute force to ensure single-something page get their specific postlayout loaded
 		$layout_cascade = !empty($_POST['layout_cascade']) ? $_POST['layout_cascade'] : false;
 		if (empty($layout_cascade)) return $cascade;
@@ -178,7 +190,7 @@ class Thx_Exporter {
 	}
 
 	// TODO this should go to upfront theme!
-	public function getThemePostpartTemplatesCascade($cascade, $base_filename) {
+	public function get_theme_postpart_templates_cascade ($cascade, $base_filename) {
 		// Override brute force to ensure single-something page get page specific post layout parts loaded
 		$layout_cascade = !empty($_POST['layout_cascade']) ? $_POST['layout_cascade'] : false;
 		if (empty($layout_cascade)) return $cascade;
@@ -189,11 +201,11 @@ class Thx_Exporter {
 		);
 	}
 
-	public function getStylesheet($stylesheet) {
+	public function get_stylesheet ($stylesheet) {
 		return upfront_exporter_get_stylesheet();
 	}
 
-	public function uploadIconFont() {
+	public function upload_icon_font () {
 		$font_path = $this->_fs->get_path(Thx_Fs::PATH_ICONS, false);
 		$options = array(
 			'upload_dir' => $font_path,
@@ -277,7 +289,7 @@ class Thx_Exporter {
 		die($out->get_output());
 	}
 
-	public function updateActiveIconFont() {
+	public function update_active_icon_font () {
 		if (!isset($_POST['family'])) {
 			return;
 		}
@@ -300,24 +312,24 @@ class Thx_Exporter {
 		$this->_theme_settings->set('icon_fonts', json_encode($result));
 	}
 
-	public function getStylesheetDirectory($stylesheetDirectory) {
+	public function get_stylesheet_directory ($stylesheetDirectory) {
 		return $this->_fs->get_path(array(
 			upfront_exporter_get_stylesheet()
 		));
 	}
 
-	function injectDependencies() {
+	function inject_dependencies () {
 		if (!is_user_logged_in()) return false; // Do not inject for non-logged in user
 
-		$themes = $this->getThemes();
+		$themes = $this->_get_themes();
 		include($this->_plugin_dir . '/templates/dependencies.php');
 	}
 
-	public function getThemesJson() {
-		$this->_json->out($this->getThemes());
+	public function json_get_themes () {
+		$this->_json->out($this->_get_themes());
 	}
 
-	protected function getThemes() {
+	protected function _get_themes () {
 		$themes = array();
 
 		foreach(wp_get_themes() as $index=>$theme) {
@@ -332,7 +344,7 @@ class Thx_Exporter {
 		return $themes;
 	}
 
-	public function exportLayout() {
+	public function json_export_layout () {
 		$data = $_POST['data'];
 		if (empty($data['theme']) || empty($data['template'])) {
 			$this->_json->error_msg(__('Theme & template must be choosen.', UpfrontThemeExporter::DOMAIN), 'missing_data');
@@ -351,15 +363,15 @@ class Thx_Exporter {
 				$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . '" . Thx_Fs::PATH_REGIONS . "' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
 				$template .= "if (file_exists({$global_region_filename})) include({$global_region_filename});\n\n"; // <-- Check first
 				$this->_global_regions[$region->name] = $region;
-				//$this->updateGlobalRegionTemplate($region->name);
+				//$this->_update_global_region_template($region->name);
 				continue;
 			}
 			if($region->container === 'lightbox') {
-				$this->exportLightbox($region);
+				$this->_export_lightbox($region);
 				continue;
 			}
 			if(!empty($region->scope) && $region->scope === 'global' && ($region->container && $region->name != $region->container)) {
-				$handle = $this->handleGlobalSideregion($region, $regions);
+				$handle = $this->_handle_global_sideregion($region, $regions);
 				if ( !$handle ) {
 					$global_region_filename = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . '" . Thx_Fs::PATH_REGIONS . "' . DIRECTORY_SEPARATOR . '{$region->name}.php'";
 					$template .= "\$region_container = '$region->container';\n";
@@ -368,11 +380,11 @@ class Thx_Exporter {
 				}
 				continue;
 			}
-			$template .= $this->renderRegion($region);
+			$template .= $this->_render_region($region);
 		}
 		
 		foreach($this->_global_regions as $region_name => $region){
-			$this->updateGlobalRegionTemplate($region_name);
+			$this->_update_global_region_template($region_name);
 		}
 
 		$file = !empty($data['functionsphp']) ? $data['functionsphp'] : false;
@@ -388,7 +400,7 @@ class Thx_Exporter {
 			: false
 		;
 
-		$this->saveLayoutToTemplate(
+		$this->_save_layout_to_template(
 			array(
 				'template' => $data['template'],
 				'content' => $template,
@@ -400,7 +412,7 @@ class Thx_Exporter {
 		die;
 	}
 
-	protected function handleGlobalSideregion($region, $regions = array()) {
+	protected function _handle_global_sideregion ($region, $regions = array()) {
 		// Check if the container is global, otherwise, export itself
 		$has_container = false;
 		foreach ( $regions as $reg ) {
@@ -418,7 +430,7 @@ class Thx_Exporter {
 		return $has_container;
 	}
 
-	public function exportElementStyles() {
+	public function json_export_element_styles () {
 		$data = stripslashes_deep($_POST['data']);
 		if (empty($data['stylename']) || empty($data['styles']) || empty($data['elementType'])) {
 			$this->_json->error_msg(__('Some data is missing.', UpfrontThemeExporter::DOMAIN), 'missing_data');
@@ -448,7 +460,7 @@ class Thx_Exporter {
 	private function _export_element_style ($name, $data) {
 		$this->_theme = $name;
 		$style = stripslashes($data['styles']);
-		$style = $this->makeUrlsPassiveRelative($style);
+		$style = $this->_make_urls_passive_relative($style);
 
 		$path = array(
 			Thx_Fs::PATH_STYLES, 
@@ -469,7 +481,7 @@ class Thx_Exporter {
 		update_option(self::TEMP_STYLES_KEY, $stored);
 	}
 
-	public function deleteElementStyles() {
+	public function json_delete_element_styles () {
 		if (upfront_exporter_is_creating()) {
 			$this->_json->error_msg(__('Can\'t do that before theme is created.', UpfrontThemeExporter::DOMAIN));
 		}
@@ -497,9 +509,9 @@ class Thx_Exporter {
 		));
 	}
 
-	protected function renderRegion($region, $use_var = false) {
+	protected function _render_region ($region, $use_var = false) {
 		$data = (array)$region;
-		$name = preg_replace('/[^_a-z0-9]/i', '_', $data['name']);
+		$name = Thx_Sanitize::extended_alnum($data['name']);
 
 		$data['type'] = isset( $data['type'] ) ? $data['type'] : "";
 		$data['scope'] = isset( $data['scope'] ) ? $data['scope'] : "";
@@ -525,7 +537,7 @@ class Thx_Exporter {
 		if (!empty($data['restrict_to_container'])) $main['restrict_to_container'] = $data['restrict_to_container'];
 		if (!empty($data['behavior'])) $main['behavior'] = $data['behavior'];
 		if (!empty($data['sticky'])) $main['sticky'] = $data['sticky'];
-		$secondary = $this->parseProperties($data['properties']);
+		$secondary = $this->_parse_properties($data['properties']);
 
 		// Deal with the slider images
 		if (!empty($secondary['background_slider_images'])) {
@@ -551,13 +563,13 @@ class Thx_Exporter {
 			' . $this->_json->stringify_php($secondary) . '
 			);' . "\n";
 
-		$output .= $this->renderModules($name, $data['modules'], $data['wrappers']);
+		$output .= $this->_render_modules($name, $data['modules'], $data['wrappers']);
 
 		$output .= "\n" . '$regions->add($' . $name . ");\n\n";
 		return $output;
 	}
 
-	protected function renderModules($name, $modules, $wrappers, $group = '') {
+	protected function _render_modules ($name, $modules, $wrappers, $group = '') {
 		$region_lightboxes = array();
 		$output = '';
 		$export_images = $this->_does_theme_export_images();
@@ -568,15 +580,15 @@ class Thx_Exporter {
 
 			// Looking for next module, so that we can compare their wrapper_id to see if we need to add close_wrapper property
 			if(!empty($modules) && sizeof($modules) > ($i+1))
-				$nextModule = $this->parseProperties($modules[$i+1]->properties);
+				$nextModule = $this->_parse_properties($modules[$i+1]->properties);
 
 			$isGroup = (isset($module['modules']) && isset($module['wrappers']));
 
-			$moduleProperties = $this->parseProperties($module['properties']);
-			$props = $this->parseModuleClass($moduleProperties['class']);
+			$moduleProperties = $this->_parse_properties($module['properties']);
+			$props = $this->_parse_module_class($moduleProperties['class']);
 			$props['id'] = $moduleProperties['element_id'];
 			if (!$isGroup)
-				$props['options'] = $this->parseProperties($module['objects'][0]->properties);
+				$props['options'] = $this->_parse_properties($module['objects'][0]->properties);
             
             foreach($moduleProperties as $property => $value){
                 if ( !in_array($property, array('class', 'element_id', 'breakpoint', 'has_settings')) )
@@ -626,7 +638,7 @@ class Thx_Exporter {
 				$props['close_wrapper'] = false;
 			}
 
-			$type = $this->getObjectType(
+			$type = $this->_get_object_type(
 				(!empty($props['options']['view_class']) ? $props['options']['view_class'] : false)
 			);
 
@@ -645,24 +657,24 @@ class Thx_Exporter {
 					}
 					break;
 				case 'PlainTxt':
-					$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromText($props));
+					$region_lightboxes = array_merge($region_lightboxes, $this->_get_lightboxes_from_text($props));
 					break;
 				case 'Button':
-					$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromButton($props));
+					$region_lightboxes = array_merge($region_lightboxes, $this->_get_lightboxes_from_button($props));
 					break;
 				case 'Unewnavigation':
-					$region_lightboxes = array_merge($region_lightboxes, $this->getLightBoxesFromMenu($props));
+					$region_lightboxes = array_merge($region_lightboxes, $this->_get_lightboxes_from_menu($props));
 					break;
 			}
 
 			if ($type === 'Unewnavigation') {
-				$this->addMenuFromElement($props);
+				$this->_add_menu_from_element($props);
 				$props['options']['menu_id'] = false; // Should not be set in exported layout
 			}
 
 			if ($isGroup){
 				$output .= "\n" . '$' . $name . '->add_group(' . $this->_json->stringify_php($props) . ");\n";
-				$output .= $this->renderModules($name, $module['modules'], $module['wrappers'], $props['id']);
+				$output .= $this->_render_modules($name, $module['modules'], $module['wrappers'], $props['id']);
 			} else {
 				if (!empty($group)){
 					$props['group'] = $group;
@@ -686,46 +698,54 @@ class Thx_Exporter {
 		return $output;
 	}
 
-	protected function getLightBoxesFromMenu($properties) {
+	protected function _get_lightboxes_from_menu ($properties) {
 		$lightboxes = array();
 
 		$menu_id = $properties['options']['menu_id'];
 		$menu_items = wp_get_nav_menu_items($menu_id);
-      if( is_array( $menu_items ) ){
-        foreach($menu_items as $menu_item) {
-          if(strpos($menu_item->url, '#ltb-') === false) continue;
-          $lightboxes[] = $menu_item->url;
-        }
-      }
+		
+		if( is_array( $menu_items ) ){
+			foreach($menu_items as $menu_item) {
+				if (!$this->_has_ligthbox($menu_item->url)) continue;
+				$lightboxes[] = $menu_item->url;
+			}
+		}
+		
 		return $lightboxes;
 	}
 
-	protected function getLightBoxesFromText($properties) {
-
-		if (strpos($properties['options']['content'], '#ltb-') === false)
-			return array();
+	protected function _get_lightboxes_from_text ($properties) {
+		if (!$this->_has_ligthbox($properties['options']['content'])) return array();
 
 		$matches = array();
 		preg_match_all('#href="(\#ltb-.+?)"#', $properties['options']['content'], $matches);
 
-		if(is_array($matches[1]))
-			foreach($matches[1] as $match)
-				if(strpos($match, '#ltb-') === false)
-					unset($match);
+		if (is_array($matches[1])) foreach ($matches[1] as $match) {
+			if (!$this->_has_ligthbox($match)) unset($match);
+		}
 
 		return is_array($matches[1]) ? $matches[1] : array();
 	}
 
-	protected function getLightBoxesFromButton($properties) {
-
-		if (strpos($properties['options']['href'], '#ltb-') === false)
-			return array();
-		else
-			return array($properties['options']['href']);
-
+	protected function _get_lightboxes_from_button ($properties) {
+		return $this->_has_ligthbox($properties['options']['href'])
+			? $properties['options']['href']
+			: array()
+		;
 	}
 
-	protected function addMenuFromElement($properties) {
+	/**
+	 * Check if the passed argument has lightbox prefix within
+	 *
+	 * @param string $string String to check
+	 *
+	 * @return bool
+	 */
+	protected function _has_ligthbox ($string) {
+		return false !== strpos($string, '#ltb-');
+	}
+
+	protected function _add_menu_from_element ($properties) {
 		$menu_id = $properties['options']['menu_id'];
 
 		$menu_object = wp_get_nav_menu_object($menu_id);
@@ -777,11 +797,11 @@ class Thx_Exporter {
 		$this->_theme_settings->set('menus', json_encode($menus));
 	}
 
-	protected function getObjectType($class){
+	protected function _get_object_type ($class) {
 		return str_replace('View', '', $class);
 	}
 
-	protected function parseProperties($props){
+	protected function _parse_properties ($props) {
 		$parsed = array();
 		if (empty($props)) return $parsed;
 		foreach($props as $p){
@@ -790,7 +810,7 @@ class Thx_Exporter {
 		return $parsed;
 	}
 
-	protected function parseModuleClass($class){
+	protected function _parse_module_class ($class) {
 		$classes = explode(' ', $class);
 		$properties = array();
 		foreach ($classes as $c) {
@@ -818,7 +838,7 @@ class Thx_Exporter {
 		$this->_theme = $data['theme'];
 
 		foreach($data['layout']['layouts'] as $index=>$layout) {
-			$this->saveLayoutToTemplate(
+			$this->_save_layout_to_template(
 				array(
 					'template' => $index === 'main' ? $data['template'] : $index,
 					'content' => stripslashes($layout)
@@ -828,8 +848,8 @@ class Thx_Exporter {
 		die;
 	}
 
-	protected function saveLayoutToTemplate($layout) {
-		$template = preg_replace('/[^-_a-z0-9]/i', '', $layout['template']);
+	protected function _save_layout_to_template ($layout) {
+		$template = Thx_Sanitize::extended_alnum($layout['template']);
 		$content = $layout['content'];
 
 		//$template_images_dir = $this->getThemePath('images', $template);
@@ -841,9 +861,9 @@ class Thx_Exporter {
 		$template_images_dir = $this->_fs->get_path($template_images_dir_args);
 
 		// Copy all images used in layout to theme directory
-		$content = $this->exportImages($content, $template, $template_images_dir);
+		$content = $this->_export_images($content, $template, $template_images_dir);
 
-		$content = $this->makeUrlsRelative($content);
+		$content = $this->_make_urls_relative($content);
 
 		// Save layout to file
 		$result = $this->_fs->write(array(
@@ -861,7 +881,7 @@ class Thx_Exporter {
 			// Don't forget the UI images in layout style 
 			// Use passively expanded URLs even though this will end up in a PHP file
 			// to keep things simple with aggressively quoted situation in settings array.
-			$value = $this->makeUrlsPassiveRelative($value);
+			$value = $this->_make_urls_passive_relative($value);
 			
 			$this->_theme_settings->set($property, $value);
 		}
@@ -884,7 +904,7 @@ class Thx_Exporter {
 				$pages = json_decode($pages, true);
 			}
 			if (!is_array($pages)) $pages = array();
-			$page = preg_replace('/[^-_a-z0-9]/i', '', $layout['layout']);
+			$page = Thx_Sanitize::extended_alnum($layout['layout']);
 			if (!empty($page)) { // We have to have this - and clean - to continue
 				$name = join(' ', array_map('ucfirst', explode('-', $page)));
 				$page_layout_data = array(
@@ -900,7 +920,7 @@ class Thx_Exporter {
 				$tpl_filename = "page_tpl-{$page}";
 
 				// Include the template file from which we will be generating a WP page template.
-				$tpl_content = $contents = $this->template($this->_plugin_dir . '/templates/page-template.php', $page_layout_data);
+				$tpl_content = $contents = $this->_template($this->_plugin_dir . '/templates/page-template.php', $page_layout_data);
 				// Recursive definition yay
 
 				$this->_fs->write(array(
@@ -910,7 +930,16 @@ class Thx_Exporter {
 		}
 	}
 
-	protected function makeUrlsRelative($content, $quote='"') {
+	/**
+	 * Relativize URLs for *active* stuff.
+	 * This means stuff that can actually process PHP expressions.
+	 *
+	 * @param string $content Content to process
+	 * @param string $quote Quote type to use
+	 *
+	 * @return string Processed content with URLs relativized
+	 */
+	protected function _make_urls_relative ($content, $quote='"') {
 		if (!in_array($quote, array('"', "'"))) $quote = '"';
 		// Fix lightboxes and other anchor urls
 		$content = preg_replace('#' . get_site_url() . '/create_new/.+?(\#[A-Za-z_-]+)#', '\1', $content);
@@ -928,17 +957,19 @@ class Thx_Exporter {
 
 	/**
 	 * This will relativize URLs for *passive* (non-PHP) stuffs
+	 * 
 	 * @param  string $content Content to process
+	 * 
 	 * @return string Content with URLs parsed.
 	 */
-	protected function makeUrlsPassiveRelative ($content) {
+	protected function _make_urls_passive_relative ($content) {
 		$base = preg_quote(get_stylesheet_directory_uri(), '/');
 		$rpl = Upfront_ChildTheme::THEME_BASE_URL_MACRO;
 
 		return preg_replace("/{$base}/", $rpl, $content);
 	}
 
-	protected function exportImages($content, $template, $template_images_dir) {
+	protected function _export_images ($content, $template, $template_images_dir) {
 		$matches = array();
 		$uploads_dir = wp_upload_dir();
 
@@ -1060,7 +1091,7 @@ class Thx_Exporter {
 		return $path; // `return` in an AJAX request handler? - *Yes* because we're just augmenting the default behavior.
 	}
 
-	protected function updateGlobalRegionTemplate($region_name) {
+	protected function _update_global_region_template ($region_name) {
 		$region = $this->_global_regions[$region_name];
 		$is_main = ( !$region->container || $region->name == $region->container );
 		$content = "<?php\n";
@@ -1069,14 +1100,14 @@ class Thx_Exporter {
 		if ($is_main && isset($this->_global_sideregions[$region->name])) {
 			foreach ($this->_global_sideregions[$region->name] as $sub => $sub_region){
 				if ($sub == 'left' || $sub == 'top')
-					$render_before[] = $this->renderRegion($sub_region);
+					$render_before[] = $this->_render_region($sub_region);
 				else
-					$render_after[] = $this->renderRegion($sub_region);
+					$render_after[] = $this->_render_region($sub_region);
 			}
 		}
 		
 		$content .= join('', $render_before);
-		$content .= $this->renderRegion($region, !$is_main);
+		$content .= $this->_render_region($region, !$is_main);
 		$content .= join('', $render_after);
 
 		// Start with global region creation
@@ -1090,9 +1121,9 @@ class Thx_Exporter {
 		));
 
 		// Copy all images used in layout to theme directory
-		$content = $this->exportImages($content, Thx_Fs::PATH_REGIONS . '/' . $region->name, $template_images_dir);
+		$content = $this->_export_images($content, Thx_Fs::PATH_REGIONS . '/' . $region->name, $template_images_dir);
 
-		$content = $this->makeUrlsRelative($content);
+		$content = $this->_make_urls_relative($content);
 
 		$this->_fs->write(array(
 			Thx_Fs::PATH_REGIONS,
@@ -1100,7 +1131,7 @@ class Thx_Exporter {
 		), $content);
 	}
 
-	protected function exportLightbox($region) {
+	protected function _export_lightbox ($region) {
 		$this->_fs->mkdir_p(array(
 			Thx_Fs::PATH_REGIONS,
 			Thx_Fs::PATH_LIGHTBOXES,
@@ -1109,7 +1140,7 @@ class Thx_Exporter {
 		ob_start();
 
 		$content = "<?php\n";
-		$content .= $this->renderRegion($region);
+		$content .= $this->_render_region($region);
 
 		$this->_fs->write(array(
 			Thx_Fs::PATH_REGIONS,
@@ -1118,7 +1149,7 @@ class Thx_Exporter {
 		), $content);
 	}
 
-	public function updateThemeFonts($theme_fonts) {
+	public function update_theme_fonts ($theme_fonts) {
 		if (upfront_exporter_is_start_page()) {
 			update_option('upfront_new-theme_fonts', json_encode($theme_fonts));
 			return;
@@ -1126,11 +1157,11 @@ class Thx_Exporter {
 		$this->_theme_settings->set('theme_fonts', json_encode($theme_fonts));
 	}
 
-	public function updateResponsiveSettings($responsive_settings) {
+	public function update_responsive_settings ($responsive_settings) {
 		$this->_theme_settings->set('responsive_settings', json_encode($responsive_settings));
 	}
 
-	public function updateThemeColors($theme_colors) {
+	public function update_theme_colors ($theme_colors) {
 		if (upfront_exporter_is_start_page()) {
 			update_option('upfront_new-theme_colors', json_encode($theme_colors));
 			return;
@@ -1138,7 +1169,7 @@ class Thx_Exporter {
 		$this->_theme_settings->set('theme_colors', json_encode($theme_colors));
 	}
 
-	public function updateButtonPresets($button_presets) {
+	public function update_button_presets ($button_presets) {
 		if (upfront_exporter_is_start_page()) {
 			update_option('upfront_new-button_presets', json_encode($button_presets));
 			return;
@@ -1146,7 +1177,7 @@ class Thx_Exporter {
 		$this->_theme_settings->set('button_presets', json_encode($button_presets));
 	}
 
-	public function updatePostImageVariants($post_image_variant) {
+	public function update_post_image_variants ($post_image_variant) {
 		if (upfront_exporter_is_start_page()) {
 			update_option('upfront_new-post_image_variants', json_encode($post_image_variant));
 			return;
@@ -1154,38 +1185,23 @@ class Thx_Exporter {
 		$this->_theme_settings->set('post_image_variants', json_encode($post_image_variant));
 	}
 
-	public function saveTabPreset() {
-		$this->saveElementPreset('tab');
+
+	public function save_preset ($properties, $slug) {
+		$this->_update_element_preset($slug);
 	}
 
-	public function deleteTabPreset() {
-		$this->deleteElementPreset('tab');
+	public function delete_preset ($properties, $slug) {
+		$this->_update_element_preset($slug, true);
 	}
 
-	public function saveAccordionPreset() {
-		$this->saveElementPreset('accordion');
-	}
-
-	public function deleteAccordionPreset() {
-		$this->deleteElementPreset('accordion');
-	}
-
-	public function saveElementPreset($slug) {
-		$this->updateElementPreset($slug);
-	}
-
-	public function deleteElementPreset($slug) {
-		$this->updateElementPreset($slug, $false);
-	}
-
-	protected function updateElementPreset($slug, $delete = false) {
+	protected function _update_element_preset ($slug, $delete=false) {
 		if (!isset($_POST['data'])) {
 			return;
 		}
 
 		$presetProperty = $slug . '_presets';
 
-		$properties = $_POST['data'];
+		$properties = stripslashes_deep($_POST['data']);
 
 		if (upfront_exporter_is_start_page()) {
 			$presets = json_decode(get_option('upfront_new-' . $presetProperty), true);
@@ -1221,14 +1237,14 @@ class Thx_Exporter {
 			'exports_images' => $this->_does_theme_export_images() ? 'true' : 'false', // Force conversion to string so it can be expanded in the template.
 		);
 
-		$contents = $this->template($this->_plugin_dir . '/templates/functions.php', $data);
+		$contents = $this->_template($this->_plugin_dir . '/templates/functions.php', $data);
 
 		$this->_fs->write(array(
 			'functions.php'
 		), $contents);
 	}
 
-	protected function template($path, $data){
+	protected function _template ($path, $data) {
 		$template = file_get_contents($path);
 		foreach ($data as $key => $value) {
 			$template = str_replace('%' . $key . '%', $value, $template);
@@ -1236,7 +1252,7 @@ class Thx_Exporter {
 		return $template;
 	}
 
-	public function createTheme() {
+	public function json_create_theme () {
 		$form = array();
 		parse_str($_POST['form'], $form);
 
@@ -1368,14 +1384,14 @@ class Thx_Exporter {
 			switch_theme($theme_slug);
 		}
 
-		$this->getThemesJson();
+		$this->json_get_themes();
 	}
 
-	public function addStyles() {
+	public function add_styles () {
 		wp_enqueue_style('upfront-exporter', $this->_plugin_dir_url . '/exporter.css');
 	}
 
-	public function addData($data) {
+	public function add_data ($data) {
 		$data['exporter'] = array(
 			'url' => plugins_url('', __FILE__),
 			'testContent' => $this->_get_preview_content(),
@@ -1386,7 +1402,7 @@ class Thx_Exporter {
 		return $data;
 	}
 
-	public function ajax_export_part_template() {
+	public function json_export_part_template () {
 		global $allowedposttags;
 		$allowedposttags['time'] = array('datetime' => true);
 		$tpl = isset($_POST['tpl']) ? wp_kses(stripslashes($_POST['tpl']), $allowedposttags) : false;
@@ -1402,12 +1418,12 @@ class Thx_Exporter {
 		else
 			$type = 'single';
 
-		$filename = $this->export_post_part_template($type, $id, $part, $tpl);
+		$filename = $this->_export_post_part_template($type, $id, $part, $tpl);
 
 		$this->_json->out(array('filename' => $filename));
 	}
 
-	protected function export_post_part_template($type, $id, $part, $tpl){
+	protected function _export_post_part_template ($type, $id, $part, $tpl){
 		$file_path_parts = array(
 			Thx_Fs::PATH_TEMPLATES,
 			Thx_Fs::PATH_POSTPARTS,
@@ -1422,14 +1438,14 @@ class Thx_Exporter {
 
 		$templates[$part] = $tpl;
 
-		$output = $this->generate_exported_templates($templates);
+		$output = $this->_generate_exported_templates($templates);
 
 		$this->_fs->write($file_path_parts, $output);
 
 		return $file_path;
 	}
 
-	protected function generate_exported_templates($templates){
+	protected function _generate_exported_templates ($templates){
 		$out = '<?php $templates = array(); ob_start();' . "\n\n";
 
 		foreach($templates as $part => $template){
@@ -1445,18 +1461,18 @@ class Thx_Exporter {
 		return $out;
 	}
 
-	public function ajax_export_post_layout() {
+	public function json_export_post_layout() {
 		$layoutData = isset($_POST['layoutData']) ? $_POST['layoutData'] : false;
 		$params = isset($_POST['params']) ? $_POST['params'] : false;
 		if(!$layoutData || !$params ) $this->_json->error_msg(__('No layout data or cascade sent.', UpfrontThemeExporter::DOMAIN));
 
 		$this->_json->out(array(
-			"file" => $this->save_post_layout( $params, $layoutData ),
+			"file" => $this->_save_post_layout( $params, $layoutData ),
 		));
 	}
 
 
-	protected function save_post_layout( $params, $layoutData ) {
+	protected function _save_post_layout ($params, $layoutData) {
 		$file_name = !empty($params['specificity'])
 			? $params['type'] . "-" . $params['specificity']
 			: $params['type'] . "-" . $params['item']
@@ -1531,91 +1547,10 @@ class Thx_Exporter {
 	}
 
 	private function _validate_theme_slug ($slug) {
-		$slug = preg_replace('/[^-_a-z0-9]/i', '', $slug);
-		return $this->_is_valid_slug($slug)	&& $this->_is_not_declared_slug($slug)
+		$slug = Thx_Sanitize::extended_alnum($slug);
+		return Thx_Sanitize::is_not_reserved($slug) && Thx_Sanitize::is_not_declared($slug)
 			? $slug
 			: false
 		;
-	}
-
-	private function _is_not_declared_slug ($slug) {
-		$functions = get_defined_functions();
-		if (!empty($functions['user']) && in_array($slug, $functions['user'])) return false;
-		if (!empty($functions['internal']) && in_array($slug, $functions['internal'])) return false;
-		if (in_array($slug, get_declared_classes())) return false;
-		return true;
-	}
-
-	private function _is_valid_slug ($slug) {
-		$reserved = array(
-			"__halt_compiler",
-			"abstract",
-			"and",
-			"array",
-			"as",
-			"break",
-			"callable",
-			"case",
-			"catch",
-			"class",
-			"clone",
-			"const",
-			"continue",
-			"declare",
-			"default",
-			"die",
-			"do",
-			"echo",
-			"else",
-			"elseif",
-			"empty",
-			"enddeclare",
-			"endfor",
-			"endforeach",
-			"endif",
-			"endswitch",
-			"endwhile",
-			"eval",
-			"exit",
-			"extends",
-			"final",
-			"finally",
-			"for",
-			"foreach",
-			"function",
-			"global",
-			"goto",
-			"if",
-			"implements",
-			"include",
-			"include_once",
-			"instanceof",
-			"insteadof",
-			"interface",
-			"isset",
-			"list",
-			"namespace",
-			"new",
-			"or",
-			"print",
-			"private",
-			"protected",
-			"public",
-			"require",
-			"require_once",
-			"return",
-			"static",
-			"switch",
-			"throw",
-			"trait",
-			"try",
-			"unset",
-			"use",
-			"var",
-			"while",
-			"xor",
-			"yield",
-		);
-		return !in_array($slug, $reserved);
 	}
 }
