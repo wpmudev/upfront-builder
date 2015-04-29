@@ -1248,8 +1248,68 @@ class Thx_Exporter {
 		$template = file_get_contents($path);
 		foreach ($data as $key => $value) {
 			$template = str_replace('%' . $key . '%', $value, $template);
+	/**
+	 * Creates the theme's `style.css` file.
+	 * 
+	 * Trumps over the old one, if it already exists.
+	 * If the method is called against the existing theme, not all the data needs to be
+	 * passed in. The missing info bits will be inferred from existing headers.
+	 *
+	 * @param string $theme_slug Theme slug
+	 * @param array $data Theme data that'll be used to populate headers
+	 */
+	protected function _create_style_file ($theme_slug, $data) {
+		$theme = wp_get_theme($theme_slug);
+
+		// Populate missing info from the current theme
+		if (is_object($theme) && $theme->exists()) {
+			foreach ($data as $idx => $info) {
+				if (!empty($info)) continue; // If we have stuff here, we're all good to go for this property, so carry on
+
+				// Because both theme headers and our data keys are so super-consistent, 
+				// let's make sure we have what it takes
+				$raw_ti = preg_replace('/\buri\b/', 'URI', $idx); // In theme headers, "uri" bit is always all-caps so make sure we comply
+				
+				// Now, the variations. Some headers can, but not always, have "Theme" prefix.
+				// Likewise, our data keys can, but don't have to, have "-theme-" infix.
+				// So, we spawn some variations to check both versions.
+				$theme_index1 = preg_replace('/thx-/', '', $raw_ti);
+				$theme_index2 = preg_replace('/thx-theme-/', '', $raw_ti);
+
+				// No matter the variation, the theme property within the WP theme API is CamelCased.
+				// Well, except for the string "URI" which is always all-caps, but that's been taken care of already.
+				$theme_index1 = join('', array_values(array_filter(array_map('ucfirst', explode('-', $theme_index1)))));
+				$theme_index2 = join('', array_values(array_filter(array_map('ucfirst', explode('-', $theme_index2)))));
+
+				// Scatter gun shot here. Get anything that can be got pl0x.
+				$existing1 = $theme->get($theme_index1);
+				$existing2 = $theme->get($theme_index2);
+				$info = '';
+
+				if (!empty($existing1)) $info = $existing1;
+				else if (!empty($existing2)) $info = $existing2;
+				
+				// Did we ended up getting anything? Set the value if so.
+				if (!empty($info)) $data[$idx] = $info;
+			}
 		}
-		return $template;
+
+		$content = $this->_template('templates/style.css', $data);
+
+		//$content = preg_replace('/^\s*[A-Z][^:]+:\s*%[^%]+%\s*$/m', '', $content);
+		// Collapse missing properties instead
+		$carr = explode("\n", preg_replace('/\R/u', "\n", $content));
+		foreach ($carr as $cidx => $cnt) {
+			$cnt = preg_replace('/^\s*[A-Z][^:]+:\s*(%[^%]+%\s*)?$/', '', $cnt);
+			$carr[$cidx] = $cnt;
+		}
+		$content = join("\n", array_values(array_filter($carr)));
+		
+		$this->_fs->write(array(
+			'style.css'
+		), $content);
+
+		$theme->cache_delete(); // We need this in order to prevent the theme from using the stale fucking data
 	}
 
 	public function json_create_theme () {
@@ -1295,26 +1355,7 @@ class Thx_Exporter {
 		$this->_fs->mkdir($theme_path);
 
 		// Write style.css with theme variables
-		$stylesheet_header = "/*\n";
-		$stylesheet_header .= sprintf("Theme Name:%s\nTemplate: %s\n",
-			$form['thx-theme-name'],
-			$form['thx-theme-template']
-		);
-		if ($uri = $form['thx-theme-uri']) $stylesheet_header .= "Theme URI: $uri\n";
-		if ($author = $form['thx-author']) $stylesheet_header .= "Author: $author\n";
-		if ($author_uri = $form['thx-author-uri']) $stylesheet_header .= "Author URI: $author_uri\n";
-		if ($description = $form['thx-theme-description']) $stylesheet_header .= "Description: $description\n";
-		if ($version = $form['thx-theme-version']) $stylesheet_header .= "Version: $version\n";
-		if ($licence = $form['thx-theme-licence']) $stylesheet_header .= "Licence: $licence\n";
-		if ($licence_uri = $form['thx-theme-licence-uri']) $stylesheet_header .= "Licence URI: $licence_uri\n";
-		if ($tags = $form['thx-theme-tags']) $stylesheet_header .= "Tags: $tags\n";
-		if ($text_domain = $form['thx-theme-text-domain']) $stylesheet_header .= "Text Domain: $text_domain\n";
-		$stylesheet_header .= "*/\n";
-		$stylesheet_header .= "@import url(../{$form['thx-theme-template']}/style.css);";
-
-		$this->_fs->write(array(
-			'style.css'
-		), $stylesheet_header);
+		$this->_create_style_file($theme_slug, $form);
 
 		// Add directories
 		$this->_fs->mkdir($this->_fs->get_path(Thx_Fs::PATH_LAYOUTS, false));
