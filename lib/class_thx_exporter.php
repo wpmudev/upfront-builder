@@ -920,7 +920,7 @@ class Thx_Exporter {
 				$tpl_filename = "page_tpl-{$page}";
 
 				// Include the template file from which we will be generating a WP page template.
-				$tpl_content = $contents = $this->_template($this->_plugin_dir . '/templates/page-template.php', $page_layout_data);
+				$tpl_content = $contents = $this->_template('templates/page-template.php', $page_layout_data);
 				// Recursive definition yay
 
 				$this->_fs->write(array(
@@ -1229,6 +1229,30 @@ class Thx_Exporter {
 		$this->_theme_settings->set($presetProperty, json_encode($result));
 	}
 
+	/**
+	 * Processes the template path and expands the macros.
+	 *
+	 * @param string $relpath Relative path to template.
+	 * @param array $data Macro definitions hash (macro => value)
+	 *
+	 * @return mixed Processed template as string or (bool)false on failure
+	 */
+	protected function _template ($relpath, $data) {
+		$path = wp_normalize_path(trailingslashit($this->_plugin_dir) . ltrim($relpath, '/'));
+		if (!$this->_fs->exists($path)) return false;
+
+		$template = file_get_contents($path);
+		foreach ($data as $key => $value) {
+			$template = str_replace('%' . $key . '%', $value, $template);
+		}
+		return $template;
+	}
+
+	/**
+	 * Creates the theme's `functions.php` file from a template.
+	 *
+	 * @param string $slug Theme slug to be used as child theme's class name
+	 */
 	private function _create_functions_file ($slug) {
 		$data = array(
 			'name' => ucwords(str_replace('-', '_', sanitize_html_class($slug))),
@@ -1237,17 +1261,13 @@ class Thx_Exporter {
 			'exports_images' => $this->_does_theme_export_images() ? 'true' : 'false', // Force conversion to string so it can be expanded in the template.
 		);
 
-		$contents = $this->_template($this->_plugin_dir . '/templates/functions.php', $data);
+		$contents = $this->_template('templates/functions.php', $data);
 
 		$this->_fs->write(array(
 			'functions.php'
 		), $contents);
 	}
 
-	protected function _template ($path, $data) {
-		$template = file_get_contents($path);
-		foreach ($data as $key => $value) {
-			$template = str_replace('%' . $key . '%', $value, $template);
 	/**
 	 * Creates the theme's `style.css` file.
 	 * 

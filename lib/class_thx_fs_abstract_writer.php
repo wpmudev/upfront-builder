@@ -113,6 +113,7 @@ abstract class Thx_Fs_AbstractWriter {
 		return file_put_contents($path, $content);
 	}
 
+
 	/**
 	 * Delete a file within theme-relative path.
 	 *
