@@ -1137,7 +1137,7 @@ class Thx_Exporter {
 			Thx_Fs::PATH_LIGHTBOXES,
 		));
 
-		ob_start();
+		ob_start(); // ??? can we ditch this please?
 
 		$content = "<?php\n";
 		$content .= $this->_render_region($region);
