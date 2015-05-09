@@ -27,7 +27,7 @@ class Thx_Exporter {
 		$this->_plugin_dir_url = plugin_dir_url(dirname(__FILE__));
 
 		$this->_theme = upfront_exporter_get_stylesheet();
-		
+
 		require_once (dirname(__FILE__) . '/class_thx_sanitize.php');
 		
 		require_once (dirname(__FILE__) . '/class_thx_fs.php');
@@ -37,6 +37,9 @@ class Thx_Exporter {
 
 		require_once (dirname(__FILE__) . '/class_thx_json.php');
 		$this->_json = new Thx_Json;
+		
+		require_once(dirname(__FILE__) . '/class_thx_endpoint.php');
+		if (class_exists('Upfront_Thx_Builder_VirtualPage')) Upfront_Thx_Builder_VirtualPage::serve();
 	}
 
 	private function _set_up_theme_settings () {
@@ -45,7 +48,7 @@ class Thx_Exporter {
 			: $this->_fs->get_path('settings.php', false)
 		;
 		//$settings_file = $settings_file ? $settings_file : 'settings.php'; // Do NOT auto-init the settings file!!!
-		
+
 		$settings = new Upfront_Theme_Settings($settings_file);
 		$this->_theme_settings = $settings;
 
@@ -67,14 +70,13 @@ class Thx_Exporter {
 	private function _add_hooks () {
 
 		// Clean up the temporary styles on each load, if not doing AJAX
-		if (!is_admin() && !(defined('DOING_AJAX') && DOING_AJAX) && is_user_logged_in()) update_option(self::TEMP_STYLES_KEY, array());
-		
+		if (!is_admin() && !(defined('DOING_AJAX') && DOING_AJAX) && is_user_logged_in()) update_option(self::TEMP_STYLES_KEY, array());		
 
 		add_filter('stylesheet_directory', array($this, 'process_stylesheet_directory'), 100);
 		
 		add_action('wp_footer', array($this, 'inject_dependencies'), 100);
 		add_filter('upfront_data', array($this, 'add_data'));
-		add_action( 'wp_enqueue_scripts', array($this,'add_styles'));
+		add_action('wp_enqueue_scripts', array($this,'add_styles'));
 		
 		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 
