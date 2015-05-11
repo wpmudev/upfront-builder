@@ -34,17 +34,24 @@ abstract class Thx_VirtualSubpage extends Upfront_VirtualSubpage {
 	}
 }
 
+/**
+ * Initial page.
+ */
 class Upfront_Thx_InitialPage_VirtualSubpage extends Thx_VirtualSubpage {
 
 	public function render ($request) {
 		$this->parse($request);
-		$tpl = dirname(dirname(__FILE__)) . '/templates/thx_initial_page.php';
+		$tpl = Thx_Template::plugin()->path('initial_page');
 		load_template($tpl);
 		die;
 	}
 
 }
 
+
+/**
+ * Individual upfront theme editing page.
+ */
 class Upfront_Thx_ThemePage_VirtualSubpage extends Thx_VirtualSubpage {
 
 	public function __construct ($stylesheet) {

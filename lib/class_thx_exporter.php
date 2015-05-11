@@ -29,6 +29,7 @@ class Thx_Exporter {
 		$this->_theme = upfront_exporter_get_stylesheet();
 
 		require_once (dirname(__FILE__) . '/class_thx_sanitize.php');
+		require_once (dirname(__FILE__) . '/class_thx_template.php');
 		
 		require_once (dirname(__FILE__) . '/class_thx_fs.php');
 		$this->_fs = Thx_Fs::get($this->_theme);
@@ -324,8 +325,11 @@ class Thx_Exporter {
 	function inject_dependencies () {
 		if (!is_user_logged_in()) return false; // Do not inject for non-logged in user
 
-		$themes = $this->_get_themes();
-		include($this->_plugin_dir . '/templates/dependencies.php');
+		Thx_Template::plugin()->load('dependencies', array(
+			'root_url' =>  $this->_plugin_dir_url,
+			'includes_url' => includes_url() . 'js/',
+			'themes' => $this->_get_themes(),
+		));
 	}
 
 	public function json_get_themes () {
@@ -923,7 +927,7 @@ class Thx_Exporter {
 				$tpl_filename = "page_tpl-{$page}";
 
 				// Include the template file from which we will be generating a WP page template.
-				$tpl_content = $contents = $this->_template('templates/page-template.php', $page_layout_data);
+				$tpl_content = $contents = $this->_template('page-template', $page_layout_data);
 				// Recursive definition yay
 
 				$this->_fs->write(array(
@@ -1241,7 +1245,7 @@ class Thx_Exporter {
 	 * @return mixed Processed template as string or (bool)false on failure
 	 */
 	protected function _template ($relpath, $data) {
-		$path = wp_normalize_path(trailingslashit($this->_plugin_dir) . ltrim($relpath, '/'));
+		$path = Thx_Template::theme()->path($relpath);
 		if (!$this->_fs->exists($path)) return false;
 
 		$template = file_get_contents($path);
@@ -1264,7 +1268,7 @@ class Thx_Exporter {
 			'exports_images' => $this->_does_theme_export_images() ? 'true' : 'false', // Force conversion to string so it can be expanded in the template.
 		);
 
-		$contents = $this->_template('templates/functions.php', $data);
+		$contents = $this->_template('functions', $data);
 
 		$this->_fs->write(array(
 			'functions.php'
@@ -1316,8 +1320,7 @@ class Thx_Exporter {
 				if (!empty($info)) $data[$idx] = $info;
 			}
 		}
-
-		$content = $this->_template('templates/style.css', $data);
+		$content = $this->_template('style', $data);
 
 		//$content = preg_replace('/^\s*[A-Z][^:]+:\s*%[^%]+%\s*$/m', '', $content);
 		// Collapse missing properties instead
