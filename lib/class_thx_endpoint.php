@@ -1,5 +1,10 @@
 <?php
 if ((defined('UF_THX_TMP_SWITCH') && UF_THX_TMP_SWITCH)) {
+
+/**
+ * Builder virtual subpage abstraction.
+ * All actual endpoints (for creating/editing a theme) inherit from this.
+ */
 abstract class Thx_VirtualSubpage extends Upfront_VirtualSubpage {
 
 	const INITIAL_SLUG = 'theme';
@@ -73,6 +78,9 @@ class Upfront_Thx_ThemePage_VirtualSubpage extends Thx_VirtualSubpage {
 
 }
 
+/**
+ * Main interface.
+ */
 class Upfront_Thx_Builder_VirtualPage extends Upfront_VirtualPage {
 	
 	public static function serve () {
