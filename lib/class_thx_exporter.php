@@ -39,6 +39,7 @@ class Thx_Exporter {
 		require_once (dirname(__FILE__) . '/class_thx_json.php');
 		$this->_json = new Thx_Json;
 		
+		
 		require_once(dirname(__FILE__) . '/class_thx_endpoint.php');
 		if (class_exists('Upfront_Thx_Builder_VirtualPage')) Upfront_Thx_Builder_VirtualPage::serve();
 	}
@@ -82,6 +83,7 @@ class Thx_Exporter {
 		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 
 		add_action($ajaxPrefix . 'create-theme', array($this, 'json_create_theme'));
+		add_action($ajaxPrefix . 'update-theme', array($this, 'json_update_theme'));
 		add_action($ajaxPrefix . 'get-themes', array($this, 'json_get_themes'));
 
 		add_action($ajaxPrefix . 'export-layout', array($this, 'json_export_layout'));
@@ -274,10 +276,10 @@ class Thx_Exporter {
 				'name' => $name_parts[0],
 				'family' => $name_parts[0],
 				'files' => array(),
-				'type' => 'theme-defined',// default, theme-defined or user-defined ->
-																	// 'default' is only UpFont from Upfront theme,
-																	// 'theme-defined' come with theme
-																	// 'user-defined' are uploaded by theme user
+				'type' => 'theme-defined',	// default, theme-defined or user-defined ->
+											// 'default' is only UpFont from Upfront theme,
+											// 'theme-defined' come with theme
+											// 'user-defined' are uploaded by theme user
 				'active' => false
 			);
 			$font['files'][$name_parts[1]] = $result['media'][0]->name;
@@ -1338,10 +1340,14 @@ class Thx_Exporter {
 		$theme->cache_delete(); // We need this in order to prevent the theme from using the stale fucking data
 	}
 
-	public function json_create_theme () {
-		$form = array();
-		parse_str($_POST['form'], $form);
-
+	/**
+	 * Populate theme form defaults from the supplied data.
+	 *
+	 * @param array $form Initial data, optional
+	 *
+	 * @return array Properly initialized form hash
+	 */
+	private function _get_theme_form_defaults ($form=array()) {
 		$form = wp_parse_args($form, array(
 			'thx-theme-template' => 'upfront',
 			'thx-theme-name' => false,
@@ -1360,6 +1366,34 @@ class Thx_Exporter {
 			'thx-activate_theme' => false,
 			'thx-export_with_images' => false,
 		));
+		return $form;
+	}
+
+	public function json_update_theme () {
+		$form = array();
+		parse_str($_POST['form'], $form);
+
+		$form = $this->_get_theme_form_defaults($form);
+
+		$theme_slug = $this->_validate_theme_slug($form['thx-theme-slug']);
+		if (empty($theme_slug)) {
+			$this->_json->error_msg(__('Your chosen theme slug is invalid, please try another.', UpfrontThemeExporter::DOMAIN), 'missing_required');
+		}
+		// Check if theme directory already exists
+		$this->_fs->set_theme($theme_slug);
+		$theme_path = $this->_fs->get_root_path();
+		if (!file_exists($theme_path)) {
+			$this->_json->error_msg(__('Theme with that directory name does not exist.', UpfrontThemeExporter::DOMAIN), 'theme_exists');
+		}
+		$this->_create_style_file($theme_slug, $form);
+		die;
+	}
+
+	public function json_create_theme () {
+		$form = array();
+		parse_str($_POST['form'], $form);
+
+		$form = $this->_get_theme_form_defaults($form);
 
 		// Check required fields
 		if (empty($form['thx-theme-slug']) || empty($form['thx-theme-name']) || empty($form['thx-theme-template'])) {
