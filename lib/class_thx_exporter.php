@@ -1363,9 +1363,15 @@ class Thx_Exporter {
 			'thx-theme-licence-uri' => false,
 			'thx-theme-tags' => false,
 			'thx-theme-text-domain' => false,
-			'thx-activate_theme' => false,
-			'thx-export_with_images' => false,
+			'thx-activate_theme' => true,
+			'thx-export_with_images' => true,
 		));
+
+		// In case we have a theme name, but no slug
+		if (empty($form['thx-theme-slug']) && !empty($form['thx-theme-name'])) {
+			$form['thx-theme-slug'] = strtolower(Thx_Sanitize::extended_alnum($form['thx-theme-name'], '-'));
+		}
+
 		return $form;
 	}
 
