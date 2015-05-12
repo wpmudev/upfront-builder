@@ -6,11 +6,16 @@ abstract class Thx_Sanitize {
 	 * Strip all non-alphanumeric characters from a string.
 	 *
 	 * @param string $what String to process
+	 * @param string $rpl String to replace with (optional)
 	 *
 	 * @return string Clean string
 	 */
-	public static function alnum ($what) {
-		return preg_replace('/[^a-z0-9]/i', '', $what);
+	public static function alnum ($what, $rpl='') {
+		$str = preg_replace('/[^a-z0-9]/i', $rpl, $what);
+		if (empty($rpl)) return $str;
+
+		$q = preg_quote($rpl, '/');
+		return preg_replace("/{$q}+/", $q, $str);
 	}
 
 	/**
@@ -18,11 +23,16 @@ abstract class Thx_Sanitize {
 	 * except underscore and dash.
 	 *
 	 * @param string $what String to process
+	 * @param string $rpl String to replace with (optional)
 	 *
 	 * @return string Clean string
 	 */
-	public static function extended_alnum ($what) {
-		return preg_replace('/[^-_a-z0-9]/i', '', $what);
+	public static function extended_alnum ($what, $rpl='') {
+		$str = preg_replace('/[^-_a-z0-9]/i', $rpl, $what);
+		if (empty($rpl)) return $str;
+
+		$q = preg_quote($rpl, '/');
+		return preg_replace("/{$q}+/", $rpl, $str);
 	}
 
 	/**
