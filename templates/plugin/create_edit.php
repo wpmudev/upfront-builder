@@ -10,7 +10,11 @@
 
 <header class="builder">
 	<h2><?php esc_html_e('Upfront Builder', UpfrontThemeExporter::DOMAIN); ?></h2>
-	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+	<p>
+		<?php esc_html_e('Build your own, slick, customizable, intuitive Upfront themes.', UpfrontThemeExporter::DOMAIN); ?>
+		<br />
+		<?php esc_html_e('Creating a WordPress theme has never been easier.', UpfrontThemeExporter::DOMAIN); ?>
+	</p>
 </header>
 
 <div class="uf-thx-initial clearfix">
@@ -19,6 +23,7 @@
 	<?php if (!empty($themes)) { ?>
 		<h3><?php esc_html_e('Modify existing theme:', UpfrontThemeExporter::DOMAIN); ?></h3>
 		
+		<label class="inline"><span class="description"><?php esc_html_e('Select a theme to modify:', UpfrontThemeExporter::DOMAIN); ?></span></label>
 		<div class="uf-thx-themes_container clearfix">
 		<?php foreach ($themes as $key => $theme) { ?>
 			<div class="uf-thx-theme <?php if (!empty($_GET['theme']) && $theme->get_stylesheet() === $_GET['theme']) echo 'current'; ?>">
@@ -40,9 +45,9 @@
 			<?php esc_html_e('Edit theme details', UpfrontThemeExporter::DOMAIN); ?>
 		</button>
 	<?php } else { ?>
-		<p>
+		<label class="inline"><span class="description">
 			<?php esc_html_e('No existing themes, please create a new one.', UpfrontThemeExporter::DOMAIN); ?>
-		</p>
+		</span></label>
 	<?php } ?>
 	</div>
 
@@ -57,7 +62,7 @@
 		</button>
 	<?php } else { ?>
 		<?php $theme = wp_get_theme($_GET['theme']); ?>
-		<h3><?php echo esc_html(sprintf(__('Edit %s', UpfrontThemeExporter::DOMAIN), $theme->get('Name'))); ?></h3>
+		<h3><?php echo esc_html(sprintf(__('Edit &quot;%s&quot;:', UpfrontThemeExporter::DOMAIN), $theme->get('Name'))); ?></h3>
 
 		<?php 
 			Thx_Template::plugin()->load('theme_form', array(
@@ -233,37 +238,49 @@ header.builder {
 	padding: 40px;
 	text-align: center;
 }
+header.builder h2 {
+	font-size: 30px;
+}
+header.builder p {
+	font-size: 16px;
+	color: rgb(76, 83, 85);
+	margin-top: 1em;
+}
+
 .uf-thx-initial {
 	min-width: 400px;
 }
 .uf-thx-pane {
 	float: left;
-	width: 48%;
-	padding: .5%;
+	padding: 10px;
 }
 
 .uf-thx-new_theme {
-	left: 0;
 	margin-left: -1px;
 	border-left: 1px solid rgb(216, 216, 216);
-	padding-left: 20px;
+	padding-left: 35px;
 }
 .uf-thx-existing_theme {
-	left: 50%;
+	width: 450px;
 	border-right: 1px solid rgb(216, 216, 216);
 }
-.uf-thx-existing_theme h3 {
+.uf-thx-existing_theme h3, label.inline {
 	padding-left: 20px;
+}
+.uf-thx-existing_theme .uf-thx-themes_container {
+	margin-top: -15px;
 }
 
 /* forms */
 .uf-thx-pane h3 {
 	margin-bottom: 1em;
+	font-size: 23px;
 }
 .uf-thx-pane label {
 	display: block;
 	color: rgb(109, 114, 116);
 	margin-bottom: 1em;
+	font-size: 16px;
 }
 .uf-thx-pane label.inline {
 	margin-bottom: 0;
@@ -282,7 +299,7 @@ header.builder {
 	min-width: 300px;
 	width: 100%;
 	color: rgb(109, 114, 116);
-	font-size: 14px;
+	font-size: 16px;
 }
 button {
 	color: rgb(126, 131, 132);
@@ -300,6 +317,7 @@ button.info {
 /* list */
 .uf-thx-existing_theme .uf-thx-theme {
 	width: 110px;
+	height: 110px;
 	float: left;
 	margin: 15px;
 	position: relative;
@@ -314,11 +332,7 @@ button.info {
 	overflow: hidden;
 	background: rgba(100, 100, 100, .7);
 	position: absolute;
-	bottom: 3px;
-	display: none;
-}
-.uf-thx-existing_theme .uf-thx-theme:hover .uf-thx-caption {
-	display: block;
+	bottom: 0px;
 }
 .uf-thx-existing_theme .uf-thx-theme .uf-thx-caption b {
 	margin: 9px 18px;
@@ -337,8 +351,8 @@ button.info {
 	content: "\2714";
 	display: block;
 	position: absolute;
-	right: -5px;
-	top: -5px;
+	right: -8px;
+	top: -8px;
 	width: 30px;
 	height: 30px;
 	background: rgb(35, 49, 64);
@@ -354,6 +368,6 @@ button.info {
 }
 .uf-thx-theme_info .uf-thx-theme_meta {
 	float: left;
-	margin-left: 20px;
+	margin-left: 25px;
 }
 </style>
