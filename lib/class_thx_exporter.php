@@ -1491,7 +1491,13 @@ class Thx_Exporter {
 			switch_theme($theme_slug);
 		}
 
-		$this->json_get_themes();
+		//$this->json_get_themes();
+		wp_send_json(array(
+			'theme' => array(
+				'directory' => $theme_slug,
+				'name' => $form['thx-theme-name']
+			)
+		));
 	}
 
 	public function add_styles () {
