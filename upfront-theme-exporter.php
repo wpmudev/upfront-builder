@@ -1062,9 +1062,13 @@ class UpfrontThemeExporter {
 	 */
 	protected function makeUrlsPassiveRelative ($content) {
 		$base = preg_quote(get_stylesheet_directory_uri(), '/');
+		$no_protocol_base = preg_quote(preg_replace('/^https?:/', '', get_stylesheet_directory_uri()), '/');
 		$rpl = Upfront_ChildTheme::THEME_BASE_URL_MACRO;
 
-		return preg_replace("/{$base}/", $rpl, $content);
+		$content = preg_replace("/{$base}/", $rpl, $content);
+		$content = preg_replace("/{$no_protocol_base}/", $rpl, $content);
+
+		return $content;
 	}
 
 	protected function exportImages($content, $template, $template_images_dir) {
