@@ -49,7 +49,6 @@ class Thx_Exporter {
 			? $this->_fs->get_path('settings.php')
 			: $this->_fs->get_path('settings.php', false)
 		;
-		//$settings_file = $settings_file ? $settings_file : 'settings.php'; // Do NOT auto-init the settings file!!!
 
 		$settings = new Upfront_Theme_Settings($settings_file);
 		$this->_theme_settings = $settings;
@@ -97,7 +96,7 @@ class Thx_Exporter {
 		add_action($ajaxPrefix . 'export-element-styles', array($this, 'json_export_element_styles'));
 		add_action($ajaxPrefix . 'delete-element-styles', array($this, 'json_delete_element_styles'));
 
-		add_filter('upfront_theme_layout_cascade', array($this, 'get_theme_layout_cascade'), 10, 2);
+		add_filter('upfront_theme_layout_cascade', array($this, 'get_theme_layout_cascade'), 10, 2); // Used for ThisPost - this will be going out
 		add_filter('upfront_theme_postpart_templates_cascade', array($this, 'get_theme_postpart_templates_cascade'), 10, 2);
 
 		add_filter('upfront_prepare_theme_styles', '__return_empty_string', 15);
@@ -111,43 +110,12 @@ class Thx_Exporter {
 
 		add_action('upfront_update_button_presets', array($this, 'update_button_presets'));
 		add_action('init', array($this, 'dispatch_preset_handling'), 99);
-		/*
-// These are disabled in favor of unified preset handling dispatching above
-		add_action('upfront_save_tab_preset', array($this, 'saveTabPreset'));
-		add_action('upfront_save_accordion_preset', array($this, 'saveAccordionPreset'));
-
-		add_action('upfront_delete_tab_preset', array($this, 'deleteTabPreset'));
-		add_action('upfront_delete_accordion_preset', array($this, 'deleteAccordionPreset'));
-		*/
 	
 		add_action('upfront_get_stylesheet_directory', array($this, 'get_stylesheet_directory'));
 		add_action('upfront_get_stylesheet', array($this, 'get_stylesheet'));
 
 		add_action('upfront_upload_icon_font', array($this, 'upload_icon_font'));
 		add_action('upfront_update_active_icon_font', array($this, 'update_active_icon_font'));
-
-
-// ALL OF THESE ARE DISABLED NOW
-// ... because we're overriding the child's theme settings instead
-		/*
-		// This set of actions will force child theme class to load data from theme files
-		// since child theme class is also hooked into this actions and loads data from
-		// theme files if data is empty. So all these actions will reset data to empty.
-		// These actions are lower priority than actions in child theme so they will be
-		// executed first.
-		add_action('upfront_get_theme_styles', array($this, 'getThemeStyles'), 5);
-		add_action('upfront_get_global_regions', array($this, 'getGlobalRegions'), 5, 2);
-		add_action('upfront_get_responsive_settings', array($this, 'getResponsiveSettings'), 5);
-		add_action('upfront_get_layout_properties', array($this, 'getLayoutProperties'), 5);
-
-		add_action('upfront_get_theme_fonts', array($this, 'getEmptyArray'), 5, 2);
-		add_action('upfront_get_icon_fonts', array($this, 'getEmptyArray'), 5, 2);
-		add_action('upfront_get_theme_colors', array($this, 'getEmptyArray'), 5, 2);
-		add_action('upfront_get_post_image_variants', array($this, 'getEmptyArray'), 5, 2);
-		add_action('upfront_get_button_presets', array($this, 'getEmptyArray'), 5, 2);
-		add_action('upfront_get_tab_presets', array($this, 'getEmptyArray'), 5, 2);
-		add_action('upfront_get_accordion_presets', array($this, 'getEmptyArray'), 5, 2);
-		*/
 
 		// Intercept theme images loading and verify that the destination actually exists
 		add_action('wp_ajax_upfront-media-list_theme_images', array($this, 'check_theme_images_destination_exists'), 5);
@@ -218,12 +186,17 @@ class Thx_Exporter {
 		return $this->_generate_preview_post($data);
 	}
 
-	// TODO this should go to upfront theme!
+	// This is used for ThisPost filtering - will be going out soon enough
 	public function get_theme_layout_cascade ($cascade, $base_filename) {
+		$layout_cascade = false;
+		$post_type = false;
 		// Override brute force to ensure single-something page get their specific postlayout loaded
-		$layout_cascade = !empty($_POST['layout_cascade']) ? $_POST['layout_cascade'] : false;
-		if (empty($layout_cascade)) return $cascade;
-		$post_type = !empty($_POST['post_type']) ? $_POST['post_type'] : false;
+		if (!empty($_POST['layout_cascade'])) {
+			$layout_cascade = stripslashes_deep($_POST['layout_cascade']);
+			$post_type = !empty($_POST['post_type']) ? $_POST['post_type'] : false;
+		}
+		if (empty($layout_cascade)) return $cascade;		
+
 		$new_cascade = array(
 			trailingslashit(wp_normalize_path(dirname($base_filename))) . $layout_cascade['item'] . '.php', // So... make sure this goes first, that's the most likely candidate
 			$base_filename . $layout_cascade['item'] . '.php',
@@ -875,26 +848,6 @@ class Thx_Exporter {
 		return $properties;
 	}
 
-	public function saveLayout() {
-		$data = $_POST['data'];
-
-		if (empty($data['theme']) || empty($data['template'])) {
-			$this->_json->error_msg(__('Theme & template must be choosen.', UpfrontThemeExporter::DOMAIN), 'missing_data');
-		}
-
-		$this->_theme = $data['theme'];
-
-		foreach($data['layout']['layouts'] as $index=>$layout) {
-			$this->_save_layout_to_template(
-				array(
-					'template' => $index === 'main' ? $data['template'] : $index,
-					'content' => stripslashes($layout)
-				)
-			);
-		}
-		die;
-	}
-
 	protected function _save_layout_to_template ($layout) {
 		$template = Thx_Sanitize::extended_alnum($layout['template']);
 		$content = $layout['content'];
@@ -1051,7 +1004,6 @@ class Thx_Exporter {
 			: array()
 		;
 
-		//preg_match_all("#[\"'](http.+?(jpg|jpeg|png|gif))[\"']#", $content, $matches); // Won't recognize escaped quotes (such as content images), and will find false positives such as "httpajpg"
 		preg_match_all("#\b(https?://.+?\.(jpg|jpeg|png|gif))\b#", $content, $matches);
 
 		$images_used_in_template = array();
@@ -1203,8 +1155,6 @@ class Thx_Exporter {
 			Thx_Fs::PATH_REGIONS,
 			Thx_Fs::PATH_LIGHTBOXES,
 		));
-
-		ob_start(); // ??? can we ditch this please?
 
 		$content = "<?php\n";
 		$content .= $this->_render_region($region);
@@ -1423,6 +1373,7 @@ class Thx_Exporter {
 			'thx-theme-text-domain' => false,
 			'thx-activate_theme' => true,
 			'thx-export_with_images' => true,
+			'thx-selected_preset' => true,
 		));
 
 		// In case we have a theme name, but no slug
@@ -1469,7 +1420,6 @@ class Thx_Exporter {
 			$this->_json->error_msg(__('Your chosen theme slug is invalid, please try another.', UpfrontThemeExporter::DOMAIN), 'missing_required');
 		}
 
-
 		// Check if theme directory already exists
 		$this->_fs->set_theme($theme_slug);
 		$theme_path = $this->_fs->get_root_path();
@@ -1495,15 +1445,16 @@ class Thx_Exporter {
 		$this->_create_functions_file($theme_slug);
 
 		// Adding default layouts
-		$default_layouts_dir = trailingslashit($this->_fs->construct_path(array(
-			$this->_plugin_dir,
-			'templates',
-			'default_layouts',
-		)));
+		$preset = !empty($form['thx-selected_preset']) ? $form['thx-selected_preset'] : 'default';
+		$default_layouts_dir = trailingslashit(Thx_Template::theme()->dirpath("default_layouts/{$preset}", false));
 		$theme_layouts_dir = trailingslashit($this->_fs->construct_path(array(
 			Thx_Fs::PATH_LAYOUTS
 		)));
-		$default_layouts = glob($default_layouts_dir . '*');
+
+		$default_layouts = !empty($default_layouts_dir) && $this->_fs->exists($default_layouts_dir)
+			? glob($default_layouts_dir . '*')
+			: array()
+		;
 		$add_global_regions = isset($form['add_global_regions']) && $form['add_global_regions'];
 		$global_regions_path = "get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'global-regions' . DIRECTORY_SEPARATOR";
 		$header_include = "\nif (file_exists({$global_regions_path} . 'header.php')) include({$global_regions_path} . 'header.php');\n";

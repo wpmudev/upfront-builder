@@ -48,12 +48,39 @@ abstract class Thx_Template_Abstract {
 	 * @return string Resolved template path
 	 */
 	public function path ($tpl, $check_existence=true) {
+		if (empty($this->_base_path) || empty($this->_directory)) return false;
+		
 		$path = wp_normalize_path(
 			untrailingslashit($this->_base_path) .
 			'/' .
 			Thx_Sanitize::path_fragment($this->_directory) .
 			'/' .
 			Thx_Sanitize::path_fragment($tpl) . '.php'
+		);
+		if ($check_existence) {
+			$path = file_exists($path) ? $path : false;
+		}
+		return $path;
+	}
+
+	/**
+	 * Resolve directory path
+	 *
+	 * @param string $dir_relpath Relative path to directory
+	 * @param bool $check_existence Whether to check the file existence first, defaults to true
+	 *
+	 * @return string Resolved directory path
+	 */
+	public function dirpath ($dir_relpath, $check_existence=true) {
+		if (empty($this->_base_path) || empty($this->_directory)) return false;
+
+		$dir_relpath = join('/', array_map(array('Thx_Sanitize', 'path_fragment'), explode('/', $dir_relpath)));
+		$path = wp_normalize_path(
+			untrailingslashit($this->_base_path) .
+			'/' .
+			Thx_Sanitize::path_fragment($this->_directory) .
+			'/' .
+			trim($dir_relpath, '/')
 		);
 		if ($check_existence) {
 			$path = file_exists($path) ? $path : false;

@@ -54,6 +54,16 @@
 		</label>
 	<?php } ?>
 
+	<?php if (empty($name)) { /* if are creating a new theme, show preset selection */ ?>
+		<label for="">
+			<span class="description"><?php esc_html_e('Initial theme preset:', UpfrontThemeExporter::DOMAIN); ?></span>
+			<select id="selected_preset">
+				<option value="default"><?php esc_html_e('Default', UpfrontThemeExporter::DOMAIN); ?></option>
+				<option value="test"><?php esc_html_e('Test', UpfrontThemeExporter::DOMAIN); ?></option>
+			</select>
+		</label>
+	<?php } ?>
+
 		<label for="activate_theme" class="inline">
 			<input type="checkbox" checked id="activate_theme" />
 			<span class="description"><?php esc_html_e('Activate theme', UpfrontThemeExporter::DOMAIN); ?></span>
