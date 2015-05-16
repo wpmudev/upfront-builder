@@ -79,6 +79,9 @@ class Thx_Exporter {
 		add_action('wp_footer', array($this, 'inject_dependencies'), 100);
 		add_filter('upfront_data', array($this, 'add_data'));
 		add_action('wp_enqueue_scripts', array($this,'add_styles'));
+
+		// Allow particular layout override from GET query
+		add_filter('upfront-entity_resolver-entity_ids', array($this, 'augment_layout_load_from_get_query'), 10, 2);
 		
 		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 
@@ -150,6 +153,41 @@ class Thx_Exporter {
 		add_action('wp_ajax_upfront-media-list_theme_images', array($this, 'check_theme_images_destination_exists'), 5);
 
 		add_filter('upfront-this_post-unknown_post', array($this, 'prepare_preview_post'), 10, 2);
+	}
+
+	/**
+	 * Specific layout loading from the GET query.
+	 * Filters the entity resolver results to apply query override.
+	 *
+	 * @param array $ids
+	 * @param array $cascade
+	 *
+	 * @return array [description]
+	 */
+	public function augment_layout_load_from_get_query ($ids, $cascade) {
+		$get = stripslashes_deep($_GET);
+		
+		$layout = !empty($get['layout']) ? explode('-', $get['layout']) : false;
+		if (!empty($layout)) {
+			$type = array_shift($layout);
+			$item_part = array_shift($layout);
+			$rest = join('-', $layout);
+
+			if (!empty($type)) {
+				// If we have stuff here, then reset the parsed IDs.
+				$ids = array();
+
+				if (!empty($type) && empty($get['type'])) $get['type'] = $type;
+				if (!empty($item_part) && empty($get['item'])) $get['item'] = "{$type}-{$item_part}";
+				if (!empty($rest) && empty($get['specificity'])) $get['specificity'] = "{$type}-{$item_part}-{$rest}";
+			}
+
+		}
+
+		foreach (array('item', 'type', 'specificity') as $key) {
+			if (!empty($get[$key])) $ids[$key] = $get[$key];
+		}
+		return $ids;
 	}
 
 	/**
