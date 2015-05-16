@@ -82,6 +82,8 @@ class Upfront_Thx_ThemePage_VirtualSubpage extends Thx_VirtualSubpage {
  * Main interface.
  */
 class Upfront_Thx_Builder_VirtualPage extends Upfront_VirtualPage {
+
+	const SLUG = 'create_new';
 	
 	public static function serve () {
 		$me = new self;
@@ -89,7 +91,7 @@ class Upfront_Thx_Builder_VirtualPage extends Upfront_VirtualPage {
 	}
 	
 	public function get_slug () { 
-		return 'create_new'; 
+		return self::SLUG; 
 	}
 
 	protected function _add_subpages () {

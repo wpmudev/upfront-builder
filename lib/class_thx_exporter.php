@@ -764,7 +764,7 @@ class Thx_Exporter {
             if(strpos($menu_item->url, site_url()) === false) continue;
 
             // Fix lightboxes and other anchor urls
-            $menu_item->url = preg_replace('#' . get_site_url() . '/create_new/.+?(\#[A-Za-z_-]+)#', '\1', $menu_item->url);
+            $menu_item->url = preg_replace('#' . get_home_url() . '/' . UpfrontThemeExporter::get_root_slug() . '/.+?(\#[A-Za-z_-]+)#', '\1', $menu_item->url);
 
             // Fix hardcoded site url
             $menu_item->url = str_replace(site_url(), '%siteurl%', $menu_item->url);
@@ -952,20 +952,30 @@ class Thx_Exporter {
 		if (!in_array($quote, array('"', "'"))) $quote = '"';
 		$alt_quote = '"' === $quote ? "'" : '"';
 		// Fix lightboxes and other anchor urls
-		$content = preg_replace('#' . get_site_url() . '/create_new/.+?(\#[A-Za-z_-]+)#', '\1', $content);
+		$content = preg_replace('#' . get_home_url() . '/' . UpfrontThemeExporter::get_root_slug() . '/.+?(\#[A-Za-z_-]+)#', '\1', $content);
 
 		$stylesheet = get_stylesheet_directory_uri();
 
 		// Okay, so now the imported image is hard-linked to *current* theme dir...
 		// Not what we want - the images don't have to be in the current theme, not really
 		// Ergo, fix - replace all the hardcoded stylesheet URIs to dynamic ones.
-		$content = str_replace($quote . $stylesheet, $quote . $alt_quote . ' . get_stylesheet_directory_uri() . ' . $alt_quote, $content);
-		$content = str_replace($alt_quote . $stylesheet, $alt_quote . $quote . ' . get_stylesheet_directory_uri() . ' . $quote, $content);
-		// One last time for good measure, in case we missed something
-		$content = str_replace($stylesheet, $quote . ' . get_stylesheet_directory_uri() . ' . $quote, $content);
+		$content = preg_replace('/(=\s?)' . preg_quote("{$quote}{$stylesheet}", '/') . '/', "\\1{$quote}{$alt_quote} . get_stylesheet_directory_uri() . {$alt_quote}", $content);
+		$content = preg_replace('/(=\s?)' . preg_quote("{$alt_quote}{$stylesheet}", '/') . '/', "\\1{$alt_quote}{$quote} . get_stylesheet_directory_uri() . {$quote}", $content);
+		
+		$content = str_replace(
+			$quote . $stylesheet,
+			$quote . $quote . ' . get_stylesheet_directory_uri() . ' . $quote, 
+			$content
+		);
+		$content = str_replace(
+			$alt_quote . $stylesheet, 
+			$alt_quote . $alt_quote . ' . get_stylesheet_directory_uri() . ' . $alt_quote, 
+			$content
+		);
 
 		// Replace all urls that reffer to current site with get_current_site
-		$content = str_replace(get_site_url(), $quote . ' . get_site_url() . ' . $quote, $content);
+		$content = str_replace(get_home_url(), $quote . ' . get_home_url() . ' . $quote, $content);
+		if (get_home_url() !== get_site_url()) $content = str_replace(get_site_url(), $quote . ' . get_site_url() . ' . $quote, $content);
 
 		return $content;
 	}

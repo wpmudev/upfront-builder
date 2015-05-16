@@ -94,9 +94,21 @@ class UpfrontThemeExporter {
 		$toolbar->add_menu(array(
 			'id' => 'upfront-create-theme',
 			'title' => __('Create New Theme', self::DOMAIN),
-			'href' => home_url('/create_new/theme'),
+			'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/theme'),
 			'meta' => array( 'class' => 'upfront-create_theme' )
 		));
+	}
+
+	/**
+	 * Get the root slug in endpoint-agnostic manner
+	 *
+	 * @return string Root slug
+	 */
+	public static function get_root_slug () {
+		return class_exists('Upfront_Thx_Builder_VirtualPage')
+			? Upfront_Thx_Builder_VirtualPage::SLUG
+			: 'create_new'
+		;
 	}
 
 }
