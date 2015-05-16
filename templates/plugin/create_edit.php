@@ -26,7 +26,7 @@
 		<label class="inline"><span class="description"><?php esc_html_e('Select a theme to modify:', UpfrontThemeExporter::DOMAIN); ?></span></label>
 		<div class="uf-thx-themes_container clearfix">
 		<?php foreach ($themes as $key => $theme) { ?>
-			<div class="uf-thx-theme <?php if (!empty($_GET['theme']) && $theme->get_stylesheet() === $_GET['theme']) echo 'current'; ?>">
+			<div class="uf-thx-theme <?php if (!empty($_GET['theme']) && $theme->get_stylesheet() === $_GET['theme']) echo 'current'; ?>" data-theme="<?php echo esc_attr($theme->get_stylesheet()); ?>">
 				<a href="?theme=<?php echo esc_attr($theme->get_stylesheet()); ?>">
 					<?php $screenshot = $theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot; ?>
 					<img src="<?php echo esc_url($screenshot); ?>" />
@@ -104,7 +104,7 @@ function edit_theme (theme) {
 
 function get_data () {
 	var data = {},
-		$ins = $(".uf-thx-new_theme input, .uf-thx-new_theme textarea")
+		$ins = $(".uf-thx-new_theme input, .uf-thx-new_theme textarea, .uf-thx-new_theme select")
 	;
 	$ins.each(function () {
 		var $me = $(this),
