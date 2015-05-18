@@ -46,8 +46,14 @@ class Upfront_Thx_InitialPage_VirtualSubpage extends Thx_VirtualSubpage {
 
 	public function render ($request) {
 		$this->parse($request);
-		$tpl = Thx_Template::plugin()->path('initial_page');
-		load_template($tpl);
+		$tpl = Thx_Template::plugin();
+
+		wp_enqueue_style('initial_page', $tpl->url('css/initial_page.css'));
+		wp_enqueue_style('create_edit', $tpl->url('css/create_edit.css'));
+		
+		wp_enqueue_script('create_edit', $tpl->url('js/create_edit.js'), array('jquery'));
+
+		load_template($tpl->path('initial_page'));
 		die;
 	}
 

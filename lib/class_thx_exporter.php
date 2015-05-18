@@ -1624,8 +1624,8 @@ class Thx_Exporter {
    * @return string
    */
 	protected function _get_preview_content ( $post_id = "fake_post", $post = false ) {
-		$test_content_file = $post ? '/templates/tpl/postTestContent.html' : '/templates/tpl/testContent.html';
-		$template_file = $post_id === "fake_styled_post" ? upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/tpl/testContentStyled.html')  : upfront_get_template_path('preview_post', dirname(__FILE__) . $test_content_file);
+		$test_content_file = $post ? '/templates/theme/tpl/postTestContent.html' : '/templates/theme/tpl/testContent.html';
+		$template_file = $post_id === "fake_styled_post" ? upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/theme/tpl/testContentStyled.html')  : upfront_get_template_path('preview_post', dirname(__FILE__) . $test_content_file);
 		if (file_exists($template_file)) {
 			ob_start();
 			include($template_file);
@@ -1635,7 +1635,7 @@ class Thx_Exporter {
 	}
 
 	private function _get_styled_preview_content ( $post_id = "fake_styled_post" ) {
-	  $template_file =  upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/tpl/testContentStyled.html');
+	  $template_file =  upfront_get_template_path('preview_post', dirname(__FILE__) . '/templates/theme/tpl/testContentStyled.html');
 	  if (file_exists($template_file)) {
 		ob_start();
 		include($template_file);
