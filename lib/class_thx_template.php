@@ -50,17 +50,7 @@ abstract class Thx_Template_Abstract {
 	public function path ($tpl, $check_existence=true) {
 		if (empty($this->_base_path) || empty($this->_directory)) return false;
 		
-		$path = wp_normalize_path(
-			untrailingslashit($this->_base_path) .
-			'/' .
-			Thx_Sanitize::path_fragment($this->_directory) .
-			'/' .
-			Thx_Sanitize::path_fragment($tpl) . '.php'
-		);
-		if ($check_existence) {
-			$path = file_exists($path) ? $path : false;
-		}
-		return $path;
+		return $this->filepath("{$tpl}.php", $check_existence);
 	}
 
 	/**
@@ -86,6 +76,59 @@ abstract class Thx_Template_Abstract {
 			$path = file_exists($path) ? $path : false;
 		}
 		return $path;
+	}
+
+	/**
+	 * Resolve filepath path
+	 *
+	 * @param string $file_relpath Relative path to file
+	 * @param bool $check_existence Whether to check the file existence first, defaults to true
+	 *
+	 * @return string Resolved file path
+	 */
+	public function filepath ($file_relpath, $check_existence=true) {
+		if (empty($this->_base_path) || empty($this->_directory)) return false;
+
+		$path_bits = explode('/', $file_relpath);
+		$file = Thx_Sanitize::path_endpoint(array_pop($path_bits));
+		$file_relpath = join('/', array_map(array('Thx_Sanitize', 'path_fragment'), $path_bits));
+
+		$path = wp_normalize_path(
+			untrailingslashit($this->_base_path) .
+			'/' .
+			Thx_Sanitize::path_fragment($this->_directory) .
+			'/' .
+			trim($file_relpath, '/') .
+			'/' . $file
+		);
+		if ($check_existence) {
+			$path = file_exists($path) ? $path : false;
+		}
+		return $path;
+	}
+
+	/**
+	 * Resolve filepath file URL
+	 *
+	 * @param string $dir_relpath Relative path to file
+	 * @param bool $check_existence Whether to check the file existence first, defaults to true
+	 *
+	 * @return string Resolved file URL
+	 */
+	public function url ($file_relpath, $check_existence=true) {
+		if (empty($this->_base_path) || empty($this->_directory)) return false;
+
+		$filepath = $this->filepath($file_relpath, $check_existence);
+		if (empty($filepath)) return false;
+
+		$dirpath = trailingslashit($this->dirpath(''));
+		$base_url = trailingslashit(
+			untrailingslashit(plugin_dir_url($dirpath)) . '/' . trim($this->_directory, '/')
+		);
+
+		$file_url = preg_replace('/^' . preg_quote($dirpath, '/') . '/', $base_url, $filepath);
+
+		return $file_url;
 	}
 
 	/**
