@@ -50,6 +50,25 @@ abstract class Thx_Sanitize {
 	}
 
 	/**
+	 * Sanitizes a path fragment.
+	 * Fragment here means either a directory name, of file name.
+	 *
+	 * @param string $frag Path fragment
+	 *
+	 * @return string Clean path fragment
+	 */
+	public static function path_endpoint ($frag) {
+		if (!stristr($frag, '.')) return Thx_Sanitize::path_fragment($frag);
+
+		// We have a dot. Let's treat this
+		
+		$parts = explode('.', $frag);
+		if (count($parts) > 2) return ''; // Don't allow multiple extensions, or multiple dots at all
+
+		return Thx_Sanitize::path_endpoint($parts[0]) . '.' . Thx_Sanitize::path_endpoint($parts[1]);
+	}
+
+	/**
 	 * Check if the string is also a declared class/function.
 	 *
 	 * @param string $what String to check

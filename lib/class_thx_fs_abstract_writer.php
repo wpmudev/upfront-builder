@@ -241,14 +241,7 @@ abstract class Thx_Fs_AbstractWriter {
 	 * @return string Clean path fragment
 	 */
 	protected function _escape_fragment ($frag) {
-		if (!stristr($frag, '.')) return Thx_Sanitize::path_fragment($frag);
-
-		// We have a dot. Let's treat this
-		
-		$parts = explode('.', $frag);
-		if (count($parts) > 2) return ''; // Don't allow multiple extensions, or multiple dots at all
-
-		return $this->_escape_fragment($parts[0]) . '.' . $this->_escape_fragment($parts[1]);
+		return Thx_Sanitize::path_endpoint($frag);
 	}
 
 	/**
