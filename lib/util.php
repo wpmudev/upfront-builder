@@ -82,3 +82,17 @@ function upfront_exporter_is_running() {
 	// sketchy, we'll if this will need to be adjusted
 	return upfront_exporter_is_exporter_referer();
 }
+
+/**
+ * Check if the current theme is an Upfront child theme
+ *
+ * @return bool False if not, stylesheet name (true-ish) if it is.
+ */
+function upfont_thx_is_current_theme_upfront_child () {
+	$current = wp_get_theme();
+	$parent = $current->parent();
+	if (empty($parent)) return false; // Current theme is not a child theme, carry on...
+	if ('upfront' !== $parent->get_template()) return false; // Not an Upfront child, carry on...
+
+	return $current->get_stylesheet();
+}

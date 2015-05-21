@@ -91,12 +91,35 @@ class UpfrontThemeExporter {
 		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) return false;
 		if (empty($item['meta'])) return false; // Only actual boot item has meta set
 
+		$child = upfont_thx_is_current_theme_upfront_child();
+		$create_title = __('Create New Theme', self::DOMAIN);
+		$main_title = (bool)$child
+			? __('Builder', self::DOMAIN)
+			: $create_title
+		;
+		$root_item_id = 'upfront-create-theme';
+
 		$toolbar->add_menu(array(
-			'id' => 'upfront-create-theme',
-			'title' => __('Create New Theme', self::DOMAIN),
+			'id' => $root_item_id,
+			'title' => $main_title,
 			'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/theme'),
 			'meta' => array( 'class' => 'upfront-create_theme' )
 		));
+
+		if ((bool)$child) {
+			$toolbar->add_menu(array(
+				'parent' => $root_item_id,
+				'id' => 'upfront-builder-current_theme',
+				'title' => __('Edit current theme', self::DOMAIN),
+				'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/' . $child)
+			));
+			$toolbar->add_menu(array(
+				'parent' => $root_item_id,
+				'id' => 'upfront-builder-create_theme',
+				'title' => $create_title,
+				'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/theme')
+			));
+		}
 	}
 
 	/**
