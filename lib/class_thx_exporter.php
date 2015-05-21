@@ -1010,16 +1010,17 @@ class Thx_Exporter {
 		$separator = '/';
 
 		$export_images = $this->_does_theme_export_images();
+		
+		// Use this for "theme" images - the ones in the `ui/` subdirectory
+		$_this_theme_relative_ui_root = '/' . basename($this->_fs->get_root_path()) . '/' . Thx_Fs::PATH_UI . '/';
 		$theme_ui_path = $this->_fs->get_path(Thx_Fs::PATH_UI);
 
 		// matches[1] containes full image urls
 		foreach ($matches[1] as $image) {
+			$is_ui_image = false !== strpos($image, $_this_theme_relative_ui_root);
 
 			// If the exports aren't allowed...
 			if (!$export_images) {
-				$this_theme_relative_ui_root = '/' . basename($this->_fs->get_root_path()) . '/' . Thx_Fs::PATH_UI . '/';
-				$is_ui_image = false !== strpos($image, $this_theme_relative_ui_root);
-
 				// Lots of duplication, this could really use some refactoring :/
 				if ($is_ui_image) {
 					// ... let's deal with the UI images first ...
@@ -1055,14 +1056,22 @@ class Thx_Exporter {
 			// So, let's export!
 
 			// Image is from a theme
-			if (strpos($image, get_theme_root_uri()) !== false) {
+			if (false !== strpos($image, get_theme_root_uri())) {
 				$relative_url = explode("/{$_themes_root}/", $image);
 				$source_root = get_theme_root();
+				$current_template_directory = $template_images_dir;
 			}
 			// Image is from uploads
-			if (strpos($image, 'uploads') !== false) {
+			if (false !== strpos($image, 'uploads')) {
 				$relative_url = explode("/{$_uploads_root}/", $image);
 				$source_root = $uploads_dir['basedir'];
+				$current_template_directory = $template_images_dir;
+			}
+			// Image is from UI
+			if ($is_ui_image) {
+				$relative_url = explode("/{$_themes_root}/", $image);
+				$source_root = get_theme_root();
+				$current_template_directory = $theme_ui_path;
 			}
 			$relative_url = $relative_url[1];
 
@@ -1074,16 +1083,19 @@ class Thx_Exporter {
 			$source_relative_path = str_replace('/', $separator, $relative_url);
 			$source_image = $source_root . $separator . $source_relative_path;
 
-			$destination_image = $template_images_dir . $image_filename;
+			$destination_image = trailingslashit($current_template_directory) . $image_filename;
 
 			// Copy image
-			if (file_exists($source_image)) {
+			if (file_exists($source_image) && !file_exists($destination_image)) {
 				$result = copy($source_image, $destination_image);
 			}
 			$images_used_in_template[] = $destination_image;
 
 			// Replace images url root with stylesheet uri
-			$image_uri = get_stylesheet_directory_uri() . '/images/' . $template . '/' . $image_filename;
+			$image_uri = !empty($is_ui_image)
+				? get_stylesheet_directory_uri() . '/ui/' . $image_filename
+				: get_stylesheet_directory_uri() . '/images/' . $template . '/' . $image_filename
+			;
 			$content = preg_replace('/\b' . preg_quote($image, '/') . '\b/i', $image_uri, $content);
 		}
 
