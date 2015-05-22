@@ -55,7 +55,7 @@ class Thx_Exporter {
 
 		// Override the child theme settings
 		$theme = Upfront_ChildTheme::get_instance();
-		$theme->set_theme_settings($settings);
+		if (!empty($theme) && $theme instanceof Upfront_ChildTheme) $theme->set_theme_settings($settings);
 	}
 
 	public static function serve () {
