@@ -1401,7 +1401,6 @@ class Thx_Exporter {
 		parse_str($_POST['form'], $form);
 
 		$form = $this->_get_theme_form_defaults($form);
-
 		$theme_slug = $this->_validate_theme_slug($form['thx-theme-slug']);
 		if (empty($theme_slug)) {
 			$this->_json->error_msg(__('Your chosen theme slug is invalid, please try another.', UpfrontThemeExporter::DOMAIN), 'missing_required');
@@ -1413,6 +1412,13 @@ class Thx_Exporter {
 			$this->_json->error_msg(__('Theme with that directory name does not exist.', UpfrontThemeExporter::DOMAIN), 'theme_exists');
 		}
 		$this->_create_style_file($theme_slug, $form);
+
+		// Also, let's activate this, if requested
+		$current = get_option('stylesheet');
+		if ($current !== $theme_slug && !empty($form['thx-activate_theme'])) {
+			switch_theme($theme_slug);
+		}
+
 		die;
 	}
 
