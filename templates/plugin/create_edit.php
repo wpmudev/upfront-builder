@@ -1,7 +1,7 @@
 <?php
 	$themes = array();
 	$fallback_screenshot = plugins_url(THX_BASENAME . '/imgs/testImage.jpg');
-	$current_theme = get_option('current_theme');
+	$current_theme = get_option('stylesheet');
 
 	foreach(wp_get_themes() as $stylesheet=>$theme) {
 		if ($theme->get('Template') !== 'upfront') continue;
@@ -30,7 +30,10 @@
 			<div class="uf-thx-theme <?php 
 			if (!empty($_GET['theme']) && $theme->get_stylesheet() === $_GET['theme']) echo 'selected'; 
 		?> <?php
-			if ($theme->get_stylesheet() === $current_theme) echo 'current'; 
+			if ($theme->get_stylesheet() === $current_theme) {
+				echo 'current'; 
+				if (empty($_GET['theme'])) echo ' selected';
+			}
 		?>" data-theme="<?php echo esc_attr($theme->get_stylesheet()); ?>">
 				<a href="?theme=<?php echo esc_attr($theme->get_stylesheet()); ?>">
 					<?php $screenshot = $theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot; ?>

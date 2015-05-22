@@ -1,4 +1,4 @@
-;(function ($) {
+;(function ($, undefined) {
 
 function edit_theme (theme) {
 	var search = window.location.search.toString(),
@@ -83,6 +83,12 @@ function init_new () {
 			edit_theme(current);
 
 			return false;			
+		})
+		.on("click", ".uf-thx-theme_screenshot", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			return false;	
 		})
 	;
 }
