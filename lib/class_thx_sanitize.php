@@ -36,6 +36,22 @@ abstract class Thx_Sanitize {
 	}
 
 	/**
+	 * Make a string safe to be used in PHP context (e.g. as a var name)
+	 *
+	 * @param string $what String to process
+	 *
+	 * @return mixed Sanitized string or (bool)false on failure
+	 */
+	public static function php_safe ($what) {
+		$str = preg_replace('/_+/', '_', preg_replace('/[^_a-z0-9]/i', '_', $what));
+		
+		return Thx_Sanitize::is_not_declared($str) && Thx_Sanitize::is_not_reserved($str)
+			? $str
+			: false
+		;
+	}
+
+	/**
 	 * Strip all non-alphanumeric characters from a string,
 	 * except underscore, dash and colon.
 	 * Colon character is whitelisted because we could be dealing with

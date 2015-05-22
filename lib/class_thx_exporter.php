@@ -531,7 +531,8 @@ class Thx_Exporter {
 
 	protected function _render_region ($region, $use_var = false) {
 		$data = (array)$region;
-		$name = Thx_Sanitize::extended_alnum($data['name']);
+		$name = Thx_Sanitize::php_safe($data['name']);
+		if (empty($name)) $name = 'region_' . substr(md5(serialize($data)), 0, 6);
 
 		$data['type'] = isset( $data['type'] ) ? $data['type'] : "";
 		$data['scope'] = isset( $data['scope'] ) ? $data['scope'] : "";
