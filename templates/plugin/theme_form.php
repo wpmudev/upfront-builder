@@ -22,7 +22,7 @@
 	<?php if (!empty($name)) { /* if we're not creating a new theme, show all */ ?>
 		<label for="theme-slug">
 			<span class="description"><?php esc_html_e('Theme directory:', UpfrontThemeExporter::DOMAIN); ?></span>
-			<input type="text" id="theme-slug" placeholder="<?php esc_attr_e('Base directory for your theme', UpfrontThemeExporter::DOMAIN); ?>" value="<?php if (!empty($slug)) echo esc_attr($slug); ?>" />
+			<input readonly type="text" id="theme-slug" placeholder="<?php esc_attr_e('Base directory for your theme', UpfrontThemeExporter::DOMAIN); ?>" value="<?php if (!empty($slug)) echo esc_attr($slug); ?>" />
 		</label>
 		<label for="description">
 			<span class="description"><?php esc_html_e('Theme description:', UpfrontThemeExporter::DOMAIN); ?></span>
