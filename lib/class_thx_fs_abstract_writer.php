@@ -254,9 +254,15 @@ abstract class Thx_Fs_AbstractWriter {
 	 */
 	protected function _escape_path ($fspath) {
 		$fspath = wp_normalize_path($fspath);
+
 		$parts = explode('/', $fspath);
 		$parts = array_values(array_filter(array_map(array($this, '_escape_fragment'), $parts)));
 
-		return join('/', $parts);
+		$clean_path = trim(join('/', $parts), '/');
+		if ('/' === substr($fspath, 0, 1)) { // We had an absolute path to begin with
+			$clean_path = "/{$clean_path}";
+		}
+
+		return $clean_path;
 	}
 }
