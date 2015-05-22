@@ -89,7 +89,7 @@ function upfront_exporter_is_running() {
  * @return bool False if not, stylesheet name (true-ish) if it is.
  */
 function upfont_thx_is_current_theme_upfront_child () {
-	$current = wp_get_theme(get_option('current_theme'));
+	$current = wp_get_theme(get_option('stylesheet'));
 	$parent = $current->parent();
 	
 	if (empty($parent)) return false; // Current theme is not a child theme, carry on...
