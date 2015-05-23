@@ -45,7 +45,7 @@ abstract class Thx_Fs_AbstractWriter {
 
 		if (!$relative) array_unshift($parts, $this->get_root_path());
 
-		return join('/', $parts);
+		return rtrim(join('/', $parts), '/');
 	}
 
 	/**
@@ -77,7 +77,7 @@ abstract class Thx_Fs_AbstractWriter {
 			$fspath = false;
 		}
 
-		return $fspath;
+		return !empty($fspath) ? wp_normalize_path($fspath) : false;
 	}
 
 	/**
