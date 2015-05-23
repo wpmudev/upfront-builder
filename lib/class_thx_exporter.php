@@ -569,9 +569,13 @@ class Thx_Exporter {
 				if (empty($source)) continue;
 				// copy file to theme folder
 				$file = basename($source);
-				$destination = $this->_fs->get_path('images') . $file;
+				$path_parts = array(
+					Thx_Fs::PATH_IMAGES,
+					$file,
+				);
+				$destination = $this->_fs->get_path($path_parts, false);
 				@copy($source, $destination);
-				$secondary['background_slider_images'][$idx] = "/images/{$file}";
+				$secondary['background_slider_images'][$idx] = $this->_fs->construct_path($path_parts, true);
 			}
 		}
 
