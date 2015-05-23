@@ -330,9 +330,11 @@ class Thx_Exporter {
 	}
 
 	public function get_stylesheet_directory ($stylesheetDirectory) {
-		return $this->_fs->get_path(array(
-			upfront_exporter_get_stylesheet()
-		));
+		$path = $this->_fs->get_path('/');
+		return !empty($path)
+			? $path
+			: $stylesheetDirectory
+		;
 	}
 
 	function inject_dependencies () {
