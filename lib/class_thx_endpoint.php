@@ -115,6 +115,13 @@ class Upfront_Thx_Builder_VirtualPage extends Upfront_VirtualPage {
 	}
 
 
+	public function intercept_page () {
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) {
+			$this->redirect('/');
+		}
+		parent::intercept_page();
+	}
+
 	public function parse ($request) {}
 	
 	/**
