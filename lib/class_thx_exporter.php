@@ -1152,11 +1152,13 @@ class Thx_Exporter {
 		$greg_root = $this->_fs->construct_theme_path(Thx_Fs::PATH_REGIONS);
 		if (!$this->_fs->exists($greg_root)) $this->_fs->mkdir($greg_root);
 
-		$template_images_dir = $this->_fs->mkdir_p(array(
+		$path_bits = array(
 			Thx_Fs::PATH_IMAGES, 
 			Thx_Fs::PATH_REGIONS, 
 			$region->name
-		));
+		);
+		$this->_fs->mkdir_p($path_bits);
+		$template_images_dir = $this->_fs->get_path($path_bits);
 
 		// Copy all images used in layout to theme directory
 		$content = $this->_export_images($content, Thx_Fs::PATH_REGIONS . '/' . $region->name, $template_images_dir);
