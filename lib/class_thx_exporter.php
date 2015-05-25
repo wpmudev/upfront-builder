@@ -957,9 +957,25 @@ class Thx_Exporter {
 		// Okay, so now the imported image is hard-linked to *current* theme dir...
 		// Not what we want - the images don't have to be in the current theme, not really
 		// Ergo, fix - replace all the hardcoded stylesheet URIs to dynamic ones.
+
+		// In attributes
 		$content = preg_replace('/(=\s?)' . preg_quote("{$quote}{$stylesheet}", '/') . '/', "\\1{$quote}{$alt_quote} . get_stylesheet_directory_uri() . {$alt_quote}", $content);
 		$content = preg_replace('/(=\s?)' . preg_quote("{$alt_quote}{$stylesheet}", '/') . '/', "\\1{$alt_quote}{$quote} . get_stylesheet_directory_uri() . {$quote}", $content);
-		
+
+		// In multiline expressions
+		$regexen = array(
+			'/(=>\s?' . $alt_quote . ')(.*?)' . $quote . preg_quote($stylesheet, '/') . '/ms' => "\\1\\2{$quote}{$alt_quote} . get_stylesheet_directory_uri() . {$alt_quote}",
+			'/(=>\s?' . $quote . ')(.*?)' . $alt_quote . preg_quote($stylesheet, '/') . '/ms' => "\\1\\2{$alt_quote}{$quote} . get_stylesheet_directory_uri() . {$quote}",
+		);
+		foreach ($regexen as $rx => $rpl) {
+			$count = 0;
+			while (preg_match($rx, $content) && $count < 1000) {
+				$content = preg_replace($rx, $rpl, $content);
+				$count++;
+			}
+		}
+
+		// Fallback catch-all
 		$content = str_replace(
 			$quote . $stylesheet,
 			$quote . $quote . ' . get_stylesheet_directory_uri() . ' . $quote, 
