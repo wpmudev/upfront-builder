@@ -43,6 +43,11 @@
 			});
 		});
 		*/
+		$(document).on("upfront-load", function () {
+			Upfront.Events.on("upfront:layout:loaded", function () {
+				Upfront.data.global_regions = false; // Reset global regions info on layout load, so fresh batch is forced
+			});
+		});
 
 	});
 })(jQuery);
