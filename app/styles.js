@@ -5,6 +5,7 @@ define([
   var ThemeStyleManager = function(){};
   ThemeStyleManager.prototype = {
     init: function(){
+/*
       var me = this;
 
       if(!Upfront.Events.on){
@@ -12,12 +13,12 @@ define([
           me.init();
         },50);
       }
-
       Upfront.Events.on('Upfront:loaded', function(){
         me.setThemeCSSImages();
       });
+*/
     },
-
+/*
     setThemeCSSImages: function(){
       var editor = Upfront.Application.cssEditor;
 
@@ -26,7 +27,6 @@ define([
       editor.delegateEvents();
       editor.$el.on('click', '.upfront-css-image', _.bind(this.openImagePicker, this));
     },
-
     openImagePicker: function(){
       var me = this,
         editor = Upfront.Application.cssEditor
@@ -44,6 +44,7 @@ define([
         editor.editor.focus();
       });
     }
+*/
   };
 
   return new ThemeStyleManager();
