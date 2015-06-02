@@ -1718,10 +1718,6 @@ class Thx_Exporter {
 	}
 
 	private function _validate_theme_slug ($slug) {
-		$slug = Thx_Sanitize::extended_alnum($slug);
-		return Thx_Sanitize::is_not_reserved($slug) && Thx_Sanitize::is_not_declared($slug)
-			? $slug
-			: false
-		;
+		return Thx_Sanitize::php_safe($slug);
 	}
 }
