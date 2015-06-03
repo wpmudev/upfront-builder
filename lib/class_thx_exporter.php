@@ -471,7 +471,8 @@ class Thx_Exporter {
 			? $_POST['stylesheet']
 			: false
 		;
-		if (!empty($stylesheet)) $this->_export_element_style($stylesheet, $data);
+
+		if (!empty($stylesheet)) $this->_export_element_style($stylesheet, $_POST['data']);
 		else $this->_temporarily_store_export_file($data);
 		$this->_json->out(__('Exported', UpfrontThemeExporter::DOMAIN));
 	}
@@ -481,7 +482,7 @@ class Thx_Exporter {
 	 */
 	private function _export_element_style ($name, $data) {
 		$this->_theme = $name;
-		$style = stripslashes($data['styles']);
+		$style = stripslashes_deep($data['styles']);
 		$style = $this->_make_urls_passive_relative($style);
 
 		$path = array(
