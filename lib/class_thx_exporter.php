@@ -988,7 +988,35 @@ class Thx_Exporter {
 			$content
 		);
 
-		// Replace all urls that reffer to current site with get_current_site
+		// Replace all urls that reffer to current site with proper expansion
+		$home = get_home_url();
+		$site = get_site_url();
+
+		$content = str_replace(
+			$quote . $home,
+			$quote . $quote . ' . get_home_url() . ' . $quote, 
+			$content
+		);
+		$content = str_replace(
+			$alt_quote . $home, 
+			$alt_quote . $alt_quote . ' . get_home_url() . ' . $alt_quote, 
+			$content
+		);
+
+		if ($site !== $home) {
+			$content = str_replace(
+				$quote . $site,
+				$quote . $quote . ' . get_site_url() . ' . $quote, 
+				$content
+			);
+			$content = str_replace(
+				$alt_quote . $site, 
+				$alt_quote . $alt_quote . ' . get_site_url() . ' . $alt_quote, 
+				$content
+			);			
+		}
+
+		// Fall back to... this
 		$content = str_replace(get_home_url(), $quote . ' . get_home_url() . ' . $quote, $content);
 		if (get_home_url() !== get_site_url()) $content = str_replace(get_site_url(), $quote . ' . get_site_url() . ' . $quote, $content);
 
