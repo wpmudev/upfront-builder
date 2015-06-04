@@ -757,7 +757,7 @@ class Thx_Exporter {
 
 	protected function _get_lightboxes_from_button ($properties) {
 		return $this->_has_ligthbox($properties['options']['href'])
-			? $properties['options']['href']
+			? array($properties['options']['href'])
 			: array()
 		;
 	}
