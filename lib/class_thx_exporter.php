@@ -959,9 +959,10 @@ class Thx_Exporter {
 		// Not what we want - the images don't have to be in the current theme, not really
 		// Ergo, fix - replace all the hardcoded stylesheet URIs to dynamic ones.
 
+/*
 		// In attributes
 		$content = preg_replace('/(=\s?)' . preg_quote("{$quote}{$stylesheet}", '/') . '/', "\\1{$quote}{$alt_quote} . get_stylesheet_directory_uri() . {$alt_quote}", $content);
-		$content = preg_replace('/(=\s?)' . preg_quote("{$alt_quote}{$stylesheet}", '/') . '/', "\\1{$alt_quote}{$quote} . get_stylesheet_directory_uri() . {$quote}", $content);
+		$content = preg_replace('/(=\s?)' . preg_quote("{$alt_quote}{$stylesheet}", '/') . '/', "\\1{$alt_quote}{$quote} . get_stylesheet_directory_uri() . {$quote}", $content);	
 
 		// In multiline expressions
 		$regexen = array(
@@ -991,6 +992,9 @@ class Thx_Exporter {
 		// Replace all urls that reffer to current site with proper expansion
 		$home = get_home_url();
 		$site = get_site_url();
+		
+		$content = preg_replace('/(=\s?)' . preg_quote("{$quote}{$home}", '/') . '/', "\\1{$quote}{$alt_quote} . get_home_url() . {$alt_quote}", $content);
+		$content = preg_replace('/(=\s?)' . preg_quote("{$alt_quote}{$home}", '/') . '/', "\\1{$alt_quote}{$quote} . get_home_url() . {$quote}", $content);
 
 		$content = str_replace(
 			$quote . $home,
@@ -1004,6 +1008,8 @@ class Thx_Exporter {
 		);
 
 		if ($site !== $home) {
+			$content = preg_replace('/(=\s?)' . preg_quote("{$quote}{$site}", '/') . '/', "\\1{$quote}{$alt_quote} . get_site_url() . {$alt_quote}", $content);
+			$content = preg_replace('/(=\s?)' . preg_quote("{$alt_quote}{$site}", '/') . '/', "\\1{$alt_quote}{$quote} . get_site_url() . {$quote}", $content);
 			$content = str_replace(
 				$quote . $site,
 				$quote . $quote . ' . get_site_url() . ' . $quote, 
@@ -1015,10 +1021,65 @@ class Thx_Exporter {
 				$content
 			);			
 		}
+*/
+		$home = get_home_url();
+		$site = get_site_url();
+
+		$content = $this->_url_call_subst($stylesheet, 'get_stylesheet_directory_uri', $content);
+		$content = $this->_url_call_subst($home, 'get_home_url', $content);
+		if ($site !== $home) $content = $this->_url_call_subst($site, 'get_site_url', $content);
+
+		
 
 		// Fall back to... this
 		$content = str_replace(get_home_url(), $quote . ' . get_home_url() . ' . $quote, $content);
 		if (get_home_url() !== get_site_url()) $content = str_replace(get_site_url(), $quote . ' . get_site_url() . ' . $quote, $content);
+
+		return $content;
+	}
+
+	/**
+	 * URL expansion helper method
+	 *
+	 * @param string $url An URL to replace with dynamic callback
+	 * @param string $substitute Function name to use as replacement
+	 * @param string $content Content to process
+	 *
+	 * @return string Processed content
+	 */
+	private function _url_call_subst ($url, $substitute, $content) {
+		$quote = '"';
+		$alt_quote = "'";
+		$substitute = function_exists($substitute) ? "{$substitute}()" : Thx_Sanitize::php_safe($substitute);
+
+		// In attributes
+		$content = preg_replace('/(=\s?)' . preg_quote("{$quote}{$url}", '/') . '/', "\\1{$quote}{$alt_quote} . {$substitute} . {$alt_quote}", $content);
+		$content = preg_replace('/(=\s?)' . preg_quote("{$alt_quote}{$url}", '/') . '/', "\\1{$alt_quote}{$quote} . {$substitute} . {$quote}", $content);
+
+		// In multiline expressions
+		$regexen = array(
+			'/(=>\s?' . $alt_quote . ')(.*?)' . $quote . preg_quote($url, '/') . '/ms' => "\\1\\2{$quote}{$alt_quote} . {$substitute} . {$alt_quote}",
+			'/(=>\s?' . $quote . ')(.*?)' . $alt_quote . preg_quote($url, '/') . '/ms' => "\\1\\2{$alt_quote}{$quote} . {$substitute} . {$quote}",
+		);
+		foreach ($regexen as $rx => $rpl) {
+			$count = 0;
+			while (preg_match($rx, $content) && $count < 1000) {
+				$content = preg_replace($rx, $rpl, $content);
+				$count++;
+			}
+		}
+
+		// Fallback catch-all 
+		$content = str_replace(
+			$quote . $url,
+			$quote . $quote . ' . ' . $substitute . ' . ' . $quote, 
+			$content
+		);
+		$content = str_replace(
+			$alt_quote . $url, 
+			$alt_quote . $alt_quote . ' . ' . $substitute . ' . ' . $alt_quote, 
+			$content
+		);
 
 		return $content;
 	}
