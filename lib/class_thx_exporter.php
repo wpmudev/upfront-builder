@@ -121,6 +121,127 @@ class Thx_Exporter {
 		add_action('wp_ajax_upfront-media-list_theme_images', array($this, 'check_theme_images_destination_exists'), 5);
 
 		add_filter('upfront-this_post-unknown_post', array($this, 'prepare_preview_post'), 10, 2);
+
+		// These things are currently in Upfront core, but should and will go out
+		add_action('wp_ajax_upfront_list_theme_layouts', array($this, 'json_get_exported_layouts'), 9);
+		add_action('wp_ajax_upfront_list_available_layout', array($this, 'json_get_available_layouts'), 9);
+	}
+
+	/**
+	 * Fetches the list of currently exported layouts (for the current theme)
+	 * and outputs it as JSON response.
+	 *
+	 * @todo : this should actually replace the Upfront_Ajax::list_theme_layouts() method in Upfront core.
+	 */
+	public function json_get_exported_layouts () {
+		$layouts_path = $this->_fs->get_path(Thx_Fs::PATH_LAYOUTS);
+		if (empty($layouts_path)) $this->_json->error_msg('Invalid layouts path');
+
+		$layout_files = glob("{$layouts_path}/*.php");
+		$layouts = array();
+
+		foreach ($layout_files as $file) {
+			$raw_layout = pathinfo($file, PATHINFO_FILENAME);
+			$raw = explode('-', $raw_layout, 2);
+			
+			if (empty($raw[0])) continue;
+			if (!in_array($raw[0], array('archive', 'single'))) continue;
+
+			$layout = array(
+				'label' => '',
+				'layout' => array(
+					'type' => $raw[0],
+				),
+			);
+			$type_basename = 'archive' === $raw[0] ? __('Archive %s', UpfrontThemeExporter::DOMAIN) : __('Single %s', UpfrontThemeExporter::DOMAIN);
+			$type_name = '';
+
+			if (!empty($raw[1])) {
+				$type_name = preg_match('/[-_]/', $raw[1])
+					? sprintf('(%s)', $raw[1])
+					: ucfirst($raw[1])
+				;
+			} else $type_name = __('(generic)', UpfrontThemeExporter::DOMAIN);
+			$layout['label'] = sprintf($type_basename, $type_name);
+
+			$layouts[] = $layout;
+		}
+		
+		$this->_json->out(array(
+			'data' => $layouts,
+		));
+	}
+
+	/**
+	 * Fetches the list of all Upfront-available layouts
+	 * and outputs a JSON reponse.
+	 */
+	public function json_get_available_layouts () {
+		// Predefined layouts
+		$layouts = array(
+			'archive-home' => array(
+				'layout' => array(
+					'item' => 'archive-home',
+					'type' => 'archive'
+				)
+			),
+			'archive' => array(
+				'layout' => array(
+					'type' => 'archive'
+				)
+			),
+			'archive-search' => array(
+				'layout' => array(
+					'item' => 'archive-search',
+					'type' => 'archive'
+				)
+			),
+			'404' => array(
+				'layout' => array(
+					'specificity' => 'single-404_page',
+					'item' => 'single-page',
+					'type' => 'single',
+				)
+			),
+		);
+
+		// add singular post type
+		$post_types = get_post_types(array(
+			'public' => true, 
+			'show_ui' => true,
+		), 'objects');
+		foreach ($post_types as $post_type) {
+			$layouts['single-' . $post_type->name] = array(
+				'layout' => array(
+					'item' => 'single-' . $post_type->name,
+					'type' => 'single'
+				)
+			);
+		}
+
+		// add taxonomy archive
+		foreach ( get_taxonomies(array('public' => true, 'show_ui' => true), 'objects') as $taxonomy ){
+			$layouts['archive-' . $taxonomy->name] = array(
+				'layout' => array(
+					'item' => 'archive-' . $taxonomy->name,
+					'type' => 'archive'
+				)
+			);
+		}
+
+		// Now we have a list of layouts. Let's add some additional info, such as
+		// human-friendly labels and whether there's any changes in the DB for each of them
+		$db_layouts = Upfront_Layout::get_db_layouts();
+
+		foreach ($layouts as $idx => $layout) {
+			$layout['label'] = Upfront_EntityResolver::layout_to_name($layout['layout']);
+			$layout['saved'] = in_array($idx, $db_layouts);
+			$layouts[$idx] = $layout;
+		}
+
+		$this->_json->out(array(
+			'data' => $layouts
+		));
 	}
 
 	/**
