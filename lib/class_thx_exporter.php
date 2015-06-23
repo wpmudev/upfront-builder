@@ -151,7 +151,6 @@ class Thx_Exporter {
 				'label' => '',
 				'layout' => array(
 					'type' => $raw[0],
-					'item' => $raw[0] . (!empty($raw[1]) ? '-' . $raw[1] : '')
 				),
 			);
 			$type_basename = 'archive' === $raw[0] ? __('Archive %s', UpfrontThemeExporter::DOMAIN) : __('Single %s', UpfrontThemeExporter::DOMAIN);
@@ -162,6 +161,8 @@ class Thx_Exporter {
 					? sprintf('(%s)', $raw[1])
 					: ucfirst($raw[1])
 				;
+				// Add a more specific layout entry
+				$layout['layout']['item'] = $raw[0] . '-' . $raw[1];
 			} else $type_name = __('(generic)', UpfrontThemeExporter::DOMAIN);
 			$layout['label'] = sprintf($type_basename, $type_name);
 
