@@ -138,7 +138,7 @@ class UpfrontThemeExporter {
 
 		add_action('upfront_update_theme_colors', array($this, 'updateThemeColors'));
 		add_action('upfront_update_post_image_variants', array($this, 'updatePostImageVariants'));
-		add_action('upfront_update_button_presets', array($this, 'updateButtonPresets'));
+		//add_action('upfront_update_button_presets', array($this, 'updateButtonPresets'));
 		add_action('upfront_update_theme_fonts', array($this, 'updateThemeFonts'));
 		add_action('upfront_update_responsive_settings', array($this, 'updateResponsiveSettings'));
 
@@ -147,6 +147,9 @@ class UpfrontThemeExporter {
 
 		add_action('upfront_save_accordion_preset', array($this, 'saveAccordionPreset'));
 		add_action('upfront_delete_accordion_preset', array($this, 'deleteAccordionPreset'));
+
+		add_action('upfront_save_button_preset', array($this, 'saveButtonPreset'));
+		add_action('upfront_delete_button_preset', array($this, 'deleteButtonPreset'));
 
 		add_action('upfront_get_stylesheet_directory', array($this, 'getStylesheetDirectory'));
 		add_action('upfront_get_stylesheet', array($this, 'getStylesheet'));
@@ -992,7 +995,8 @@ class UpfrontThemeExporter {
 			
 			$this->themeSettings->set($property, $value);
 		}
-		$array_properties = array('theme_colors', 'button_presets', "post_image_variants");
+		// $array_properties = array('theme_colors', 'button_presets', "post_image_variants");
+		$array_properties = array('theme_colors', "post_image_variants");
 		foreach($array_properties as $property) {
 			$value = isset($raw_post_data[$property]) ? $raw_post_data[$property] : false;
 			if ($value === false) continue;
@@ -1271,13 +1275,13 @@ class UpfrontThemeExporter {
 		$this->themeSettings->set('theme_colors', json_encode($theme_colors));
 	}
 
-	public function updateButtonPresets($button_presets) {
+	/*public function updateButtonPresets($button_presets) {
 		if (upfront_exporter_is_start_page()) {
 			update_option('upfront_new-button_presets', json_encode($button_presets));
 			return;
 		}
 		$this->themeSettings->set('button_presets', json_encode($button_presets));
-	}
+	}*/
 
 	public function updatePostImageVariants($post_image_variant) {
 		if (upfront_exporter_is_start_page()) {
@@ -1303,12 +1307,20 @@ class UpfrontThemeExporter {
 		$this->deleteElementPreset('accordion');
 	}
 
+	public function saveButtonPreset() {
+		$this->saveElementPreset('button');
+	}
+
+	public function deleteButtonPreset() {
+		$this->deleteElementPreset('button');
+	}
+
 	public function saveElementPreset($slug) {
 		$this->updateElementPreset($slug);
 	}
 
 	public function deleteElementPreset($slug) {
-		$this->updateElementPreset($slug, $false);
+		$this->updateElementPreset($slug, true);
 	}
 
 	protected function updateElementPreset($slug, $delete = false) {
