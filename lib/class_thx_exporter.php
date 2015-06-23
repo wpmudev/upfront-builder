@@ -236,8 +236,13 @@ class Thx_Exporter {
 		$db_layouts = Upfront_Layout::get_db_layouts();
 
 		foreach ($layouts as $idx => $layout) {
-			$layout['label'] = Upfront_EntityResolver::layout_to_name($layout['layout']);
+			if (empty($layout['label'])) {
+				$label = Upfront_EntityResolver::layout_to_name($layout['layout']);
+				if (!empty($label)) $layout['label'] = $label;
+				else continue;
+			}
 			$layout['saved'] = in_array($idx, $db_layouts);
+			
 			$layouts[$idx] = $layout;
 		}
 
