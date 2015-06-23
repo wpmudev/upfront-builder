@@ -121,6 +121,7 @@ class Thx_Exporter {
 		add_action('wp_ajax_upfront-media-list_theme_images', array($this, 'check_theme_images_destination_exists'), 5);
 
 		add_filter('upfront-this_post-unknown_post', array($this, 'prepare_preview_post'), 10, 2);
+		add_filter('upfront-post_data-unknown_post', array($this, 'prepare_preview_post'), 10, 2);
 
 		// These things are currently in Upfront core, but should and will go out
 		add_action('wp_ajax_upfront_list_theme_layouts', array($this, 'json_get_exported_layouts'), 9);
@@ -716,21 +717,24 @@ class Thx_Exporter {
 			$module = (array) $m;
 
 			// Looking for next module, so that we can compare their wrapper_id to see if we need to add close_wrapper property
-			if(!empty($modules) && sizeof($modules) > ($i+1))
+			if (!empty($modules) && sizeof($modules) > ($i+1)) {
 				$nextModule = $this->_parse_properties($modules[$i+1]->properties);
+			}
 
 			$isGroup = (isset($module['modules']) && isset($module['wrappers']));
 
 			$moduleProperties = $this->_parse_properties($module['properties']);
 			$props = $this->_parse_module_class($moduleProperties['class']);
 			$props['id'] = $moduleProperties['element_id'];
-			if (!$isGroup)
+			if (!$isGroup) {
 				$props['options'] = $this->_parse_properties($module['objects'][0]->properties);
-            
-            foreach($moduleProperties as $property => $value){
-                if ( !in_array($property, array('class', 'element_id', 'breakpoint', 'has_settings')) )
-                    $props[$property] = $value;
-            }
+			}
+
+			foreach($moduleProperties as $property => $value){
+				if ( !in_array($property, array('class', 'element_id', 'breakpoint', 'has_settings')) ) {
+					$props[$property] = $value;
+				}
+			}
 
 			// Add new line if needed
 			foreach($wrappers as $wrapper) {
@@ -746,7 +750,7 @@ class Thx_Exporter {
 				if ($property->name !== 'class' && $property->name !== 'breakpoint') continue;
 
 				if ($property->name === 'class' && strpos($property->value, 'clr') !== false) {
-					$props['new_line'] = 'true';
+					$props['new_line'] = true;
 				}
 
 				if ($property->name === 'breakpoint' && !in_array($props['wrapper_id'], $exported_wrappers) && !empty($property->value)) {
@@ -816,6 +820,12 @@ class Thx_Exporter {
 				if (!empty($group)){
 					$props['group'] = $group;
 				}
+				
+				// Render objects if there's objects attribute in the object (means it is ObjectGroup)
+				if (isset($module['objects'][0]->objects)) {
+					$props['objects'] = (array)$this->_render_objects($name, $module['objects'][0]->objects, $module['objects'][0]->wrappers, $props['id']);
+				}
+				
 				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . $this->_json->stringify_php($props) . ");\n";
 			}
 		}
@@ -833,6 +843,75 @@ class Thx_Exporter {
 			$output .= "\nif (file_exists({$lightboxes_path} . '$lightbox.php')) include({$lightboxes_path} . '$lightbox.php');";
 		}
 		return $output;
+	}
+
+	protected function _render_objects ($name, $objects, $wrappers, $parent_id) {
+		$return = array();
+		$exported_wrappers = array();
+		foreach ($objects as $i => $o) {
+			$nextObject = false;
+			$object = (array)$o;
+			// Looking for next object, so that we can compare their wrapper_id to see if we need to add close_wrapper property
+			if (!empty($objects) && sizeof($objects) > ($i+1)) {
+				$nextObject = $this->_parse_properties($objects[$i+1]->properties);
+			}
+			
+			$properties = $this->_parse_properties($object['properties']);
+			$props = $this->_parse_module_class($properties['class']);
+
+			foreach ($properties as $property => $value) {
+				if ( !in_array($property, array('class', 'breakpoint', 'has_settings')) ) {
+					$props[$property] = $value;
+				}
+			}
+
+			// Add new line if needed
+			foreach ($wrappers as $wrapper) {
+				foreach($wrapper->properties as $property) {
+					if ($property->name === 'wrapper_id' && $property->value === $props['wrapper_id']) {
+						$object_wrapper = $wrapper;
+						break;
+					}
+				}
+			}
+
+			foreach($object_wrapper->properties as $property) {
+				if ($property->name !== 'class' && $property->name !== 'breakpoint') continue;
+
+				if ($property->name === 'class' && strpos($property->value, 'clr') !== false) {
+					$props['new_line'] = true;
+				}
+
+				if ($property->name === 'breakpoint' && !in_array($props['wrapper_id'], $exported_wrappers) && !empty($property->value)) {
+					// Only export the wrapper breakpoint data on the first object
+					$props['wrapper_breakpoint'] = array();
+					foreach($property->value as $bidx => $point) {
+						$props['wrapper_breakpoint'][$bidx] = (array)$point;
+					}
+					$exported_wrappers[] = $props['wrapper_id'];
+				}
+			}
+
+			// Deal with per-object breakpoint props
+			$breakpoints = !empty($properties['breakpoint'])
+				? (array)$properties['breakpoint']
+				: array()
+			;
+			if (!empty($breakpoints)) {
+				$props['breakpoint'] = array();
+				foreach($breakpoints as $bidx => $point) {
+					$props['breakpoint'][$bidx] = (array)$point;
+				}
+			}
+
+			if ($nextObject && $properties['wrapper_id'] == $nextObject['wrapper_id']) {
+				$props['close_wrapper'] = false;
+			}
+			
+			$return[] = $props;
+			
+		}
+		return $return;
 	}
 
 	protected function _get_lightboxes_from_menu ($properties) {
@@ -951,17 +1030,23 @@ class Thx_Exporter {
 		$classes = explode(' ', $class);
 		$properties = array();
 		foreach ($classes as $c) {
-			if(preg_match('/^c\d+$/', $c))
+			if (preg_match('/^c\d+$/', $c)) {
 				$properties['columns'] = str_replace('c', '', $c);
-			else if(preg_match('/^ml\d+$/', $c))
+			}
+			else if (preg_match('/^ml\d+$/', $c)) {
 				$properties['margin_left'] = str_replace('ml', '', $c);
-			else if(preg_match('/^mr\d+$/', $c))
+			}
+			else if (preg_match('/^mr\d+$/', $c)) {
 				$properties['margin_right'] = str_replace('mr', '', $c);
-			else if(preg_match('/^mt\d+$/', $c))
+			}
+			else if (preg_match('/^mt\d+$/', $c)) {
 				$properties['margin_top'] = str_replace('mt', '', $c);
-			else if(preg_match('/^mb\d+$/', $c))
+			}
+			else if (preg_match('/^mb\d+$/', $c)) {
 				$properties['margin_bottom'] = str_replace('mb', '', $c);
+			}
 		}
+		$properties['class'] = trim(preg_replace('/(c|ml|mr|mt|mb)\d+ ?/', '', $class));
 		return $properties;
 	}
 
