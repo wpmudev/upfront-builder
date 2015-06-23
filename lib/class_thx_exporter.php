@@ -177,35 +177,12 @@ class Thx_Exporter {
 	/**
 	 * Fetches the list of all Upfront-available layouts
 	 * and outputs a JSON reponse.
+	 *
+	 * @todo This should actually replace the Upfront_Ajax::list_available_layouts() method in Upfront core
 	 */
 	public function json_get_available_layouts () {
 		// Predefined layouts
-		$layouts = array(
-			'archive-home' => array(
-				'layout' => array(
-					'item' => 'archive-home',
-					'type' => 'archive'
-				)
-			),
-			'archive' => array(
-				'layout' => array(
-					'type' => 'archive'
-				)
-			),
-			'archive-search' => array(
-				'layout' => array(
-					'item' => 'archive-search',
-					'type' => 'archive'
-				)
-			),
-			'404' => array(
-				'layout' => array(
-					'specificity' => 'single-404_page',
-					'item' => 'single-page',
-					'type' => 'single',
-				)
-			),
-		);
+		$layouts = Upfront_Layout::get_default_layouts();
 
 		// add singular post type
 		$post_types = get_post_types(array(
@@ -222,7 +199,11 @@ class Thx_Exporter {
 		}
 
 		// add taxonomy archive
-		foreach ( get_taxonomies(array('public' => true, 'show_ui' => true), 'objects') as $taxonomy ){
+		$taxonomies = get_taxonomies(array(
+			'public' => true, 
+			'show_ui' => true
+		), 'objects');
+		foreach ($taxonomies as $taxonomy) {
 			$layouts['archive-' . $taxonomy->name] = array(
 				'layout' => array(
 					'item' => 'archive-' . $taxonomy->name,
