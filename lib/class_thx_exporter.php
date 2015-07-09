@@ -696,6 +696,10 @@ class Thx_Exporter {
 			$output .= '$' . $name . '_sub = ( !empty($region_sub) ? $region_sub: "' . ( !empty($data['sub']) ? $data['sub'] : '' ) . '" );' . "\n\n";
 		}
 
+		// Marker to let us know where region start, used to split string when we process it
+		// @TODO Remove this when proper solution is available
+		$output .= '/* START_REGION_OUTPUT */' . "\n";
+		
 		$output .= '$'. $name . ' = upfront_create_region(
 			' . $this->_json->stringify_php($main) .',
 			' . $this->_json->stringify_php($secondary) . '
@@ -704,6 +708,11 @@ class Thx_Exporter {
 		$output .= $this->_render_modules($name, $data['modules'], $data['wrappers']);
 
 		$output .= "\n" . '$regions->add($' . $name . ");\n\n";
+
+		// Marker to let us know where region end
+		// @TODO Remove this when proper solution is available
+		$output .= '/* END_REGION_OUTPUT */' . "\n";
+
 		return $output;
 	}
 
@@ -1067,6 +1076,10 @@ class Thx_Exporter {
 
 		$content = $this->_make_urls_relative($content);
 
+		// Remove marker
+		// @TODO Remove this when proper solution is available
+		$content = preg_replace("/\/\* (START|END)_REGION_OUTPUT \*\/\n/ms", '', $content);
+
 		// Save layout to file
 		$result = $this->_fs->write(array(
 			Thx_Fs::PATH_LAYOUTS,
@@ -1245,7 +1258,8 @@ class Thx_Exporter {
 		$quote = '"';
 		$alt_quote = "'";
 		$substitute = function_exists($substitute) ? "{$substitute}()" : Thx_Sanitize::php_safe($substitute);
-
+		
+		/*
 		// In attributes
 		$content = preg_replace('/(=\s?)' . preg_quote("{$quote}{$url}", '/') . '/', "\\1{$quote}{$alt_quote} . {$substitute} . {$alt_quote}", $content);
 		$content = preg_replace('/(=\s?)' . preg_quote("{$alt_quote}{$url}", '/') . '/', "\\1{$alt_quote}{$quote} . {$substitute} . {$quote}", $content);
@@ -1274,6 +1288,46 @@ class Thx_Exporter {
 			$alt_quote . $alt_quote . ' . ' . $substitute . ' . ' . $alt_quote, 
 			$content
 		);
+
+		return $content;*/
+		
+		// Splitting string for performance improvement
+		// @TODO Remove when proper solution is available
+		$content_parts = explode('/* START_REGION_OUTPUT */', $content);
+		$content_output = array();
+
+		foreach ( $content_parts as $content_part ) {
+			// In attributes
+			$content_part = preg_replace('/(=\s?)' . preg_quote("{$quote}{$url}", '/') . '/', "\\1{$quote}{$alt_quote} . {$substitute} . {$alt_quote}", $content_part);
+			$content_part = preg_replace('/(=\s?)' . preg_quote("{$alt_quote}{$url}", '/') . '/', "\\1{$alt_quote}{$quote} . {$substitute} . {$quote}", $content_part);
+	
+			// In multiline expressions
+			$regexen = array(
+				'/(=>\s?' . $alt_quote . ')(.*?)' . $quote . preg_quote($url, '/') . '/ms' => "\\1\\2{$quote}{$alt_quote} . {$substitute} . {$alt_quote}",
+				'/(=>\s?' . $quote . ')(.*?)' . $alt_quote . preg_quote($url, '/') . '/ms' => "\\1\\2{$alt_quote}{$quote} . {$substitute} . {$quote}",
+			);
+			foreach ($regexen as $rx => $rpl) {
+				$count = 0;
+				while (preg_match($rx, $content_part) && $count < 1000) {
+					$content_part = preg_replace($rx, $rpl, $content_part);
+					$count++;
+				}
+			}
+	
+			// Fallback catch-all 
+			$content_part = str_replace(
+				$quote . $url,
+				$quote . $quote . ' . ' . $substitute . ' . ' . $quote, 
+				$content_part
+			);
+			$content_part = str_replace(
+				$alt_quote . $url, 
+				$alt_quote . $alt_quote . ' . ' . $substitute . ' . ' . $alt_quote, 
+				$content_part
+			);
+			$content_output[] = $content_part;
+		}
+		$content = implode('/* START_REGION_OUTPUT */', $content_output);
 
 		return $content;
 	}
