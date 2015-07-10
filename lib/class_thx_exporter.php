@@ -569,12 +569,14 @@ class Thx_Exporter {
 		}
 
 		if ($data['elementType'] === 'layout') {
+			$style = $this->_make_urls_passive_relative($data['styles']);
 			if (upfront_exporter_is_start_page()) {
-				update_option('upfront_new-layout_style', addcslashes($data['styles'], "'\\"));
-				return;
+				update_option('upfront_new-layout_style', addcslashes($style, "'\\"));
+				$this->_json->out(__('Exported', UpfrontThemeExporter::DOMAIN));
+			} else {
+				$this->_theme_settings->set('layout_style', addcslashes($style, "'\\"));
+				$this->_json->out(__('Exported', UpfrontThemeExporter::DOMAIN));
 			}
-			$this->_theme_settings->set('layout_style', addcslashes($data['styles'], "'\\"));
-			return;
 		}
 
 		$stylesheet = !empty($_POST['stylesheet']) && 'upfront' !== $_POST['stylesheet']
