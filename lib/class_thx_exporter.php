@@ -30,16 +30,16 @@ class Thx_Exporter {
 
 		require_once (dirname(__FILE__) . '/class_thx_sanitize.php');
 		require_once (dirname(__FILE__) . '/class_thx_template.php');
-		
+
 		require_once (dirname(__FILE__) . '/class_thx_fs.php');
 		$this->_fs = Thx_Fs::get($this->_theme);
-		
+
 		$this->_set_up_theme_settings();
 
 		require_once (dirname(__FILE__) . '/class_thx_json.php');
 		$this->_json = new Thx_Json;
-		
-		
+
+
 		require_once(dirname(__FILE__) . '/class_thx_endpoint.php');
 		if (class_exists('Upfront_Thx_Builder_VirtualPage')) Upfront_Thx_Builder_VirtualPage::serve();
 	}
@@ -71,17 +71,17 @@ class Thx_Exporter {
 	private function _add_hooks () {
 
 		// Clean up the temporary styles on each load, if not doing AJAX
-		if (!is_admin() && !(defined('DOING_AJAX') && DOING_AJAX) && is_user_logged_in()) update_option(self::TEMP_STYLES_KEY, array());		
+		if (!is_admin() && !(defined('DOING_AJAX') && DOING_AJAX) && is_user_logged_in()) update_option(self::TEMP_STYLES_KEY, array());
 
 		add_filter('stylesheet_directory', array($this, 'process_stylesheet_directory'), 100);
-		
+
 		add_action('wp_footer', array($this, 'inject_dependencies'), 100);
 		add_filter('upfront_data', array($this, 'add_data'));
 		add_action('wp_enqueue_scripts', array($this,'add_styles'));
 
 		// Allow particular layout override from GET query
 		add_filter('upfront-entity_resolver-entity_ids', array($this, 'augment_layout_load_from_get_query'), 10, 2);
-		
+
 		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 
 		add_action($ajaxPrefix . 'create-theme', array($this, 'json_create_theme'));
@@ -110,7 +110,7 @@ class Thx_Exporter {
 
 		add_action('upfront_update_button_presets', array($this, 'update_button_presets'));
 		add_action('init', array($this, 'dispatch_preset_handling'), 99);
-	
+
 		add_action('upfront_get_stylesheet_directory', array($this, 'get_stylesheet_directory'));
 		add_action('upfront_get_stylesheet', array($this, 'get_stylesheet'));
 
@@ -144,7 +144,7 @@ class Thx_Exporter {
 		foreach ($layout_files as $file) {
 			$raw_layout = pathinfo($file, PATHINFO_FILENAME);
 			$raw = explode('-', $raw_layout, 2);
-			
+
 			if (empty($raw[0])) continue;
 			if (!in_array($raw[0], array('archive', 'single'))) continue;
 
@@ -169,7 +169,7 @@ class Thx_Exporter {
 
 			$layouts[] = $layout;
 		}
-		
+
 		$this->_json->out(array(
 			'data' => $layouts,
 		));
@@ -187,7 +187,7 @@ class Thx_Exporter {
 
 		// add singular post type
 		$post_types = get_post_types(array(
-			'public' => true, 
+			'public' => true,
 			'show_ui' => true,
 		), 'objects');
 		foreach ($post_types as $post_type) {
@@ -201,7 +201,7 @@ class Thx_Exporter {
 
 		// add taxonomy archive
 		$taxonomies = get_taxonomies(array(
-			'public' => true, 
+			'public' => true,
 			'show_ui' => true
 		), 'objects');
 		foreach ($taxonomies as $taxonomy) {
@@ -224,7 +224,7 @@ class Thx_Exporter {
 				else continue;
 			}
 			$layout['saved'] = in_array($idx, $db_layouts);
-			
+
 			$layouts[$idx] = $layout;
 		}
 
@@ -244,7 +244,7 @@ class Thx_Exporter {
 	 */
 	public function augment_layout_load_from_get_query ($ids, $cascade) {
 		$get = stripslashes_deep($_GET);
-		
+
 		$layout = !empty($get['layout']) ? explode('-', $get['layout']) : false;
 		if (!empty($layout)) {
 			$type = array_shift($layout);
@@ -305,7 +305,7 @@ class Thx_Exporter {
 			$layout_cascade = stripslashes_deep($_POST['layout_cascade']);
 			$post_type = !empty($_POST['post_type']) ? $_POST['post_type'] : false;
 		}
-		if (empty($layout_cascade)) return $cascade;		
+		if (empty($layout_cascade)) return $cascade;
 
 		$new_cascade = array(
 			trailingslashit(wp_normalize_path(dirname($base_filename))) . $layout_cascade['item'] . '.php', // So... make sure this goes first, that's the most likely candidate
@@ -341,7 +341,7 @@ class Thx_Exporter {
 		);
 
 		$filename = $_FILES['media']['name'];
-		
+
 		// Remove file first if it already exists, this will allow simple update of iconfont files
 		$this->_fs->drop(array(
 			Thx_Fs::PATH_ICONS,
@@ -483,6 +483,7 @@ class Thx_Exporter {
 		}
 
 		$this->_theme = $data['theme'];
+		$this->_template = $data['template'];
 		$this->_fs->set_theme($this->_theme);
 
 		$regions = json_decode(stripslashes($data['regions']));
@@ -514,7 +515,7 @@ class Thx_Exporter {
 			}
 			$template .= $this->_render_region($region);
 		}
-		
+
 		foreach($this->_global_regions as $region_name => $region){
 			$this->_update_global_region_template($region_name);
 		}
@@ -598,7 +599,7 @@ class Thx_Exporter {
 		$style = $this->_make_urls_passive_relative($style);
 
 		$path = array(
-			Thx_Fs::PATH_STYLES, 
+			Thx_Fs::PATH_STYLES,
 			$data['elementType'],
 		);
 		$this->_fs->mkdir_p($path);
@@ -638,7 +639,7 @@ class Thx_Exporter {
 		$this->_theme = $name;
 
 		$this->_fs->drop(array(
-			Thx_Fs::PATH_STYLES, 
+			Thx_Fs::PATH_STYLES,
 			$data['elementType'],
 			$data['stylename']
 		));
@@ -665,7 +666,7 @@ class Thx_Exporter {
 		else {
 			if (!empty($data['container']) && $data['name'] !== $data['container']) $main['container'] = $data['container'];
 			else $main['container'] = $data['name'];
-	
+
 			if (!empty($data['sub'])) $main['sub'] = $data['sub'];
 		}
 		if (!empty($data['position'])) $main['position'] = $data['position'];
@@ -701,7 +702,7 @@ class Thx_Exporter {
 		// Marker to let us know where region start, used to split string when we process it
 		// @TODO Remove this when proper solution is available
 		$output .= '/* START_REGION_OUTPUT */' . "\n";
-		
+
 		$output .= '$'. $name . ' = upfront_create_region(
 			' . $this->_json->stringify_php($main) .',
 			' . $this->_json->stringify_php($secondary) . '
@@ -799,13 +800,32 @@ class Thx_Exporter {
 				$props['options']['form_email_to'] = '';
 			}
 
-			// Check for lightboxes
+			// Check for lightboxes and anchors
+			$page_slug = str_replace('single-page-', '', $this->_template);
+			$page_slug = $page_slug === 'archive-home' ? '' : $page_slug . '/';
 			switch($type) {
 				case 'Uimage':
-					if ($props['options']['when_clicked'] === 'lightbox') $region_lightboxes[] = $props['options']['image_link'];
+					if ($props['options']['link']->type === 'anchor') {
+						$converted_url = str_replace(UpfrontThemeExporter::get_root_slug() . '/' . $this->_theme, $page_slug, $props['options']['link']->url);
+						$props['options']['link']->url = $converted_url;
+					}
+					if ($props['options']['link']->type === 'lightbox') $region_lightboxes[] = $props['options']['link']->url;
 					if (!$export_images && empty($props['options']['src']) && !empty($props['options']['image_status']) && 'starting' !== $props['options']['image_status']) {
 						// If we're not exporting images AND if we're dealing with zeroed-out image, update its status
 						$props['options']['image_status'] = 'starting';
+					}
+					break;
+				case 'Ugallery':
+					foreach($props['options']['images'] as $index=>$image) {
+						if ($image->imageLink === false) {
+							continue;
+						}
+
+						// Only anchors need this
+						if ($image->imageLink->type === 'anchor') {
+							$converted_url = str_replace(UpfrontThemeExporter::get_root_slug() . '/' . $this->_theme, $page_slug, $image->imageLink->url);
+							$props['options']['images'][$index]->imageLink->url = $converted_url;
+						}
 					}
 					break;
 				case 'PlainTxt':
@@ -813,6 +833,10 @@ class Thx_Exporter {
 					break;
 				case 'Button':
 					$region_lightboxes = array_merge($region_lightboxes, $this->_get_lightboxes_from_button($props));
+					if ($props['options']['link']->type === 'anchor') {
+						$converted_url = str_replace(UpfrontThemeExporter::get_root_slug() . '/' . $this->_theme, $page_slug, $props['options']['link']->url);
+						$props['options']['link']->url = $converted_url;
+					}
 					break;
 				case 'Unewnavigation':
 					$region_lightboxes = array_merge($region_lightboxes, $this->_get_lightboxes_from_menu($props));
@@ -831,12 +855,12 @@ class Thx_Exporter {
 				if (!empty($group)){
 					$props['group'] = $group;
 				}
-				
+
 				// Render objects if there's objects attribute in the object (means it is ObjectGroup)
 				if (isset($module['objects'][0]->objects)) {
 					$props['objects'] = (array)$this->_render_objects($name, $module['objects'][0]->objects, $module['objects'][0]->wrappers, $props['id']);
 				}
-				
+
 				$output .= "\n" . '$' . $name . '->add_element("' . $type . '", ' . $this->_json->stringify_php($props) . ");\n";
 			}
 		}
@@ -866,7 +890,7 @@ class Thx_Exporter {
 			if (!empty($objects) && sizeof($objects) > ($i+1)) {
 				$nextObject = $this->_parse_properties($objects[$i+1]->properties);
 			}
-			
+
 			$properties = $this->_parse_properties($object['properties']);
 			$props = $this->_parse_module_class($properties['class']);
 
@@ -918,9 +942,9 @@ class Thx_Exporter {
 			if ($nextObject && $properties['wrapper_id'] == $nextObject['wrapper_id']) {
 				$props['close_wrapper'] = false;
 			}
-			
+
 			$return[] = $props;
-			
+
 		}
 		return $return;
 	}
@@ -930,14 +954,14 @@ class Thx_Exporter {
 
 		$menu_id = $properties['options']['menu_id'];
 		$menu_items = wp_get_nav_menu_items($menu_id);
-		
+
 		if( is_array( $menu_items ) ){
 			foreach($menu_items as $menu_item) {
 				if (!$this->_has_ligthbox($menu_item->url)) continue;
 				$lightboxes[] = $menu_item->url;
 			}
 		}
-		
+
 		return $lightboxes;
 	}
 
@@ -955,10 +979,9 @@ class Thx_Exporter {
 	}
 
 	protected function _get_lightboxes_from_button ($properties) {
-		return $this->_has_ligthbox($properties['options']['href'])
-			? array($properties['options']['href'])
-			: array()
-		;
+		if ($properties['options']['link']->type !== 'lightbox') return array();
+
+		return array($properties['options']['link']->url);
 	}
 
 	/**
@@ -975,19 +998,29 @@ class Thx_Exporter {
 	protected function _add_menu_from_element ($properties) {
 		$menu_id = $properties['options']['menu_id'];
 
+		$page_slug = str_replace('single-page-', '', $this->_template);
+		$page_slug = $page_slug === 'archive-home' ? '' : $page_slug . '/';
+
 		$menu_object = wp_get_nav_menu_object($menu_id);
 		$menu_items = wp_get_nav_menu_items($menu_id);
-        if( is_array( $menu_items ) ){
-          foreach($menu_items as $menu_item) {
-            if(strpos($menu_item->url, site_url()) === false) continue;
+		if( is_array( $menu_items ) ){
+			foreach($menu_items as $menu_item) {
+				// Make anchors work from other pages
+				if (strpos($menu_item->url, 'create_new') !== false) {
+					// If url has 'create_new' we assume it's newly linked item with anchor on this page
+					$menu_item->url = str_replace(get_home_url() . '/' . UpfrontThemeExporter::get_root_slug() . '/' . $this->_theme, '{{upfront:home_url}}/' . $page_slug, $menu_item->url);
+					continue;
+				}
 
-            // Fix lightboxes and other anchor urls
-            $menu_item->url = preg_replace('#' . get_home_url() . '/' . UpfrontThemeExporter::get_root_slug() . '/.+?(\#[A-Za-z_-]+)#', '\1', $menu_item->url);
+				if(strpos($menu_item->url, site_url()) === false) continue;
 
-            // Fix hardcoded site url
-            $menu_item->url = str_replace(site_url(), '%siteurl%', $menu_item->url);
-          }
-        }
+				// Fix lightboxes and other anchor urls
+				$menu_item->url = preg_replace('#' . get_home_url() . '/' . UpfrontThemeExporter::get_root_slug() . '/.+?(\#[A-Za-z_-]+)#', '\1', $menu_item->url);
+
+				// Fix hardcoded site url
+				$menu_item->url = str_replace(site_url(), '%siteurl%', $menu_item->url);
+			}
+		}
 
 		$menu = array(
 			'id' => false, // Shouldn't be set
@@ -1094,12 +1127,12 @@ class Thx_Exporter {
 		foreach($string_properties as $property) {
 			$value = isset($raw_post_data[$property]) ? addcslashes($raw_post_data[$property], "'\\") : false;
 			if ($value === false) continue;
-			
-			// Don't forget the UI images in layout style 
+
+			// Don't forget the UI images in layout style
 			// Use passively expanded URLs even though this will end up in a PHP file
 			// to keep things simple with aggressively quoted situation in settings array.
 			$value = $this->_make_urls_passive_relative($value);
-			
+
 			$this->_theme_settings->set($property, $value);
 		}
 		$array_properties = array('theme_colors', 'button_presets', "post_image_variants");
@@ -1170,16 +1203,16 @@ class Thx_Exporter {
 
 		$codec = new Upfront_MacroCodec_LayoutData;
 		$content = $codec->encode_all($content);
-		
+
 		return $content;
 	}
 
 
 	/**
 	 * This will relativize URLs for *passive* (non-PHP) stuffs
-	 * 
+	 *
 	 * @param  string $content Content to process
-	 * 
+	 *
 	 * @return string Content with URLs parsed.
 	 */
 	protected function _make_urls_passive_relative ($content) {
@@ -1214,7 +1247,7 @@ class Thx_Exporter {
 		$separator = '/';
 
 		$export_images = $this->_does_theme_export_images();
-		
+
 		// Use this for "theme" images - the ones in the `ui/` subdirectory
 		$_this_theme_relative_ui_root = '/' . basename($this->_fs->get_root_path()) . '/' . Thx_Fs::PATH_UI . '/';
 		$theme_ui_path = $this->_fs->get_path(Thx_Fs::PATH_UI);
@@ -1340,7 +1373,7 @@ class Thx_Exporter {
 					$render_after[] = $this->_render_region($sub_region);
 			}
 		}
-		
+
 		$content .= join('', $render_before);
 		$content .= $this->_render_region($region, !$is_main);
 		$content .= join('', $render_after);
@@ -1350,8 +1383,8 @@ class Thx_Exporter {
 		if (!$this->_fs->exists($greg_root)) $this->_fs->mkdir($greg_root);
 
 		$path_bits = array(
-			Thx_Fs::PATH_IMAGES, 
-			Thx_Fs::PATH_REGIONS, 
+			Thx_Fs::PATH_IMAGES,
+			Thx_Fs::PATH_REGIONS,
 			$region->name
 		);
 		$this->_fs->mkdir_p($path_bits);
@@ -1505,7 +1538,7 @@ class Thx_Exporter {
 
 	/**
 	 * Creates the theme's `style.css` file.
-	 * 
+	 *
 	 * Trumps over the old one, if it already exists.
 	 * If the method is called against the existing theme, not all the data needs to be
 	 * passed in. The missing info bits will be inferred from existing headers.
@@ -1521,10 +1554,10 @@ class Thx_Exporter {
 			foreach ($data as $idx => $info) {
 				if (!empty($info)) continue; // If we have stuff here, we're all good to go for this property, so carry on
 
-				// Because both theme headers and our data keys are so super-consistent, 
+				// Because both theme headers and our data keys are so super-consistent,
 				// let's make sure we have what it takes
 				$raw_ti = preg_replace('/\buri\b/', 'URI', $idx); // In theme headers, "uri" bit is always all-caps so make sure we comply
-				
+
 				// Now, the variations. Some headers can, but not always, have "Theme" prefix.
 				// Likewise, our data keys can, but don't have to, have "-theme-" infix.
 				// So, we spawn some variations to check both versions.
@@ -1543,7 +1576,7 @@ class Thx_Exporter {
 
 				if (!empty($existing1)) $info = $existing1;
 				else if (!empty($existing2)) $info = $existing2;
-				
+
 				// Did we ended up getting anything? Set the value if so.
 				if (!empty($info)) $data[$idx] = $info;
 			}
@@ -1558,7 +1591,7 @@ class Thx_Exporter {
 			$carr[$cidx] = $cnt;
 		}
 		$content = join("\n", array_values(array_filter($carr)));
-		
+
 		$this->_fs->write(array(
 			'style.css'
 		), $content);
@@ -1778,7 +1811,7 @@ class Thx_Exporter {
 
 		$file_path_parts[] = "{$type}-{$id}.php";
 		$file_path = $this->_fs->get_path($file_path_parts, false);
-		
+
 		$templates = array();
 		if($this->_fs->exists($file_path)) $templates = require $file_path;
 
@@ -1823,7 +1856,7 @@ class Thx_Exporter {
 			? $params['type'] . "-" . $params['specificity']
 			: $params['type'] . "-" . $params['item']
 		;
-		
+
 		$contents = "<?php return " .  $this->_json->stringify_php( $layoutData ) . ";";
 
 		$file_path_parts = array(
@@ -1849,8 +1882,8 @@ class Thx_Exporter {
    */
 	protected function _get_preview_content ( $post_id = "fake_post", $post = false ) {
 		$tpl = Thx_Template::theme();
-		$test_content_file = $post 
-			? 'tpl/postTestContent.html' 
+		$test_content_file = $post
+			? 'tpl/postTestContent.html'
 			: 'tpl/testContent.html'
 		;
 		$template_file = "fake_styled_post" === $post_id
