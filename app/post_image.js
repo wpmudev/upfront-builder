@@ -1,7 +1,7 @@
 define([
     'underscore',
     'jquery',
-    'text!' + Upfront.themeExporter.root + 'templates/tpl/image_variants.html',
+    'text!' + Upfront.themeExporter.root + 'templates/theme/tpl/image_variants.html',
 ], function(_, $, variant_tpl){
 
 var PostImageVariants =  Backbone.View.extend({

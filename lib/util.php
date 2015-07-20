@@ -13,7 +13,7 @@ function upfront_exporter_get_stylesheet() {
 	if (upfront_exporter_is_creating()) {
 		$form = array();
 		parse_str($_POST['form'], $form);
-		return $form['thx-theme-slug'];
+		if (!empty($form['thx-theme-slug'])) return $form['thx-theme-slug'];
 	}
 
 	//if (isset($_POST['data']['theme']) && isset($_POST['stylesheet']) && $_POST['stylesheet'] === 'upfront') {
@@ -30,7 +30,7 @@ function upfront_exporter_get_stylesheet() {
 	if (upfront_exporter_is_exporter_uri()) {
 		$uri = $_SERVER['REQUEST_URI'];
 		$matches = array();
-		preg_match('#create_new/([-_a-z0-9]+)#i', $uri, $matches);
+		preg_match('#' . UpfrontThemeExporter::get_root_slug() . '/([-_a-z0-9]+)#i', $uri, $matches);
 		if (isset($matches[1])) return $matches[1];
 	}
 
@@ -40,7 +40,7 @@ function upfront_exporter_get_stylesheet() {
 	if (upfront_exporter_is_exporter_referer()) {
 		$referer = $_SERVER['HTTP_REFERER'];
 		$matches = array();
-		preg_match('#create_new/([-_a-z0-9]+)#i', $referer, $matches);
+		preg_match('#' . UpfrontThemeExporter::get_root_slug() . '/([-_a-z0-9]+)#i', $referer, $matches);
 		if (isset($matches[1])) return $matches[1];
 	}
 
@@ -54,18 +54,18 @@ function upfront_exporter_mode() {
 
 function upfront_exporter_is_exporter_uri() {
 	$uri = !empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-	$is_builder_uri = strpos($uri, 'create_new') !== false
-		&& strpos($uri, 'create_new/post') === false
-		&& strpos($uri, 'create_new/page') === false;
+	$is_builder_uri = strpos($uri, UpfrontThemeExporter::get_root_slug()) !== false
+		&& strpos($uri, UpfrontThemeExporter::get_root_slug() . '/post') === false
+		&& strpos($uri, UpfrontThemeExporter::get_root_slug() . '/page') === false;
 
 	return $is_builder_uri;
 }
 
 function upfront_exporter_is_exporter_referer() {
 	$referer = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-	$is_builder_referer = strpos($referer, 'create_new') !== false
-		&& strpos($referer, 'create_new/post') === false
-		&& strpos($referer, 'create_new/page') === false;
+	$is_builder_referer = strpos($referer, UpfrontThemeExporter::get_root_slug()) !== false
+		&& strpos($referer, UpfrontThemeExporter::get_root_slug() . '/post') === false
+		&& strpos($referer, UpfrontThemeExporter::get_root_slug() . '/page') === false;
 
 	return $is_builder_referer;
 }
@@ -81,4 +81,19 @@ function upfront_exporter_is_running() {
 	// and other dynamic assets will have builder for referer. This is a bit
 	// sketchy, we'll if this will need to be adjusted
 	return upfront_exporter_is_exporter_referer();
+}
+
+/**
+ * Check if the current theme is an Upfront child theme
+ *
+ * @return bool False if not, stylesheet name (true-ish) if it is.
+ */
+function upfont_thx_is_current_theme_upfront_child () {
+	$current = wp_get_theme(get_option('stylesheet'));
+	$parent = $current->parent();
+	
+	if (empty($parent)) return false; // Current theme is not a child theme, carry on...
+	if ('upfront' !== $parent->get_template()) return false; // Not an Upfront child, carry on...
+
+	return $current->get_stylesheet();
 }
