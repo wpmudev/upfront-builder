@@ -3,104 +3,65 @@
 define(function() {
 
 
-var l10n = Upfront.Settings && Upfront.Settings.l10n
-	? Upfront.Settings.l10n.global.views
-	: Upfront.mainData.l10n.global.views
-;
-
-var SidebarCommands_PrimaryLayout = Upfront.Views.Editor.Commands.extend({
-	"className": "sidebar-commands sidebar-commands-primary clearfix",
-	initialize: function () {
-		this.commands = _([
-			new Command_InfoPanel({model: this.model}),
-			new Command_LayoutModal({model: this.model}),
-			
-			new Command_ThemeImagesSprites({model: this.model}),
-		]);
-	}
-});
-
-
-var Command_InfoPanel = Upfront.Views.Editor.Command.extend({
-	render: function () {
-		var layout = Upfront.Application.layout.get("current_layout") || Upfront.Application.layout.get("layout"),
-			info = layout.specificity || layout.item || layout.type
-		;
-		this.$el.html(
-			'Current Layout: <b>' + info + '</b>'
-		);
-	}
-});
-
-var Command_LayoutModal = Upfront.Views.Editor.Command.extend({
-	className: "command-browse-layout upfront-icon upfront-icon-browse-layouts",
-	render: function () {
-		this.$el.html(l10n.layouts);
-        this.$el.prop("title", l10n.layouts);
-	},
-	on_click: function () {
-		Upfront.Events.trigger("command:layout:browse");
-	}
-});
-
-var Command_ThemeImagesSprites = Upfront.Views.Editor.Command.extend({
-	tagName: 'li',
-	className: 'command-open-media-gallery upfront-icon upfront-icon-open-gallery',
-	initialize: function () {
-		this.events = _.extend({}, Upfront.Views.Editor.Command.prototype.events, {
-			'click a.images': 'pop_images',
-			'click a.sprites': 'pop_sprites'
-		});
-		Upfront.Views.Editor.Command.prototype.initialize.call(this);
-	},
-	render: function () {
-		this.$el.html(
-			'<a class="images" title="'+ l10n.media +'">Theme Images</a>'
-			+
-			'<a class="sprites" title="'+ l10n.media +'">Theme Sprites</a>'
-		);
-	},
-	pop_images: function (e) {
-		if (e.preventDefault) e.preventDefault();
-		if (e.stopPropagation) e.stopPropagation();
-		Upfront.Media.Manager.open({
-			media_type: ["images"]
-		});
-	},
-	pop_sprites: function (e) {
-		if (e.preventDefault) e.preventDefault();
-		if (e.stopPropagation) e.stopPropagation();
-		Upfront.Media.Manager.open({
-			media_type: ["images"],
-			themeImages: true
-		});
-	}
-});
-
-
-
 var LayoutsModal = Upfront.Views.Editor.Modal.extend({
+	header: false,
+	available: false,
+	existing: false,
 	initialize: function () {
 		this.events = _.extend(Upfront.Views.Editor.Modal.prototype.events, this.events);
 		Upfront.Views.Editor.Modal.prototype.initialize.apply(this, arguments);
+
+		this.header = new LayoutsModal_Header();
+		this.available = new LayoutsModal_Available();
+		this.existing = new LayoutsModal_Existing();
+			
+		this.header.on("close", this.close, this);
+		this.available.on("selected", this.close, this);
+		this.existing.on("selected", this.close, this);
 	},
 	open: function () {
-		var available = new LayoutsModal_Available(),
-			existing = new LayoutsModal_Existing()
-		;
-		existing.render();
-		available.render();
 		Upfront.Views.Editor.Modal.prototype.open.apply(this, [function ($content, $modal) {
+			if (!$content.is(":empty")) return;
+
+			$content.addClass('thx-browse_layouts');
+
+			this.header.render();
+			this.existing.render();
+			this.available.render();
+			
 			$content.empty();
-			$content.append(existing.$el);
-			$content.append(available.$el);
-		}, this]);
+			$content.append(this.header.$el)
+			$content.append(this.existing.$el);
+			$content.append(this.available.$el);
+
+		}, this]);		
+	}
+});
+
+var LayoutsModal_Header = Backbone.View.extend({
+	className: 'thx-layouts-header clearfix',
+	events: {
+		'click a': 'propagate_close'
+	},
+	render: function () {
+		this.$el.empty()
+			.append('<h3>Manage Layouts</h3>')
+			.append('<a href="#close">&times;</a>')
+		;
+	},
+	propagate_close: function (e) {
+		if (e.preventDefault) e.preventDefault();
+		if (e.stopPropagation) e.stopPropagation();
+
+		this.trigger("close");
+
+		return false;
 	}
 });
 
 var LayoutsModal_Pane = Backbone.View.extend({
 	className: function () {
-		var cls = 'upfront-layouts-pane';
+		var cls = 'thx-layouts-pane';
 		if (this.paneType) cls += ' ' + this.paneType;
 		return cls;
 	},
@@ -149,6 +110,7 @@ var LayoutsModal_Pane = Backbone.View.extend({
 	dispatch_selected: function () {
 		var field = this.get_field();
 		this.selected(field.get_value());
+		this.trigger("selected");
 	},
 /* Implementation-specific */
 	get_data: function () { return new $.Deferred(); },
@@ -191,8 +153,39 @@ var LayoutsModal_Available = LayoutsModal_Pane.extend({
 		});
 	},
 	dispatch_page: function (value) {
-		if ('single-page' !== value) return;
-		this._page_field.$el.show();
+		if ('single-page' !== value) this._page_field.$el.hide();
+		else this._page_field.$el.show();
+	},
+	selected: function (layout) {
+		var layout_slug = Upfront.Application.layout.get('layout_slug'),
+			data = _.extend({}, this.data[layout]),
+			specific_layout = this._page_field.page.get_value()
+		;
+
+		// Check if user is creating single page with specific name
+		if (layout === 'single-page' && specific_layout) {
+			layout = 'single-page-' + specific_layout.replace(/\s/g, '-').toLowerCase();
+			data = {
+				layout: {
+					'type': 'single',
+					'item': 'single-page',
+					'specificity': layout
+				}
+			};
+		}
+
+		data.use_existing = layout.match(/^single-page/) && specific_layout && "existing" === this._page_field.inherit.get_value()
+			? this._page_field.existing.get_value()
+			: false
+		;
+
+		UpfUpfront.themeExporter.current_layout_label = data.label;
+
+		Upfront.Application.create_layout(data.layout, {layout_slug: layout_slug, use_existing: data.use_existing}).done(function() {
+			Upfront.Application.layout.set('current_layout', layout);
+			// Immediately export layout to write initial state to file.
+			Upfront.Behaviors.LayoutEditor._export_layout();
+		});
 	}
 });
 
@@ -202,8 +195,8 @@ var LayoutsModal_Existing = LayoutsModal_Pane.extend({
 	pane: function () {
 		var field = this.get_field();
 		if (this.data) {
-			field.options.values = _.map(this.data, function (item) {
-				return { label: item.label, value: item.layout.specificity || item.layout.item || item.layout.type, disabled: item.saved };
+			field.options.values = _.map(this.data, function (item, item_id) {
+				return { label: item.label, value: item_id, disabled: item.saved };
 			});
 		}
 		field.render();
@@ -215,6 +208,17 @@ var LayoutsModal_Existing = LayoutsModal_Pane.extend({
 		return Upfront.Util.post({
 			action: 'upfront_list_theme_layouts'
 		});
+	},
+	selected: function (layout) {
+		var layout_slug = Upfront.Application.layout.get('layout_slug'),
+			data = this.data[layout]
+		;
+
+		Upfront.themeExporter.current_layout_label = data.label;
+
+		if (data.latest_post) _upfront_post_data.post_id = data.latest_post;
+		Upfront.Application.layout.set('current_layout', layout);
+		Upfront.Application.load_layout(data.layout, {layout_slug: layout_slug});
 	}
 });
 
@@ -252,6 +256,8 @@ var LayoutsModal_AvailablePane_SinglePage = Backbone.View.extend({
 		this.$el.append(this.page.$el);
 		this.$el.append(this.inherit.$el);
 		this.$el.append(this.existing.$el);
+
+		this.existing.delegateEvents();
 	},
 	reload: function () {
 		if (this.all_templates) return;
@@ -300,11 +306,6 @@ function browse_layouts () {
 function init () {
 	Upfront.Events.on("application:mode:after_switch", function () {
 		if (Upfront.Application.get_current() !== Upfront.Settings.Application.MODE.THEME) return false;
-
-		Upfront.Application.sidebar.sidebar_commands.primary = new SidebarCommands_PrimaryLayout({model: Upfront.Application.sidebar.model});
-		Upfront.Application.sidebar.sidebar_commands.additional = false;
-		
-		Upfront.Application.sidebar.render();
 
 		Upfront.Application.current_subapplication.stopListening(Upfront.Events, "command:layout:browse"); // Unbind this stuff, we don't use this
 		Upfront.Application.current_subapplication.stopListening(Upfront.Events, "command:layout:create"); // Unbind this stuff, we don't use this
