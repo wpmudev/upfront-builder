@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Upfront Theme Exporter 0.0.1\n"
 "Report-Msgid-Bugs-To: "
 "http://wordpress.org/support/plugin/upfront-theme-exporter\n"
-"POT-Creation-Date: 2015-04-20 05:35:13+00:00\n"
+"POT-Creation-Date: 2015-07-30 06:47:52+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,64 +20,217 @@ msgid ""
 "href=\"%s\">here</a>"
 msgstr ""
 
-#: upfront-theme-exporter.php:188
-msgid "Create New Theme"
+#: lib/class_thx_exporter.php:157
+msgid "Archive %s"
 msgstr ""
 
-#: upfront-theme-exporter.php:306
+#: lib/class_thx_exporter.php:157
+msgid "Single %s"
+msgstr ""
+
+#: lib/class_thx_exporter.php:167
+msgid "(generic)"
+msgstr ""
+
+#: lib/class_thx_exporter.php:370
 msgid "Please rename font. Default Upfront font is called \"icomoon\"."
 msgstr ""
 
-#: upfront-theme-exporter.php:421 upfront-theme-exporter.php:897
+#: lib/class_thx_exporter.php:488
 msgid "Theme & template must be choosen."
 msgstr ""
 
-#: upfront-theme-exporter.php:506 upfront-theme-exporter.php:559
+#: lib/class_thx_exporter.php:574 lib/class_thx_exporter.php:632
 msgid "Some data is missing."
 msgstr ""
 
-#: upfront-theme-exporter.php:554
+#: lib/class_thx_exporter.php:581 lib/class_thx_exporter.php:584
+#: lib/class_thx_exporter.php:595
+msgid "Exported"
+msgstr ""
+
+#: lib/class_thx_exporter.php:627
 msgid "Can't do that before theme is created."
 msgstr ""
 
-#: upfront-theme-exporter.php:915 upfront-theme-exporter.php:920
-msgid "Invalid theme name."
-msgstr ""
-
-#: upfront-theme-exporter.php:936
-msgid "Theme root does not exists."
-msgstr ""
-
-#: upfront-theme-exporter.php:1375
-msgid "Please check required fields."
-msgstr ""
-
-#: upfront-theme-exporter.php:1380
+#: lib/class_thx_exporter.php:1618 lib/class_thx_exporter.php:1650
 msgid "Your chosen theme slug is invalid, please try another."
 msgstr ""
 
-#: upfront-theme-exporter.php:1392
+#: lib/class_thx_exporter.php:1624
+msgid "Theme with that directory name does not exist."
+msgstr ""
+
+#: lib/class_thx_exporter.php:1645
+msgid "Please check required fields."
+msgstr ""
+
+#: lib/class_thx_exporter.php:1657
 msgid "Theme with that directory name already exists."
 msgstr ""
 
-#: upfront-theme-exporter.php:1520
+#: lib/class_thx_exporter.php:1766
 msgid "Not all required data sent."
 msgstr ""
 
-#: upfront-theme-exporter.php:1581
+#: lib/class_thx_exporter.php:1819
 msgid "No layout data or cascade sent."
 msgstr ""
 
-#: upfront-theme-exporter.php:1621
+#: lib/class_thx_exporter.php:1869
 msgid "some test content"
 msgstr ""
 
-#: upfront-theme-exporter.php:1631
+#: lib/class_thx_exporter.php:1879
 msgid "some styled test content"
 msgstr ""
 
-#: upfront-theme-exporter.php:1644
+#: lib/class_thx_exporter.php:1892
 msgid "Sample Post"
+msgstr ""
+
+#: templates/plugin/create_edit.php:13
+msgid "Upfront Builder"
+msgstr ""
+
+#: templates/plugin/create_edit.php:15
+msgid "Build your own, slick, customizable, intuitive Upfront themes."
+msgstr ""
+
+#: templates/plugin/create_edit.php:17
+msgid "Creating a WordPress theme has never been easier."
+msgstr ""
+
+#: templates/plugin/create_edit.php:25
+msgid "Modify existing theme:"
+msgstr ""
+
+#: templates/plugin/create_edit.php:27
+msgid "Select a theme to modify:"
+msgstr ""
+
+#: templates/plugin/create_edit.php:50
+msgid "Edit theme"
+msgstr ""
+
+#: templates/plugin/create_edit.php:53
+msgid "Edit theme details"
+msgstr ""
+
+#: templates/plugin/create_edit.php:57
+msgid "No existing themes, please create a new one."
+msgstr ""
+
+#: templates/plugin/create_edit.php:64
+msgid "Build a new theme:"
+msgstr ""
+
+#: templates/plugin/create_edit.php:69
+msgid "Start building"
+msgstr ""
+
+#: templates/plugin/create_edit.php:73
+msgid "Edit &quot;%s&quot;:"
+msgstr ""
+
+#: templates/plugin/create_edit.php:93
+msgid "Edit info"
+msgstr ""
+
+#: templates/plugin/theme_form.php:4
+msgid "Theme listing preview:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:10
+msgid "Theme name:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:11
+msgid "Name for your theme"
+msgstr ""
+
+#: templates/plugin/theme_form.php:14
+msgid "Author name:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:15
+msgid "Your name"
+msgstr ""
+
+#: templates/plugin/theme_form.php:18
+msgid "Author URL:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:19
+msgid "Your URL"
+msgstr ""
+
+#: templates/plugin/theme_form.php:24
+msgid "Theme directory:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:25
+msgid "Base directory for your theme"
+msgstr ""
+
+#: templates/plugin/theme_form.php:28
+msgid "Theme description:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:32
+msgid "Theme version:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:36
+msgid "Theme URL:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:40
+msgid "Theme licence:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:44
+msgid "Licence URL:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:48
+msgid "Theme tags:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:52
+msgid "Theme text domain:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:59
+msgid "Initial theme preset:"
+msgstr ""
+
+#: templates/plugin/theme_form.php:61
+msgid "Default"
+msgstr ""
+
+#: templates/plugin/theme_form.php:62
+msgid "Test"
+msgstr ""
+
+#: templates/plugin/theme_form.php:69
+msgid "Activate theme"
+msgstr ""
+
+#: templates/plugin/theme_form.php:73
+msgid "Export with images"
+msgstr ""
+
+#: upfront-theme-exporter.php:95
+msgid "Create New Theme"
+msgstr ""
+
+#: upfront-theme-exporter.php:97
+msgid "Builder"
+msgstr ""
+
+#: upfront-theme-exporter.php:113
+msgid "Edit current theme"
 msgstr ""
 
 #. Plugin Name of the plugin/theme
