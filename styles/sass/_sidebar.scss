@@ -1,0 +1,25 @@
+#sidebar-ui .create-theme-sidebar .sidebar-commands-primary {
+
+	.info-panel {
+		font-size: 15px;
+
+		b {
+			font-weight: bold;
+		}
+	}
+	
+	.command-browse-layout {
+		float: left;
+	}
+
+	.command-open-exporter_media {
+		max-width: 120px;
+
+		a {
+			text-decoration: underline;
+			color: #1fcd8f;
+			font-size: 12px;
+			display: block;
+		}
+	}
+}

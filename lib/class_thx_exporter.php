@@ -450,10 +450,16 @@ class Thx_Exporter {
 	function inject_dependencies () {
 		if (!is_user_logged_in()) return false; // Do not inject for non-logged in user
 
+		$layout = $this->augment_layout_load_from_get_query(array(
+			'item' => 'archive-home',
+			'type' => 'archive',
+		), null);
+
 		Thx_Template::plugin()->load('dependencies', array(
 			'root_url' =>  $this->_plugin_dir_url,
 			'includes_url' => includes_url() . 'js/',
 			'themes' => $this->_get_themes(),
+			'layout' => Upfront_EntityResolver::layout_to_name($layout),
 		));
 	}
 
@@ -1734,7 +1740,7 @@ class Thx_Exporter {
 	}
 
 	public function add_styles () {
-		wp_enqueue_style('upfront-exporter', $this->_plugin_dir_url . '/exporter.css');
+		wp_enqueue_style('upfront-exporter', $this->_plugin_dir_url . '/styles/exporter.css');
 	}
 
 	public function add_data ($data) {

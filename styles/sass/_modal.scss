@@ -1,0 +1,48 @@
+.upfront-inline-modal {
+
+	/* Layouts browse modal */
+	.thx-browse_layouts {
+
+		padding: 0;
+
+		.thx-layouts-header {
+			padding: 16px;
+			height: 48px;
+			border-bottom: 1px solid #ccc;
+
+			h3 {
+				float: left;
+			}
+			a {
+				display: block;
+				float: right;
+				text-decoration: none;
+				font-size: 32px;
+				color: #000;
+			}
+		}
+		
+		.thx-layouts-pane {
+			padding: 16px;
+			width: 50%;
+			float: left;
+			border-top: 1px solid #fff;
+
+			&.existing {
+				background-color: #e5f3ff;
+			}
+			&.available {
+				background-color: #c8e1f6;
+			}
+
+			.upfront-field-button {
+				background: #1fcd8f;
+				padding: 10px;
+				color: white;
+				font-size: 15px;
+			}
+		}
+	}
+
+
+}
