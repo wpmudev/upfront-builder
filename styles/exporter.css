@@ -26,6 +26,16 @@
     font-size: 12px;
     display: block; }
 
+#sidebar-ui .sidebar-commands-responsive .command-browse-layout {
+  background: #54708C;
+  box-shadow: 0px 1px 0px 0px #2F3E4D, inset 0px 2px 0px 0px rgba(255, 255, 255, 0.1);
+  line-height: 34px;
+  padding: 0 10px;
+  border: 2px solid #25394d;
+  font-size: 15px;
+  height: 40px;
+  max-width: 110px; }
+
 .upfront-inline-modal {
   /* Layouts browse modal */ }
   .upfront-inline-modal .thx-browse_layouts {
@@ -44,8 +54,6 @@
         color: #000; }
     .upfront-inline-modal .thx-browse_layouts .thx-layouts-pane {
       padding: 16px;
-      width: 50%;
-      float: left;
       border-top: 1px solid #fff; }
       .upfront-inline-modal .thx-browse_layouts .thx-layouts-pane.existing {
         background-color: #e5f3ff; }
@@ -56,5 +64,8 @@
         padding: 10px;
         color: white;
         font-size: 15px; }
+  .upfront-inline-modal .thx-all_layouts .thx-layouts-pane {
+    width: 50%;
+    float: left; }
 
 /*# sourceMappingURL=exporter.css.map */

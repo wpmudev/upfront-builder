@@ -21,11 +21,9 @@
 				color: #000;
 			}
 		}
-		
+
 		.thx-layouts-pane {
 			padding: 16px;
-			width: 50%;
-			float: left;
 			border-top: 1px solid #fff;
 
 			&.existing {
@@ -41,6 +39,14 @@
 				color: white;
 				font-size: 15px;
 			}
+		}
+		
+	}
+	
+	.thx-all_layouts {
+		.thx-layouts-pane {
+			width: 50%;
+			float: left;
 		}
 	}
 

@@ -80,16 +80,29 @@ var Command_ThemeImagesSprites = Upfront.Views.Editor.Command.extend({
 });
 
 
+function init_normal_exporter () {
+	Upfront.Application.sidebar.sidebar_commands.primary = new SidebarCommands_PrimaryLayout({model: Upfront.Application.sidebar.model});
+	Upfront.Application.sidebar.sidebar_commands.additional = false;
+	
+	Upfront.Application.sidebar.render();
+}
 
+function init_responsive_exporter () {
+	var browse = new Command_LayoutModal({model: Upfront.Application.sidebar.model});
+	if (Upfront.Application.sidebar.sidebar_commands.responsive.views[2].$el.is(".command-browse-layout")) {
+		Upfront.Application.sidebar.sidebar_commands.responsive.views[2].remove();
+		Upfront.Application.sidebar.sidebar_commands.responsive.views[2] = browse;
+	} else {
+		Upfront.Application.sidebar.sidebar_commands.responsive.views.splice(2, 0, browse);
+	}
+
+	Upfront.Application.sidebar.render();
+}
 
 function init () {
 	Upfront.Events.on("application:mode:after_switch", function () {
-		if (Upfront.Application.get_current() !== Upfront.Settings.Application.MODE.THEME) return false;
-
-		Upfront.Application.sidebar.sidebar_commands.primary = new SidebarCommands_PrimaryLayout({model: Upfront.Application.sidebar.model});
-		Upfront.Application.sidebar.sidebar_commands.additional = false;
-		
-		Upfront.Application.sidebar.render();
+		if (Upfront.Application.get_current() === Upfront.Settings.Application.MODE.THEME) return init_normal_exporter();
+		if (Upfront.Application.get_current() === Upfront.Settings.Application.MODE.RESPONSIVE) return init_responsive_exporter();
 	});
 }
 

@@ -23,7 +23,7 @@ var LayoutsModal = Upfront.Views.Editor.Modal.extend({
 		Upfront.Views.Editor.Modal.prototype.open.apply(this, [function ($content, $modal) {
 			if (!$content.is(":empty")) return;
 
-			$content.addClass('thx-browse_layouts');
+			$content.addClass('thx-browse_layouts thx-all_layouts');
 
 			this.header.render();
 			this.existing.render();
@@ -33,6 +33,29 @@ var LayoutsModal = Upfront.Views.Editor.Modal.extend({
 			$content.append(this.header.$el)
 			$content.append(this.existing.$el);
 			$content.append(this.available.$el);
+
+		}, this]);		
+	}
+});
+
+var ResponsiveLayoutsModal = Upfront.Views.Editor.Modal.extend({
+	existing: false,
+	initialize: function () {
+		this.events = _.extend(Upfront.Views.Editor.Modal.prototype.events, this.events);
+		Upfront.Views.Editor.Modal.prototype.initialize.apply(this, arguments);
+		this.existing = new LayoutsModal_Existing();
+		this.existing.on("selected", this.close, this);
+	},
+	open: function () {
+		Upfront.Views.Editor.Modal.prototype.open.apply(this, [function ($content, $modal) {
+			if (!$content.is(":empty")) return;
+
+			$content.addClass('thx-browse_layouts thx-existing_layouts');
+
+			this.existing.render();
+			
+			$content.empty();
+			$content.append(this.existing.$el);
 
 		}, this]);		
 	}
@@ -285,31 +308,53 @@ var LayoutsModal_AvailablePane_SinglePage = Backbone.View.extend({
 	}
 });
 
-var modal = false;
-function browse_layouts () {
-	if (!modal) {
-		modal = new LayoutsModal({
+var normal_modal = false;
+function browse_normal_layouts () {
+	if (!normal_modal) {
+		normal_modal = new LayoutsModal({
 			to: $('body'), 
 			button: false, 
 			top: 120, 
 			width: 540
 		});
-		modal.render();
-		$('body').append(modal.el);
+		normal_modal.render();
+		$('body').append(normal_modal.el);
 	}
-	modal.open()
+	normal_modal.open()
+}
+
+var responsive_modal = false;
+function browse_responsive_layouts () {
+	if (!responsive_modal) {
+		responsive_modal = new ResponsiveLayoutsModal({
+			to: $('body'), 
+			button: false, 
+			top: 120, 
+			width: 540
+		});
+		responsive_modal.render();
+		$('body').append(responsive_modal.el);
+	}
+	responsive_modal.open()
 }
 
 
+function init_normal_exporter () {
+	Upfront.Application.current_subapplication.stopListening(Upfront.Events, "command:layout:browse"); // Unbind this stuff, we don't use this
+	Upfront.Application.current_subapplication.stopListening(Upfront.Events, "command:layout:create"); // Unbind this stuff, we don't use this
+	Upfront.Application.current_subapplication.listenTo(Upfront.Events, "command:layout:browse", browse_normal_layouts);
+}
+
+function init_responsive_exporter () {
+	Upfront.Application.current_subapplication.stopListening(Upfront.Events, "command:layout:browse"); // Unbind this stuff, we don't use this
+	Upfront.Application.current_subapplication.listenTo(Upfront.Events, "command:layout:browse", browse_responsive_layouts);
+}
 
 
 function init () {
 	Upfront.Events.on("application:mode:after_switch", function () {
-		if (Upfront.Application.get_current() !== Upfront.Settings.Application.MODE.THEME) return false;
-
-		Upfront.Application.current_subapplication.stopListening(Upfront.Events, "command:layout:browse"); // Unbind this stuff, we don't use this
-		Upfront.Application.current_subapplication.stopListening(Upfront.Events, "command:layout:create"); // Unbind this stuff, we don't use this
-		Upfront.Application.current_subapplication.listenTo(Upfront.Events, "command:layout:browse", browse_layouts);
+		if (Upfront.Application.get_current() === Upfront.Settings.Application.MODE.THEME) return init_normal_exporter();
+		if (Upfront.Application.get_current() === Upfront.Settings.Application.MODE.RESPONSIVE) return init_responsive_exporter();
 	});
 }
 
