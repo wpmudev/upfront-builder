@@ -202,7 +202,7 @@ var LayoutsModal_Available = LayoutsModal_Pane.extend({
 			: false
 		;
 
-		UpfUpfront.themeExporter.current_layout_label = data.label;
+		Upfront.themeExporter.current_layout_label = data.label;
 
 		Upfront.Application.create_layout(data.layout, {layout_slug: layout_slug, use_existing: data.use_existing}).done(function() {
 			Upfront.Application.layout.set('current_layout', layout);
