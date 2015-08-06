@@ -4,8 +4,8 @@ define(function() {
 
 
 var l10n = Upfront.Settings && Upfront.Settings.l10n
-	? Upfront.Settings.l10n.global.views
-	: Upfront.mainData.l10n.global.views
+	? Upfront.Settings.l10n.exporter
+	: Upfront.mainData.l10n.exporter
 ;
 
 var SidebarCommands_PrimaryLayout = Upfront.Views.Editor.Commands.extend({
@@ -29,7 +29,7 @@ var Command_InfoPanel = Upfront.Views.Editor.Command.extend({
 		;
 
 		this.$el.html(
-			'Current Layout: <b>' + info + '</b>'
+			l10n.current_layout.replace(/%s/, info)
 		);
 	}
 });
@@ -57,9 +57,9 @@ var Command_ThemeImagesSprites = Upfront.Views.Editor.Command.extend({
 	},
 	render: function () {
 		this.$el.html(
-			'<a class="images" title="'+ l10n.media +'">Theme Images</a>'
+			'<a class="images" title="'+ l10n.media +'">' + l10n.theme_images + '</a>'
 			+
-			'<a class="sprites" title="'+ l10n.media +'">Theme Sprites</a>'
+			'<a class="sprites" title="'+ l10n.media +'">' + l10n.theme_sprites + '</a>'
 		);
 	},
 	pop_images: function (e) {

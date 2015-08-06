@@ -68,7 +68,7 @@ var LayoutsModal_Header = Backbone.View.extend({
 	},
 	render: function () {
 		this.$el.empty()
-			.append('<h3>Manage Layouts</h3>')
+			.append('<h3>' +  Upfront.Settings.l10n.exporter.manage_layouts + '</h3>')
 			.append('<a href="#close">&times;</a>')
 		;
 	},
@@ -107,7 +107,7 @@ var LayoutsModal_Pane = Backbone.View.extend({
 		if (this.layout_field) return this.layout_field;
 		this.layout_field = new Upfront.Views.Editor.Field.Select({
 			name: this.paneType,
-			values: [{label: Upfront.Settings.l10n.global.behaviors.loading, value: ""}]
+			values: [{label: Upfront.Settings.l10n.exporter.loading, value: ""}]
 		});
 		return this.layout_field;
 	},
@@ -143,7 +143,7 @@ var LayoutsModal_Pane = Backbone.View.extend({
 
 var LayoutsModal_Available = LayoutsModal_Pane.extend({
 	paneType: 'available',
-	action_label: 'Create Layout',
+	action_label:  Upfront.Settings.l10n.exporter.create_layout,
 	_page_field: false,
 	initialize: function () {
 		LayoutsModal_Pane.prototype.initialize.apply(this, arguments);
@@ -214,7 +214,7 @@ var LayoutsModal_Available = LayoutsModal_Pane.extend({
 
 var LayoutsModal_Existing = LayoutsModal_Pane.extend({
 	paneType: 'existing',
-	action_label: 'Edit Layout',
+	action_label:  Upfront.Settings.l10n.exporter.edit_layout,
 	pane: function () {
 		var field = this.get_field();
 		if (this.data) {
@@ -223,7 +223,7 @@ var LayoutsModal_Existing = LayoutsModal_Pane.extend({
 			});
 		}
 		field.render();
-		this.$el.html('Edit Existing Layout');
+		this.$el.html( Upfront.Settings.l10n.exporter.edit_existing_layout);
 		this.$el.append(field.$el);
 		field.delegateEvents();
 	},
@@ -254,14 +254,14 @@ var LayoutsModal_AvailablePane_SinglePage = Backbone.View.extend({
 	initialize: function () {
 		this.page = new Upfront.Views.Editor.Field.Text({
 			name: 'page_name',
-			label: Upfront.Settings.l10n.global.behaviors.page_layout_name,
+			label: Upfront.Settings.l10n.exporter.page_layout_name,
 		});
 		this.inherit = new Upfront.Views.Editor.Field.Radios({
 			name: 'inherit',
 			layout: "horizontal-inline",
 			values: [
-				{label: Upfront.Settings.l10n.global.behaviors.start_fresh, value: ''},
-				{label: Upfront.Settings.l10n.global.behaviors.start_from_existing, value: 'existing'}
+				{label: Upfront.Settings.l10n.exporter.start_fresh, value: ''},
+				{label: Upfront.Settings.l10n.exporter.start_from_existing, value: 'existing'}
 			]
 		});
 		this.existing = new Upfront.Views.Editor.Field.Select({

@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 require_once dirname(__FILE__) . '/lib/util.php';
+require_once dirname(__FILE__) . '/lib/class_thx_l10n.php';
 
 define('THX_BASENAME', basename(dirname(__FILE__)));
 
