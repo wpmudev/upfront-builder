@@ -131,8 +131,6 @@ class Thx_Exporter {
 	/**
 	 * Fetches the list of currently exported layouts (for the current theme)
 	 * and outputs it as JSON response.
-	 *
-	 * @todo : this should actually replace the Upfront_Ajax::list_theme_layouts() method in Upfront core.
 	 */
 	public function json_get_exported_layouts () {
 		$layouts_path = $this->_fs->get_path(Thx_Fs::PATH_LAYOUTS);
@@ -178,8 +176,6 @@ class Thx_Exporter {
 	/**
 	 * Fetches the list of all Upfront-available layouts
 	 * and outputs a JSON reponse.
-	 *
-	 * @todo This should actually replace the Upfront_Ajax::list_available_layouts() method in Upfront core
 	 */
 	public function json_get_available_layouts () {
 		// Predefined layouts
@@ -240,7 +236,7 @@ class Thx_Exporter {
 	 * @param array $ids
 	 * @param array $cascade
 	 *
-	 * @return array [description]
+	 * @return array Augmented cascade
 	 */
 	public function augment_layout_load_from_get_query ($ids, $cascade) {
 		$get = stripslashes_deep($_GET);
