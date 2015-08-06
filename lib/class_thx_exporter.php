@@ -163,7 +163,14 @@ class Thx_Exporter {
 				// Add a more specific layout entry
 				$layout['layout']['item'] = $raw[0] . '-' . $raw[1];
 			} else $type_name = __('(generic)', UpfrontThemeExporter::DOMAIN);
-			$layout['label'] = sprintf($type_basename, $type_name);
+
+			if (empty($layout['layout']['specificity'])) $layout['layout']['specificity'] = $raw_layout;
+
+			$label = Upfront_EntityResolver::layout_to_name($layout['layout']);
+			$layout['label'] = !empty($label)
+				? $label
+				: sprintf($type_basename, $type_name)
+			;
 
 			$layouts[] = $layout;
 		}
