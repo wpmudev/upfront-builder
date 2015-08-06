@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Upfront Theme Exporter 0.0.1\n"
 "Report-Msgid-Bugs-To: "
 "http://wordpress.org/support/plugin/upfront-theme-exporter\n"
-"POT-Creation-Date: 2015-07-30 06:47:52+00:00\n"
+"POT-Creation-Date: 2015-08-06 06:09:29+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -87,6 +87,66 @@ msgstr ""
 
 #: lib/class_thx_exporter.php:1892
 msgid "Sample Post"
+msgstr ""
+
+#: lib/class_thx_l10n.php:47
+msgid "Page name (leave empty for single-page.php)"
+msgstr ""
+
+#: lib/class_thx_l10n.php:48
+msgid "Start fresh"
+msgstr ""
+
+#: lib/class_thx_l10n.php:49
+msgid "Start from existing layout"
+msgstr ""
+
+#: lib/class_thx_l10n.php:50
+msgid "Create New Layout"
+msgstr ""
+
+#: lib/class_thx_l10n.php:51
+msgid "Edit Saved Layout"
+msgstr ""
+
+#: lib/class_thx_l10n.php:54
+msgid "Manage Layouts"
+msgstr ""
+
+#: lib/class_thx_l10n.php:55
+msgid "Create Layout"
+msgstr ""
+
+#: lib/class_thx_l10n.php:56
+msgid "Edit Layout"
+msgstr ""
+
+#: lib/class_thx_l10n.php:57
+msgid "Edit Existing Layout"
+msgstr ""
+
+#: lib/class_thx_l10n.php:58
+msgid "Loading..."
+msgstr ""
+
+#: lib/class_thx_l10n.php:61
+msgid "Current Layout: <b>%s</b>"
+msgstr ""
+
+#: lib/class_thx_l10n.php:62
+msgid "Layouts"
+msgstr ""
+
+#: lib/class_thx_l10n.php:63
+msgid "Media"
+msgstr ""
+
+#: lib/class_thx_l10n.php:64
+msgid "Theme Images"
+msgstr ""
+
+#: lib/class_thx_l10n.php:65
+msgid "Theme Sprites"
 msgstr ""
 
 #: templates/plugin/create_edit.php:13
@@ -221,15 +281,15 @@ msgstr ""
 msgid "Export with images"
 msgstr ""
 
-#: upfront-theme-exporter.php:95
+#: upfront-theme-exporter.php:96
 msgid "Create New Theme"
 msgstr ""
 
-#: upfront-theme-exporter.php:97
+#: upfront-theme-exporter.php:98
 msgid "Builder"
 msgstr ""
 
-#: upfront-theme-exporter.php:113
+#: upfront-theme-exporter.php:114
 msgid "Edit current theme"
 msgstr ""
 
