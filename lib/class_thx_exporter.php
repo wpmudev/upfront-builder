@@ -75,7 +75,8 @@ class Thx_Exporter {
 
 		add_filter('stylesheet_directory', array($this, 'process_stylesheet_directory'), 100);
 		
-		add_action('wp_footer', array($this, 'inject_dependencies'), 100);
+		//add_action('wp_footer', array($this, 'inject_dependencies'), 100);
+		add_action('upfront-core-inject_dependencies', array($this, 'inject_dependencies'), 100);
 		add_filter('upfront_data', array($this, 'add_data'));
 		add_action('wp_enqueue_scripts', array($this,'add_styles'));
 
