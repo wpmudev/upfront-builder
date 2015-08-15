@@ -54,7 +54,14 @@ class Thx_Json {
 		/// Well, except for the obvious `stdClass::__set_state` issue, which is a known PHP bug:
 		/// https://bugs.php.net/bug.php?id=67918
 		$str = var_export($object, true);
-		return preg_replace('/' . preg_quote('stdClass::__set_state' , '/') . '\b/', '(array)', $str);
+		
+		// Fix anonymous classes typecasting
+		$str = preg_replace('/' . preg_quote('stdClass::__set_state' , '/') . '\b/', '(array)', $str);
+
+		// Fix single-quoted variables
+		$str = preg_replace('/\s=>\s[\'](\$[a-z][a-z_0-9]+)[\'],?\s*$/im', ' => $1,', $str);
+
+		return $str;
 
 // --- Up to here --- //
 
