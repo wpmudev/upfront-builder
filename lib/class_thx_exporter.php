@@ -668,11 +668,14 @@ class Thx_Exporter {
 			'scope' => $data['scope']
 		);
 
-		if ( $use_var ){ // just pass a variable string, the variable will be defined before this method call, to allow the use of sidebar region globally
+		if ($use_var) { // just pass a variable string, the variable will be defined before this method call, to allow the use of sidebar region globally
+
+			// This might break with `var_export`-based exports, so there's a fix in `Thx_Json::stringify_php` method
+			// labeled "Fix single-quoted variables"
+
 			$main['container'] = "\${$name}_container";
 			$main['sub'] = "\${$name}_sub";
-		}
-		else {
+		} else {
 			if (!empty($data['container']) && $data['name'] !== $data['container']) $main['container'] = $data['container'];
 			else $main['container'] = $data['name'];
 	
@@ -703,7 +706,7 @@ class Thx_Exporter {
 		}
 
 		$output = '';
-		if ( $use_var ){
+		if ($use_var) {
 			$output .= '$' . $name . '_container = ( !empty($region_container) ? $region_container : "' . ( !empty($data['container']) ? $data['container'] : '' ) . '" );' . "\n";
 			$output .= '$' . $name . '_sub = ( !empty($region_sub) ? $region_sub: "' . ( !empty($data['sub']) ? $data['sub'] : '' ) . '" );' . "\n\n";
 		}
