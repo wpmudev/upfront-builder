@@ -1441,6 +1441,14 @@ class Thx_Exporter {
 	public function delete_preset ($properties, $slug) {
 		$this->_update_element_preset($slug, true);
 	}
+	
+	public function replace_new_lines($preset) {
+		if(isset($preset['preset_style']) && !empty($preset['preset_style'])) {
+			$preset['preset_style'] = str_replace("\n", "@n", $preset['preset_style']);
+		}
+		
+		return $preset;
+	}
 
 	protected function _update_element_preset ($slug, $delete=false) {
 		if (!isset($_POST['data'])) {
@@ -1448,8 +1456,10 @@ class Thx_Exporter {
 		}
 
 		$presetProperty = $slug . '_presets';
-
-		$properties = stripslashes_deep($_POST['data']);
+		
+		$presetData = $this->replace_new_lines($_POST['data']);
+		
+		$properties = stripslashes_deep($presetData);
 
 		if (upfront_exporter_is_start_page()) {
 			$presets = json_decode(get_option('upfront_new-' . $presetProperty), true);
