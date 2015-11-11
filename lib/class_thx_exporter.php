@@ -1475,9 +1475,16 @@ class Thx_Exporter {
 		$this->_update_element_preset($slug, true);
 	}
 
-	public function replace_new_lines($preset) {
-		if(isset($preset['preset_style']) && !empty($preset['preset_style'])) {
-			$preset['preset_style'] = str_replace("\n", "@n", $preset['preset_style']);
+	/**
+	 * Exchanges newlines and otherwise prepares preset styles for storage.
+	 *
+	 * @param array $preset Preset
+	 *
+	 * @return array Processed preset
+	 */
+	protected function _escape_preset_styles ($preset) {
+		if (isset($preset['preset_style']) && !empty($preset['preset_style'])) {
+			$preset['preset_style'] = addcslashes(str_replace("\n", "@n", $preset['preset_style']), "'\\");
 		}
 
 		return $preset;
@@ -1490,7 +1497,7 @@ class Thx_Exporter {
 
 		$presetProperty = $slug . '_presets';
 
-		$presetData = $this->replace_new_lines($_POST['data']);
+		$presetData = $this->_escape_preset_styles($_POST['data']);
 
 		$properties = stripslashes_deep($presetData);
 
