@@ -1484,6 +1484,7 @@ class Thx_Exporter {
 	 */
 	protected function _escape_preset_styles ($preset) {
 		if (isset($preset['preset_style']) && !empty($preset['preset_style'])) {
+			$preset['preset_style'] = str_replace("'", '"', $preset['preset_style']); // Unify quotes first
 			$preset['preset_style'] = addcslashes(str_replace("\n", "@n", $preset['preset_style']), "'\\");
 		}
 
