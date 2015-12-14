@@ -282,6 +282,9 @@ class Thx_Exporter {
 		$preset_servers = $registry->get_all();
 		if (empty($preset_servers)) return false;
 
+		//Handle element styles migration
+		add_action("upfront_migrate_default_presets", array($this, 'migrate_element_style_preset'), 10, 2);
+
 		foreach (array_keys($preset_servers) as $server) {
 			add_action("upfront_save_{$server}_preset", array($this, 'save_preset'), 10, 2);
 			add_action("upfront_delete_{$server}_preset", array($this, 'delete_preset'), 10, 2);
@@ -1527,7 +1530,55 @@ class Thx_Exporter {
 			update_option('upfront_new-' . $presetProperty, json_encode($result));
 			return;
 		}
+		
+		print_r($result);
+		
 		$this->_theme_settings->set($presetProperty, json_encode($result));
+	}
+	
+	public function migrate_element_style_preset () {
+		if (!isset($_POST['data'])) {
+			return;
+		}
+		
+		$migrated_presets = $_POST['data'];
+		
+		foreach($migrated_presets as $element=>$properties) {
+
+			$presetProperty = $element . '_presets';
+
+			$presetData = $this->_escape_preset_styles($properties);
+
+			$properties = stripslashes_deep($presetData);
+
+			if (upfront_exporter_is_start_page()) {
+				$presets = json_decode(get_option('upfront_new-' . $presetProperty), true);
+			} else {
+				$presets = json_decode($this->_theme_settings->get($presetProperty), true);
+			}
+
+			$result = array();
+
+			foreach ($presets as $preset) {
+				if ($preset['id'] === $properties['id']) {
+					continue;
+				}
+				$result[] = $preset;
+			}
+
+			if (!$delete) {
+				$result[] = $properties;
+			}
+
+			if (upfront_exporter_is_start_page()) {
+				update_option('upfront_new-' . $presetProperty, json_encode($result));
+				return;
+			}
+			
+			print_r($result);
+			
+			$this->_theme_settings->set($presetProperty, json_encode($result));
+		}
 	}
 
 	/**
