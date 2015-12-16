@@ -1574,9 +1574,7 @@ class Thx_Exporter {
 				update_option('upfront_new-' . $presetProperty, json_encode($result));
 				return;
 			}
-			
-			print_r($result);
-			
+
 			$this->_theme_settings->set($presetProperty, json_encode($result));
 		}
 	}
