@@ -500,6 +500,8 @@ class Thx_Exporter {
 
 		$template = "<?php\n";
 
+		$template .= "\$layout_version = '" . Upfront_Layout::$version . "';\n\n";
+
 		foreach($regions as $region) {
 			if($region->name === 'shadow') continue;
 			if(!empty($region->scope) && $region->scope === 'global' && (!$region->container || $region->name == $region->container)) {
