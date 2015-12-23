@@ -1503,14 +1503,16 @@ class Thx_Exporter {
 		$presetProperty = $slug . '_presets';
 
 		$presetData = $this->_escape_preset_styles($_POST['data']);
-
 		$properties = stripslashes_deep($presetData);
 
-		if (upfront_exporter_is_start_page()) {
-			$presets = json_decode(get_option('upfront_new-' . $presetProperty), true);
-		} else {
-			$presets = json_decode($this->_theme_settings->get($presetProperty), true);
-		}
+		$raw = upfront_exporter_is_start_page()
+			? get_option('upfront_new-' . $presetProperty)
+			: $this->_theme_settings->get($presetProperty)
+		;
+		$presets = !empty($raw)
+			? json_decode($raw, true)
+			: array()
+		;
 
 		$result = array();
 
