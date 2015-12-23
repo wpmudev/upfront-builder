@@ -1516,7 +1516,8 @@ class Thx_Exporter {
 
 		$result = array();
 
-		foreach ($presets as $preset) {
+		// Make sure we only iterate over what can be iterated over...
+		if (is_array($presets)) foreach ($presets as $preset) {
 			if ($preset['id'] === $properties['id']) {
 				continue;
 			}
