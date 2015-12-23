@@ -1532,7 +1532,9 @@ class Thx_Exporter {
 			update_option('upfront_new-' . $presetProperty, json_encode($result));
 			return;
 		}
-		$this->_theme_settings->set($presetProperty, json_encode($result));
+
+		// Note: `addslashes` here, because theme settings will call `stripslashes` in the `get` method
+		$this->_theme_settings->set($presetProperty, addslashes(json_encode($result)));
 	}
 
 	/**
