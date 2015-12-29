@@ -35,6 +35,7 @@ abstract class Thx_VirtualSubpage extends Upfront_VirtualSubpage {
 	}
 
 	public function start_editor () {
+		upfront_exporter_clear_conversion_cache($this->get_slug());
 		echo upfront_boot_editor_trigger('theme');
 	}
 }
