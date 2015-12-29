@@ -1492,6 +1492,7 @@ class Thx_Exporter {
 			$preset['preset_style'] = str_replace("'", '"', $preset['preset_style']); // Unify quotes first
 			$preset['preset_style'] = str_replace("\r\n", "\n", $preset['preset_style']); // Unify newlines
 			$preset['preset_style'] = str_replace("\r", "\n", $preset['preset_style']); // Unify newlines
+			$preset['preset_style'] = $this->_make_urls_passive_relative($preset['preset_style']);
 			$preset['preset_style'] = addcslashes(str_replace("\n", "@n", $preset['preset_style']), "'\\");
 		}
 
