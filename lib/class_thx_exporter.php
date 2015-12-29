@@ -554,6 +554,9 @@ class Thx_Exporter {
 			)
 		);
 
+		// Reset all caches on export
+		upfront_exporter_clear_conversion_cache($this->_theme);
+
 		die;
 	}
 
