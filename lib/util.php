@@ -97,3 +97,19 @@ function upfont_thx_is_current_theme_upfront_child () {
 
 	return $current->get_stylesheet();
 }
+
+
+/**
+ * Clears autoconversion cache
+ *
+ * @param  string $slug Theme slug to clear the cache for
+ *
+ * @return bool
+ */
+function upfront_exporter_clear_conversion_cache ($slug) {
+	if (empty($slug)) return false;
+	global $wpdb;
+	$rx = '_transient_(timeout_)?' . $slug . '.*_ver[0-9]';
+	$sql = "DELETE FROM {$wpdb->options} WHERE option_name REGEXP %s";
+	return !!$wpdb->query($wpdb->prepare($sql, $rx));
+}
