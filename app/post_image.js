@@ -29,7 +29,7 @@ var PostImageVariants =  Backbone.View.extend({
         var self = this;
         var $page = $('#page');
 
-        $page.find('.upfront-module').draggable('disable').resizable('disable');
+        $page.find('.upfront-module').draggable('disable').resizable({ disabled: true });
         $page.find('.upfront-region-edit-trigger').hide();
 
         Upfront.Content.ImageVariants.each(function (model) {
