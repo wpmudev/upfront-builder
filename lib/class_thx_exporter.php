@@ -326,10 +326,23 @@ class Thx_Exporter {
 		$layout_cascade = !empty($_POST['layout_cascade']) ? $_POST['layout_cascade'] : false;
 		if (empty($layout_cascade)) return $cascade;
 
+		$base_path = preg_match('/-$/', $base_filename) && !is_dir($base_filename)
+			? dirname($base_filename)
+			: false
+		;
+		if ($base_path && is_dir($base_path)) $base_path = trailingslashit($base_path);
+
 		$cascade = array(
 			$base_filename . $layout_cascade['item'] . '.php',
 			$base_filename . $layout_cascade['type'] . '.php'
 		);
+
+		if (!empty($base_path)) {
+			$cascade[] = $base_path . $layout_cascade['item'] . '.php';
+			$cascade[] = $base_path . $layout_cascade['type'] . '.php';
+		}
+
+		return $cascade;
 	}
 
 	public function get_stylesheet ($stylesheet) {
