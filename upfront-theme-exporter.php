@@ -102,7 +102,7 @@ class UpfrontThemeExporter {
 
 		$toolbar->add_menu(array(
 			'id' => $root_item_id,
-			'title' => $main_title,
+			'title' => '<span style="top:2px" class="ab-icon dashicons-hammer"></span><span class="ab-label">' . $main_title . '</span>',
 			'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/theme'),
 			'meta' => array( 'class' => 'upfront-create_theme' )
 		));
