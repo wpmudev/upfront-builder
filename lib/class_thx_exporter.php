@@ -707,6 +707,9 @@ class Thx_Exporter {
 		if (!empty($data['sticky'])) $main['sticky'] = $data['sticky'];
 		$secondary = $this->_parse_properties($data['properties']);
 
+		// Add version
+		$secondary['version'] = Upfront_Layout::$version;
+
 		// Deal with the slider images
 		if (!empty($secondary['background_slider_images'])) {
 			foreach ($secondary['background_slider_images'] as $idx => $img) {
