@@ -1978,6 +1978,7 @@ class Thx_Exporter {
 			'post_status' => 'publish',
 			'post_title' => __('Sample Post', UpfrontThemeExporter::DOMAIN),
 			'post_content' => $content,
+			'post_date' => date("Y-m-d H:i:s"),
 			'filter' => 'raw',
 			'post_author' => get_current_user_id()
 		));
