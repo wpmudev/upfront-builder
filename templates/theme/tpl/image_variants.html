@@ -2,13 +2,16 @@
     <script type="text/template" id="upfront-post-image-variant-tpl">
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias aliquid asperiores dolor dolorum eaque enim esse, est harum ipsum iusto molestiae natus nostrum porro, quia quidem suscipit veniam voluptatem.        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias aliquid asperiores dolor dolorum eaque enim esse, est harum ipsum iusto molestiae natus nostrum porro, quia quidem suscipit veniam voluptatem.
         <div class="ueditor-insert ueditor-insert-variant upfront-inserted_image-wrapper">
-	        <div class="ueditor-insert-variant-group ueditor-insert-float-{{group.float}} {{group.width_cls}} {{group.left_cls}}" style="min-height: {{group.height}}px;float:{{group.float}}">
-	            <input class="image-variant-label" type="text" value="{{label}}"/>
+	        <div class="ueditor-insert-variant-group ueditor-insert-float-{{group.float}} {{group.width_cls}}" style="min-height: {{group.height}}px;float:{{group.float}}">
+				<label class="image-variant-label">
+					<span>Name This Insert:</span>
+	            	<input type="text" value="{{label}}"/>
+				</label>
 	            <div class="ueditor-insert-variant-wrap">
-	                <div class="upfront-wrapper ueditor-insert-variant-image {{image.width_cls}} {{image.left_cls}} {{image.top_cls}} {[if( image.clear === true ) { ]} {{image.clear_cls}} {[ } ]} " style="height: {{image.height}}px;">
+	                <div class="upfront-wrapper ueditor-insert-variant-image {{image.width_cls}} {{image.clear_cls}} {{image.order_cls}} {{image.full_cls}}" style="height: {{image.height}}px;">
 	                    <div class="ueditor-insert-variant-image-inside"></div>
 	                </div>
-	                <span class="upfront-wrapper ueditor-insert-variant-caption {{caption.width_cls}} {{caption.left_cls}} {{caption.top_cls}} {[if( caption.clear === true) { ]} {{caption.clear_cls}} {[ } ]}" style="height: {{caption.height}}px;">Type your caption here ...</span>
+	                <span class="upfront-wrapper ueditor-insert-variant-caption {{caption.width_cls}} {{caption.clear_cls}} {{caption.order_cls}} {{caption.full_cls}}" style="height: {{caption.height}}px;">Type your caption here ...</span>
 	            </div>
 	            <div class="upfront_edit_image_insert">Edit Image Insert</div>
 	        </div>

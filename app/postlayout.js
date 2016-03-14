@@ -26,6 +26,13 @@ define([
         }
     });
 
+    var PostDataDesignButton = PostDesignButton.extend({
+        on_click: function( e ){
+            e.preventDefault();
+            Upfront.Events.trigger('post:layout:post:style:cancel');
+        }
+    });
+
     var PostLayoutManager = function(){
         this.init();
     };
@@ -39,9 +46,13 @@ define([
                 },50);
             }
 
+            // For old this_post
             Upfront.Events.on('post:layout:partrendered',_.bind(this.setTestContent, this) );
             Upfront.Events.on('post:layout:post:style:cancel', _.bind(this.cancelPostContentStyle, this));
             Upfront.Events.on('post:parttemplates:edit', _.bind(this.addTemplateExportButton, this));
+
+            // For new post data
+            Upfront.Events.on('post-data:part:rendered', _.bind(this.setDataTestContent, this));
         },
 
 /*
@@ -207,12 +218,79 @@ define([
             });
         },
         cancelPostContentStyle: function(){
+            var $main = $(Upfront.Settings.LayoutEditor.Selectors.main);
+            $main.removeClass('upfront-editing-content-style');
             this.savePostDesingButton.remove();
-            $('.upfront-output-PostPart_contents').closest(".upfront-object-view").removeClass("upfront-disable-surroundings");
+            $('.upfront-output-PostPart_contents, .upostdata-part.content').closest(".upfront-object-view").removeClass("upfront-disable-surroundings");
             //$('.upfront-output-PostPart_contents .post_content').html(Upfront.data.exporter.postTestContent);
-            this._setPostTestContent();
+            this._setPostTestContent(); // To be deprecated
+            this._setPostDataTestContent();
             Upfront.Application.set_post_content_style();
-        }
+
+            Upfront.Events.trigger('upfront:edit_content_style:stop');
+        },
+
+        setDataTestContent: function (view) {
+            var type = view.model.get_property_value_by_name('part_type');
+            if ( type != 'content' || !view.object_group_view ) return;
+            var editor = view.object_group_view.editor;
+            if( editor.post.get("post_type") === "post" ){
+                this._setPostDataTestContent(view);
+            }else{
+                this._setDataTestContent(view);
+            }
+        },
+        _setDataTestContent: function( view ){
+            var $content = view.$('.upostdata-part.content'),
+                $indented_content = $content.find('.upfront-indented_content')
+            ;
+            if ( $indented_content.length > 0 ) {
+                $indented_content.html(Upfront.data.exporter.testContent);
+            }
+            else {
+                $content.html(Upfront.data.exporter.testContent);
+            }
+        },
+        _setPostDataTestContent: function( view ){
+            if( view ) this.view = view;
+            var $main = $(Upfront.Settings.LayoutEditor.Selectors.main),
+                $content = this.view.$('.upostdata-part.content'),
+                $indented_content = $content.find('.upfront-indented_content'),
+                self = this
+            ;
+            $content.addClass('edit-content');
+            if ( $indented_content.length > 0 ) {
+                $indented_content.html(Upfront.data.exporter.postTestContent);
+            }
+            else {
+                $content.html(Upfront.data.exporter.postTestContent);
+            }
+            this.savePostDesingButton = new PostDataDesignButton();
+
+            /**
+             * Start content styler on click
+             */
+            this.view.$(".upfront_edit_content_style").on("click", function(e){
+                $main.addClass('upfront-editing-content-style');
+                Upfront.Events.trigger('upfront:edit_content_style:start');
+                if ( $indented_content.length > 0 ) {
+                    $indented_content.html(Upfront.data.exporter.styledTestContent);
+                }
+                else {
+                    $content.html(Upfront.data.exporter.styledTestContent);
+                }
+                //self.view.$('.upfront-object').addClass("upfront-editing-content-style");
+                self.view.$('.upfront-object-content').closest(".upfront-object-view").addClass("upfront-disable-surroundings");
+                new post_image.PostImageVariants({
+                    contentView : self.view
+                });
+                Upfront.Application.set_post_content_style();
+                self.savePostDesingButton.render();
+                self.view.$el.append( self.savePostDesingButton.$el );
+            });
+        },
+
+
     };
 
     var postLayoutManager = new PostLayoutManager();
