@@ -101,8 +101,9 @@ function init_responsive_exporter () {
 
 function init () {
 	Upfront.Events.on("application:mode:after_switch", function () {
-		if (Upfront.Application.get_current() === Upfront.Settings.Application.MODE.THEME) return init_normal_exporter();
 		if (Upfront.Application.get_current() === Upfront.Settings.Application.MODE.RESPONSIVE) return init_responsive_exporter();
+		if (Upfront.Application.get_current() === Upfront.Settings.Application.MODE.THEME) return init_normal_exporter();
+		else return init_normal_exporter();
 	});
 }
 
