@@ -817,6 +817,9 @@ var PostImageVariant = Backbone.View.extend({
             padding_right = content_view.model.get_property_value_by_name('padding_right'),
             max_col = parent_col,
             group = this.model.get('group'),
+            $content = content_view.$el.find('> .upfront-editable_entity'),
+            content_padding_left = parseInt($content.css('padding-left'), 10),
+            content_padding_right = parseInt($content.css('padding-right'), 10),
             $resize,
             col_size, axis, rsz_row, rsz_col, rsz_left, rsz_float
         ;
@@ -830,12 +833,12 @@ var PostImageVariant = Backbone.View.extend({
         padding_left = padding_left ? parseInt(padding_left) : 0;
         padding_right = padding_right ? parseInt(padding_right) : 0;
         max_col = max_col - padding_left - padding_right;
-        col_size = Math.floor($parent.width()/max_col);
-        //col_size = ge.col_size;
+        //col_size = Math.floor($parent.width()/max_col);
+        col_size = ge.col_size;
 
         this.$wrap.css({
-            marginLeft: padding_left * col_size * -1,
-            marginRight: padding_right * col_size * -1
+            marginLeft: ( padding_left * col_size * -1 ) - content_padding_left,
+            marginRight: ( padding_right * col_size * -1 ) - content_padding_right
         });
 
         if ( group.col > max_col + Math.abs(group.margin_left) + Math.abs(group.margin_right) ) {
@@ -932,12 +935,12 @@ var PostImageVariant = Backbone.View.extend({
                     rsz_max_col = max_col,
                     floatval = self.model.get('group').float;
                 if ( axis == 'nw' || axis == 'w' )
-                    rsz_max_col = Math.round((ui.originalPosition.left+ui.originalSize.width)/col_size);
+                    rsz_max_col = Math.round((ui.originalPosition.left+ui.originalSize.width+content_padding_left)/col_size);
                 else
-                    rsz_max_col = Math.round(((max_col*col_size)-ui.originalPosition.left)/col_size) + padding_left + padding_right;
+                    rsz_max_col = Math.round(((max_col*col_size)-ui.originalPosition.left-content_padding_left)/col_size) + padding_left + padding_right;
                 rsz_col = ( current_col > rsz_max_col ? rsz_max_col : current_col );
                 rsz_row = Upfront.Util.grid.height_to_row(ui.size.height);
-                rsz_left = Math.round(ui.position.left/col_size) - padding_left;
+                rsz_left = Math.round((ui.position.left+content_padding_left)/col_size) - padding_left;
 
                 if ( rsz_left <= 0 && rsz_left + rsz_col < max_col ) { //float left
                     rsz_float = "left"
