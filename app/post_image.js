@@ -858,14 +858,14 @@ var PostImageVariant = Backbone.View.extend({
 
         this.$self.append(this.w_handle);
         this.$self.append(this.e_handle);
-        this.$self.append(this.s_handle);
+        //this.$self.append(this.s_handle);
         this.$self.resizable({
             //autoHide: true,
             delay: 50,
             handles: {
                 w: '.upfront-resize-handle-w',
                 e: '.upfront-resize-handle-e',
-                s: '.upfront-resize-handle-s'
+                //s: '.upfront-resize-handle-s'
             },
             minHeight: 20,
             minWidth: 45,
@@ -1004,7 +1004,7 @@ var PostImageVariant = Backbone.View.extend({
                 $this.css({
                     float: rsz_float,
                     height: "",
-                    minHeight: height,
+                    //minHeight: height,
                     width: "",
                     top: "",
                     left: "",
