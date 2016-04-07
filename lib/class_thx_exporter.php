@@ -1057,12 +1057,19 @@ class Thx_Exporter {
 		}
 
 		$menu = array(
-			'id' => false, // Shouldn't be set
-			'slug' => $menu_object->slug,
-			'name' => $menu_object->name,
-			'description' => $menu_object->description,
+			'id' => false,
+			'slug' => "",
+			'name' => "",
+			'description' => "",
 			'items' => $menu_items
 		);
+
+		if(  is_object( $menu_object ) )
+			$menu = wp_parse_args( array(
+				'slug' => $menu_object->slug,
+				'name' => $menu_object->name,
+				'description' => $menu_object->description
+			), $menu );
 
 		if (upfront_exporter_is_start_page()) {
 			$menus = json_decode(get_option('upfront_new-menus'));
