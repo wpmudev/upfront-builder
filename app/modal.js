@@ -128,6 +128,7 @@ var LayoutsModal_Pane = Backbone.View.extend({
 			});
 			button.render();
 			this.$el.append(button.$el);
+			button.delegateEvents();
 		}
 	},
 	dispatch_selected: function () {
