@@ -43,11 +43,11 @@ abstract class Thx_Sanitize {
 	 * @return mixed Sanitized string or (bool)false on failure
 	 */
 	public static function php_safe ($what) {
-		$str = preg_replace('/_+/', '_', preg_replace('/[^_a-z0-9]/i', '_', trim($what)));
+		$str = preg_replace('/_+/', '-', preg_replace('/[^_a-z0-9]/i', '_', trim($what)));
 
 		// We can't start with number, or have only numbers
 		if (preg_match('/^[0-9]+$/', $str)) return false; // Only numbers, can't do this
-		if (preg_match('/^[0-9]/', $str)) $str = "uf_{$str}"; // Can't start with numbers
+		if (preg_match('/^[0-9]/', $str)) $str = "uf-{$str}"; // Can't start with numbers
 		
 		return Thx_Sanitize::is_not_reserved($str) && Thx_Sanitize::is_not_declared($str)
 			? $str
