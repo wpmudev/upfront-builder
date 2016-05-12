@@ -182,4 +182,17 @@ abstract class Thx_Sanitize {
 		);
 		return !in_array($what, $reserved);
 	}
+
+	/**
+	 * Sanitizes php variable name using Thx_Sanitize::php_safe and makes sure _ is not used
+	 *
+	 *
+	 * @uses Thx_Sanitize::php_safe
+	 * @param $what
+	 * @return mixed
+	 */
+	public static function php_safe_variable_name($what){
+		return str_replace( "-", "_", self::php_safe( $what ) );
+	}
+
 }
