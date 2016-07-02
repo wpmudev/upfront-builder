@@ -36,7 +36,7 @@ abstract class Thx_VirtualSubpage extends Upfront_VirtualSubpage {
 
 	public function start_editor () {
 		upfront_exporter_clear_conversion_cache($this->get_slug());
-		echo upfront_boot_editor_trigger('theme');
+		//echo upfront_boot_editor_trigger('theme');
 	}
 }
 
@@ -51,7 +51,7 @@ class Upfront_Thx_InitialPage_VirtualSubpage extends Thx_VirtualSubpage {
 
 		wp_enqueue_style('initial_page', $tpl->url('css/initial_page.css'));
 		wp_enqueue_style('create_edit', $tpl->url('css/create_edit.css'));
-		
+
 		wp_enqueue_script('create_edit', $tpl->url('js/create_edit.js'), array('jquery'));
 
 		load_template($tpl->path('initial_page'));
@@ -91,14 +91,14 @@ class Upfront_Thx_ThemePage_VirtualSubpage extends Thx_VirtualSubpage {
 class Upfront_Thx_Builder_VirtualPage extends Upfront_VirtualPage {
 
 	const SLUG = 'create_new';
-	
+
 	public static function serve () {
 		$me = new self;
 		$me->_add_hooks();
 	}
-	
-	public function get_slug () { 
-		return self::SLUG; 
+
+	public function get_slug () {
+		return self::SLUG;
 	}
 
 	protected function _add_subpages () {
@@ -124,7 +124,7 @@ class Upfront_Thx_Builder_VirtualPage extends Upfront_VirtualPage {
 	}
 
 	public function parse ($request) {}
-	
+
 	/**
 	 * Redirect to initial subpage, if we don't have a better request.
 	 */
