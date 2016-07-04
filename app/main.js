@@ -20,8 +20,5 @@
 			modal.init();
 		});
 
-		// Start the subapplication
-		jQuery(document).data("upfront-auto_start", true);
-		Upfront.Application.start("theme");
 	});
 })(jQuery);

@@ -1,26 +1,9 @@
 ;(function ($) {
 
 	require([
-		Upfront.themeExporter.root + 'app/dialogs.js'
-	], function (Dialogs) {
-
-
-		/**
-		 * We are loading theme by reloading page since lots of stuff needs
-		 * to be setup like stylesheet etc. Only way to get this right is to
-		 * load page from scratch.
-		 */
-		var load_theme = function (theme_slug) {
-			var url = location.origin;
-			// Add anything before create_new
-			url += location.pathname.split('create_new')[0];
-			// Add create_new and theme slug
-			url += 'create_new/' + theme_slug;
-			// Check for dev=true
-			if (location.toString().indexOf('dev=true') > -1) url += '?dev=true';
-
-			window.location = url;
-		};
+		Upfront.themeExporter.root + 'app/dialogs.js',
+		Upfront.themeExporter.root + 'app/exporter.js'
+	], function (Dialogs, Exporter) {
 
 		((Upfront || {}).Application || {}).ThemeEditor = new (Upfront.Subapplication.extend({
 			boot: function () {
@@ -44,7 +27,7 @@
 
 				this.listenToOnce(Upfront.Events, 'layout:render', Upfront.Behaviors.GridEditor.apply_grid);
 				this.listenTo(Upfront.Events, "command:layout:edit_structure", Upfront.Behaviors.GridEditor.edit_structure);
-				this.listenTo(Upfront.Events, "builder:load_theme", load_theme);
+				this.listenTo(Upfront.Events, "builder:load_theme", Exporter.load_theme);
 
 				this.listenTo(Upfront.Events, "command:themefontsmanager:open", Dialogs.open_theme_fonts_manager);
 				this.listenToOnce(Upfront.Events, 'command:layout:save_done', Dialogs.first_save_dialog);
@@ -58,6 +41,12 @@
 			}
 
 		}))();
+
+		if (!Exporter.is_exporter_start_page()) {
+			// Start the subapplication
+			jQuery(document).data("upfront-auto_start", true);
+			Upfront.Application.start("theme");
+		}
 
 	});
 
