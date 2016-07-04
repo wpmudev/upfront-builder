@@ -1,6 +1,8 @@
 (function ($, undefined) {
 
-define(function() {
+define([
+	Upfront.themeExporter.root + 'app/exporter.js'
+], function (Exporter) {
 
 
 var LayoutsModal = Upfront.Views.Editor.Modal.extend({
@@ -14,7 +16,7 @@ var LayoutsModal = Upfront.Views.Editor.Modal.extend({
 		this.header = new LayoutsModal_Header();
 		this.available = new LayoutsModal_Available();
 		this.existing = new LayoutsModal_Existing();
-			
+
 		this.header.on("close", this.close, this);
 		this.available.on("selected", this.close, this);
 		this.existing.on("selected", this.close, this);
@@ -28,13 +30,13 @@ var LayoutsModal = Upfront.Views.Editor.Modal.extend({
 			this.header.render();
 			this.existing.render();
 			this.available.render();
-			
+
 			$content.empty();
-			$content.append(this.header.$el)
+			$content.append(this.header.$el);
 			$content.append(this.existing.$el);
 			$content.append(this.available.$el);
 
-		}, this]);		
+		}, this]);
 	}
 });
 
@@ -53,11 +55,11 @@ var ResponsiveLayoutsModal = Upfront.Views.Editor.Modal.extend({
 			$content.addClass('thx-browse_layouts thx-existing_layouts');
 
 			this.existing.render();
-			
+
 			$content.empty();
 			$content.append(this.existing.$el);
 
-		}, this]);		
+		}, this]);
 	}
 });
 
@@ -198,9 +200,9 @@ var LayoutsModal_Available = LayoutsModal_Pane.extend({
 			};
 		}
 
-		data.use_existing = layout.match(/^single-page/) && specific_layout && "existing" === this._page_field.inherit.get_value()
-			? this._page_field.existing.get_value()
-			: false
+		data.use_existing = layout.match(/^single-page/) && specific_layout && "existing" === this._page_field.inherit.get_value() ?
+			/* ? */ this._page_field.existing.get_value() :
+			/* : */ false
 		;
 
 		Upfront.themeExporter.current_layout_label = data.label;
@@ -208,7 +210,7 @@ var LayoutsModal_Available = LayoutsModal_Pane.extend({
 		Upfront.Application.create_layout(data.layout, {layout_slug: layout_slug, use_existing: data.use_existing}).done(function() {
 			Upfront.Application.layout.set('current_layout', layout);
 			// Immediately export layout to write initial state to file.
-			Upfront.Behaviors.LayoutEditor._export_layout();
+			Exporter._export_layout();
 		});
 	}
 });
@@ -314,30 +316,30 @@ var normal_modal = false;
 function browse_normal_layouts () {
 	if (!normal_modal) {
 		normal_modal = new LayoutsModal({
-			to: $('body'), 
-			button: false, 
-			top: 120, 
+			to: $('body'),
+			button: false,
+			top: 120,
 			width: 540
 		});
 		normal_modal.render();
 		$('body').append(normal_modal.el);
 	}
-	normal_modal.open()
+	normal_modal.open();
 }
 
 var responsive_modal = false;
 function browse_responsive_layouts () {
 	if (!responsive_modal) {
 		responsive_modal = new ResponsiveLayoutsModal({
-			to: $('body'), 
-			button: false, 
-			top: 120, 
+			to: $('body'),
+			button: false,
+			top: 120,
 			width: 540
 		});
 		responsive_modal.render();
 		$('body').append(responsive_modal.el);
 	}
-	responsive_modal.open()
+	responsive_modal.open();
 }
 
 
