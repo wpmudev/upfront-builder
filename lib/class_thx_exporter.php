@@ -90,9 +90,9 @@ class Thx_Exporter {
 		add_action($ajaxPrefix . 'get-themes', array($this, 'json_get_themes'));
 
 		add_action($ajaxPrefix . 'export-layout', array($this, 'json_export_layout'));
-		add_action($ajaxPrefix . 'export-post-layout', array($this, 'json_export_post_layout'));
 
-		add_action($ajaxPrefix . 'export-part-template', array($this, 'json_export_part_template'));
+		//add_action($ajaxPrefix . 'export-post-layout', array($this, 'json_export_post_layout'));
+		//add_action($ajaxPrefix . 'export-part-template', array($this, 'json_export_part_template'));
 
 		add_action($ajaxPrefix . 'export-element-styles', array($this, 'json_export_element_styles'));
 		add_action($ajaxPrefix . 'delete-element-styles', array($this, 'json_delete_element_styles'));
@@ -1848,8 +1848,9 @@ class Thx_Exporter {
 
 		return $data;
 	}
-
+/*
 	public function json_export_part_template () {
+error_log(json_encode(array("json_export_part_template", debug_backtrace())));
 		global $allowedposttags;
 		$allowedposttags['time'] = array('datetime' => true);
 		$tpl = isset($_POST['tpl']) ? wp_kses(stripslashes($_POST['tpl']), $allowedposttags) : false;
@@ -1871,6 +1872,7 @@ class Thx_Exporter {
 	}
 
 	protected function _export_post_part_template ($type, $id, $part, $tpl){
+error_log(json_encode(array("_export_post_part_template", debug_backtrace())));
 		$file_path_parts = array(
 			Thx_Fs::PATH_TEMPLATES,
 			Thx_Fs::PATH_POSTPARTS,
@@ -1891,7 +1893,7 @@ class Thx_Exporter {
 
 		return $file_path;
 	}
-
+*/
 	protected function _generate_exported_templates ($templates){
 		$out = '<?php $templates = array(); ob_start();' . "\n\n";
 
@@ -1907,8 +1909,9 @@ class Thx_Exporter {
 
 		return $out;
 	}
-
+/*
 	public function json_export_post_layout() {
+error_log(json_encode(array("json_export_post_layout", debug_backtrace())));
 		$layoutData = isset($_POST['layoutData']) ? $_POST['layoutData'] : false;
 		$params = isset($_POST['params']) ? $_POST['params'] : false;
 		if(!$layoutData || !$params ) $this->_json->error_msg(__('No layout data or cascade sent.', UpfrontThemeExporter::DOMAIN));
@@ -1920,6 +1923,7 @@ class Thx_Exporter {
 
 
 	protected function _save_post_layout ($params, $layoutData) {
+error_log(json_encode(array("_save_post_layout", debug_backtrace())));
 		$file_name = !empty($params['specificity'])
 			? $params['type'] . "-" . $params['specificity']
 			: $params['type'] . "-" . $params['item']
@@ -1940,7 +1944,7 @@ class Thx_Exporter {
 		$this->_fs->write($file_path_parts, $contents);
 		return $file_name;
 	}
-
+*/
   /**
    * Returns fake post content
    *
