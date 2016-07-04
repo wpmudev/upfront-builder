@@ -3,9 +3,9 @@
 define(function() {
 
 
-var l10n = Upfront.Settings && Upfront.Settings.l10n
-	? Upfront.Settings.l10n.exporter
-	: Upfront.mainData.l10n.exporter
+var l10n = Upfront.Settings && Upfront.Settings.l10n ?
+	/* ? */ Upfront.Settings.l10n.exporter :
+	/* : */ Upfront.mainData.l10n.exporter
 ;
 
 var SidebarCommands_PrimaryLayout = Upfront.Views.Editor.Commands.extend({
@@ -14,7 +14,7 @@ var SidebarCommands_PrimaryLayout = Upfront.Views.Editor.Commands.extend({
 		this.commands = _([
 			new Command_InfoPanel({model: this.model}),
 			new Command_LayoutModal({model: this.model}),
-			
+
 			new Command_ThemeImagesSprites({model: this.model}),
 		]);
 	}
@@ -57,8 +57,7 @@ var Command_ThemeImagesSprites = Upfront.Views.Editor.Command.extend({
 	},
 	render: function () {
 		this.$el.html(
-			'<a class="images" title="'+ l10n.media +'">' + l10n.theme_images + '</a>'
-			+
+			'<a class="images" title="'+ l10n.media +'">' + l10n.theme_images + '</a>' +
 			'<a class="sprites" title="'+ l10n.media +'">' + l10n.theme_sprites + '</a>'
 		);
 	},
@@ -83,7 +82,7 @@ var Command_ThemeImagesSprites = Upfront.Views.Editor.Command.extend({
 function init_normal_exporter () {
 	Upfront.Application.sidebar.sidebar_commands.primary = new SidebarCommands_PrimaryLayout({model: Upfront.Application.sidebar.model});
 	Upfront.Application.sidebar.sidebar_commands.additional = false;
-	
+
 	Upfront.Application.sidebar.render();
 }
 
@@ -101,9 +100,15 @@ function init_responsive_exporter () {
 
 function init () {
 	Upfront.Events.on("application:mode:after_switch", function () {
+		/*
 		if (Upfront.Application.get_current() === Upfront.Settings.Application.MODE.RESPONSIVE) return init_responsive_exporter();
 		if (Upfront.Application.get_current() === Upfront.Settings.Application.MODE.THEME) return init_normal_exporter();
 		else return init_normal_exporter();
+		*/
+		return Upfront.Application.get_current() === Upfront.Settings.Application.MODE.RESPONSIVE ?
+			/* ? */ init_responsive_exporter() :
+			/* : */ init_normal_exporter()
+		;
 	});
 }
 
