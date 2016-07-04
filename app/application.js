@@ -42,6 +42,8 @@
 
 		}))();
 
+		Upfront.Application.ThemeEditor._get_saved_layout = Exporter._get_saved_layout;
+
 		if (!Exporter.is_exporter_start_page()) {
 			// Start the subapplication
 			jQuery(document).data("upfront-auto_start", true);
