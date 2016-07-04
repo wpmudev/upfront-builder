@@ -1562,7 +1562,7 @@ class Thx_Exporter {
 
 		// Note: `addslashes` here, because theme settings will call `stripslashes` in the `get` method
 		// Second note: we do not need to addslashes here because we already do on saving settings.php which make enourmous amount of slashes
-		$this->_theme_settings->set($presetProperty, json_encode($result));
+		$this->_theme_settings->set($presetProperty, addslashes(json_encode($result)));
 	}
 
 	/**
