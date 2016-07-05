@@ -34,6 +34,10 @@
 				this.listenTo(Upfront.Events, "command:layout:create", Dialogs.create_layout_dialog); // DEPRECATED
 				this.listenTo(Upfront.Events, "command:layout:browse", Dialogs.browse_layout_dialog); // DEPRECATED
 				this.listenTo(Upfront.Events, "command:layout:export_theme", Dialogs.export_dialog);
+				
+				setTimeout(function(){
+					Dialogs.getting_started_exp();
+				}, 500);
 			},
 
 			stop: function () {
