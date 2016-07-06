@@ -81,6 +81,22 @@
 		position: relative;
 		border-radius: 5px;
 		
+		.description {
+			padding: 30px;
+			line-height: 1.4;
+			
+			strong {
+				font-weight: bold;
+			}
+			
+			a {
+				border-bottom: 1px solid rgba(55, 147, 255,.6);
+				color: rgb(55, 147, 255);
+				font-weight: 600;
+				padding-bottom: 2px;
+			}
+		}
+		
 		.controls {
 			position: absolute;
 			width: 100%;
@@ -107,11 +123,44 @@
 			
 			.pagination {
 				padding-left: 0;
+				color: rgb(185, 185, 185);
+				font-size: 18px;
+				
+				strong {
+					color: #fff;
+					padding-right: 5px;
+				}
+				
+				em {
+					font-style: italic;
+					font-family: Georgia, Times, serif;
+					padding-right: 5px;
+				}
+			}
+			
+			button {
+				background: rgb(68, 84, 98);
+				border: none;
+				border-radius: 2px;
+				padding: 5px 20px;
+				color: #fff;
+				text-transform: none;
 			}
 			
 			button.skip {
 				border: none;
-				color: blue;
+				color: rgb(101, 188, 240);
+				font-weight: 600;
+				background: transparent;
+			}
+			
+			button.prev {
+				background: transparent;
+				margin-right: 10px;
+			}
+			
+			button.finish {
+				background: rgb(31, 205, 143);
 			}
 		}
 	}
@@ -201,7 +250,7 @@
 	.getting_started_content {
 	
 		.controls {
-			top: -55px;
+			top: -45px;
 			padding: 0 30px 10px 30px;
 		}
 	}

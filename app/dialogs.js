@@ -468,6 +468,14 @@
 				
 				// button events
 				me.$popup.content.on('click', 'button.skip', function() {
+					if (Upfront.Application.is_builder()) {
+						Upfront.Util.post({
+							action: 'upfront_thx-skip-getting-started',
+							data: {
+								key: _upfront_storage_key + '_show_builder_exp'
+							}
+						});
+					}
 					me.close_popup();
 				});
 				
