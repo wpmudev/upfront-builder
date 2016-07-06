@@ -97,8 +97,8 @@ class Thx_Exporter {
 		add_action($ajaxPrefix . 'export-element-styles', array($this, 'json_export_element_styles'));
 		add_action($ajaxPrefix . 'delete-element-styles', array($this, 'json_delete_element_styles'));
 
-		add_filter('upfront_theme_layout_cascade', array($this, 'get_theme_layout_cascade'), 10, 2); // Used for ThisPost - this will be going out
-		add_filter('upfront_theme_postpart_templates_cascade', array($this, 'get_theme_postpart_templates_cascade'), 10, 2);
+		//add_filter('upfront_theme_layout_cascade', array($this, 'get_theme_layout_cascade'), 10, 2); // Used for ThisPost - this will be going out
+		//add_filter('upfront_theme_postpart_templates_cascade', array($this, 'get_theme_postpart_templates_cascade'), 10, 2);
 
 		add_filter('upfront_prepare_theme_styles', '__return_empty_string', 15);
 		add_filter('upfront_prepare_typography_styles', '__return_empty_string', 15);
@@ -299,9 +299,10 @@ class Thx_Exporter {
 		if ( 'fake_post' !== $data['post_id'] && 'fake_styled_post' !== $data['post_id'] ) return $post;
 		return $this->_generate_preview_post($data);
 	}
-
+/*
 	// This is used for ThisPost filtering - will be going out soon enough
 	public function get_theme_layout_cascade ($cascade, $base_filename) {
+error_log(debug_backtrace());
 		$layout_cascade = false;
 		$post_type = false;
 		// Override brute force to ensure single-something page get their specific postlayout loaded
@@ -319,9 +320,12 @@ class Thx_Exporter {
 		if (!empty($post_type) && !in_array($post_type, array_values($layout_cascade))) $new_cascade[] = $base_filename . $post_type . '.php';
 		return $new_cascade;
 	}
+*/
 
+/*
 	// TODO this should go to upfront theme!
 	public function get_theme_postpart_templates_cascade ($cascade, $base_filename) {
+error_log(debug_backtrace());
 		// Override brute force to ensure single-something page get page specific post layout parts loaded
 		$layout_cascade = !empty($_POST['layout_cascade']) ? $_POST['layout_cascade'] : false;
 		if (empty($layout_cascade)) return $cascade;
@@ -344,7 +348,7 @@ class Thx_Exporter {
 
 		return $cascade;
 	}
-
+*/
 	public function get_stylesheet ($stylesheet) {
 		return upfront_exporter_get_stylesheet();
 	}
