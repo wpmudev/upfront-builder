@@ -1548,10 +1548,14 @@ class Thx_Exporter {
 			if ($preset['id'] === $properties['id']) {
 				continue;
 			}
+			// Make sure we escape preset_style
+			$preset['preset_style'] = addslashes($preset['preset_style']);
 			$result[] = $preset;
 		}
 
 		if (!$delete) {
+			// Make sure we escape preset_style
+			$properties['preset_style'] = addslashes($properties['preset_style']);
 			$result[] = $properties;
 		}
 
@@ -1562,7 +1566,7 @@ class Thx_Exporter {
 
 		// Note: `addslashes` here, because theme settings will call `stripslashes` in the `get` method
 		// Second note: we do not need to addslashes here because we already do on saving settings.php which make enourmous amount of slashes
-		$this->_theme_settings->set($presetProperty, addslashes(json_encode($result)));
+		$this->_theme_settings->set($presetProperty, json_encode($result));
 	}
 
 	/**
