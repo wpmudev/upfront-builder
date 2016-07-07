@@ -1548,10 +1548,14 @@ class Thx_Exporter {
 			if ($preset['id'] === $properties['id']) {
 				continue;
 			}
+			// Make sure we escape preset_style
+			$preset['preset_style'] = addslashes($preset['preset_style']);
 			$result[] = $preset;
 		}
 
 		if (!$delete) {
+			// Make sure we escape preset_style
+			$properties['preset_style'] = addslashes($properties['preset_style']);
 			$result[] = $properties;
 		}
 
