@@ -15,6 +15,19 @@ class Thx_Admin {
 		if (defined('DOING_AJAX') && DOING_AJAX) return false;
 
 		add_action('admin_notices', array($this, 'dispatch_notices'));
+		add_action('upfront-admin-general_settings-versions', array($this, 'version_info'));
+	}
+
+	/**
+	 * Outputs version info
+	 */
+	public function version_info () {
+		$version = UpfrontThemeExporter::get_version();
+		?>
+<div class="upfront-debug-block">
+	Builder <span>V <?php echo esc_html($version); ?></span>
+</div>
+		<?php
 	}
 
 	/**
