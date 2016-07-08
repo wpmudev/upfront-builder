@@ -36,6 +36,11 @@ abstract class Thx_VirtualSubpage extends Upfront_VirtualSubpage {
 	public function start_editor () {
 		upfront_exporter_clear_conversion_cache($this->get_slug());
 		//echo upfront_boot_editor_trigger('theme');
+		$storage_key = apply_filters('upfront-data-storage-key', Upfront_Layout::STORAGE_KEY);
+		$show_exp = (int)get_option($storage_key . '_show_builder_exp');
+		echo '<script type="text/javascript">
+			var _upfront_builder_getting_started = ' . $show_exp . ';
+		</script>';
 	}
 }
 

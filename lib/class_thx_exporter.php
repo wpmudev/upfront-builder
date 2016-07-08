@@ -95,6 +95,7 @@ class Thx_Exporter {
 
 		add_action($ajaxPrefix . 'export-element-styles', array($this, 'json_export_element_styles'));
 		add_action($ajaxPrefix . 'delete-element-styles', array($this, 'json_delete_element_styles'));
+		add_action($ajaxPrefix . 'skip-getting-started', array($this, 'skip_getting_started'));
 
 		//add_filter('upfront_theme_layout_cascade', array($this, 'get_theme_layout_cascade'), 10, 2); // Used for ThisPost - this will be going out
 		//add_filter('upfront_theme_postpart_templates_cascade', array($this, 'get_theme_postpart_templates_cascade'), 10, 2);
@@ -664,6 +665,12 @@ error_log(debug_backtrace());
 		;
 
 		if (!empty($stylesheet)) $this->_delete_element_style($stylesheet, $data);
+	}
+	
+	public function skip_getting_started () {
+		if ( isset($_POST['data']) && isset($_POST['data']['key']) ) {
+			update_option($_POST['data']['key'], 1);
+		}
 	}
 
 	private function _delete_element_style ($name, $data) {

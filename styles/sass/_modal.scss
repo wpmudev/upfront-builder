@@ -52,3 +52,208 @@
 
 
 }
+
+/* Getting Started Experience */
+#upfront-popup.getting-started-popup {
+	max-width: 520px;
+	margin: initial;
+	z-index: 10001005;
+	left: 250px;
+	
+	&:before {
+		border-bottom: 8px solid transparent;
+    border-top: 8px solid transparent;
+    border-right: 8px solid #fff;
+    content: '';
+    height: 0;
+    margin-left: -8px;
+		margin-top: 95px;
+    position: absolute;
+    width: 0;
+	}
+	
+	#upfront-popup-close {
+		display: none;
+	}
+	
+	.getting_started_content {
+		background: #fff;
+		position: relative;
+		border-radius: 5px;
+		
+		.description {
+			padding: 30px;
+			line-height: 1.4;
+			
+			strong {
+				font-weight: bold;
+			}
+			
+			a {
+				border-bottom: 1px solid rgba(55, 147, 255,.6);
+				color: rgb(55, 147, 255);
+				font-weight: 600;
+				padding-bottom: 2px;
+			}
+		}
+		
+		.controls {
+			position: absolute;
+			width: 100%;
+			padding: 10px 30px 0 30px;
+			
+			.left {
+				float: left;
+			}
+			.right {
+				float: right;
+			}
+			&:after {
+				content: ' ';
+				display: table;
+				clear: both;
+			}
+			
+			button, .pagination {
+				display: inline-block;
+				width: auto;
+				padding-left: 15px;
+				padding-right: 15px;
+			}
+			
+			.pagination {
+				padding-left: 0;
+				color: rgb(185, 185, 185);
+				font-size: 18px;
+				
+				strong {
+					color: #fff;
+					padding-right: 5px;
+				}
+				
+				em {
+					font-style: italic;
+					font-family: Georgia, Times, serif;
+					padding-right: 5px;
+				}
+			}
+			
+			button {
+				background: rgb(68, 84, 98);
+				border: none;
+				border-radius: 2px;
+				padding: 5px 20px;
+				color: #fff;
+				text-transform: none;
+			}
+			
+			button.skip {
+				border: none;
+				color: rgb(101, 188, 240);
+				font-weight: 600;
+				background: transparent;
+			}
+			
+			button.prev {
+				background: transparent;
+				margin-right: 10px;
+			}
+			
+			button.finish {
+				background: rgb(31, 205, 143);
+			}
+		}
+	}
+}
+
+#sidebar-ui .no-click-overlay {
+	position: absolute;
+	width: 100%;
+	height: 450px;
+	z-index: 10;
+	background: transparent;
+	margin-left: -15px;
+	cursor: initial;
+}
+
+#sidebar-ui.show-primary-sidebar {
+	z-index: 10001004;
+	
+	#preventUsageOverlay {
+		display: block;
+	}
+	
+	ul.sidebar-commands-primary {
+		z-index: 11;
+		position: relative;
+		
+		li.no-click-overlay {
+			cursor: initial;
+		}
+	}
+}
+
+#sidebar-ui.show-sidebar-panel-settings {
+	z-index: 10001004;
+	
+	#preventUsageOverlay {
+		display: block;
+	}
+	
+	li.sidebar-panel-settings {
+		z-index: 11;
+		position: relative;
+		
+		.sidebar-panel-content {
+			height: auto;
+		}
+		
+		.no-click-overlay {
+			margin-left: 0;
+		}
+	}
+}
+
+#sidebar-ui.show-sidebar-commands-control {
+	z-index: 10001004;
+	
+	#preventUsageOverlay {
+		display: block;
+	}
+	
+	ul.sidebar-commands-control {
+		z-index: 11;
+		position: relative;
+		
+		li.no-click-overlay {
+			height: 400px;
+			margin: 0;
+			padding: 0;
+			cursor: initial;
+		}
+	}
+}
+
+#upfront-popup.getting-started-popup.step-two-popup {
+	top: 200px;
+  left: 280px;
+}
+
+#upfront-popup.getting-started-popup.step-three-popup {
+	top: 190px;
+  left: 265px;
+	
+	&:before {
+		margin-top: 70px;
+	}
+	
+	.getting_started_content {
+	
+		.controls {
+			top: -45px;
+			padding: 0 30px 10px 30px;
+		}
+	}
+}
+
+
