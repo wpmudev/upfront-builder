@@ -16,6 +16,39 @@ class Thx_Admin {
 
 		add_action('admin_notices', array($this, 'dispatch_notices'));
 		add_action('upfront-admin-general_settings-versions', array($this, 'version_info'));
+
+		add_action('admin_menu', array($this, "add_menu_item"), 99);
+	}
+
+	/**
+	 * Exposes the builder menu item in Upfront core menu
+	 */
+	public function add_menu_item () {
+		$parent = class_exists('Upfront_Admin') && !empty(Upfront_Admin::$menu_slugs['main'])
+			? Upfront_Admin::$menu_slugs['main']
+			: false
+		;
+		if (empty($parent)) return false;
+
+		$name = Thx_L10n::get('plugin_name');
+		$name = !empty($name) ? $name : 'Builder';
+
+		add_submenu_page(
+			$parent,
+			$name,
+			$name,
+			'manage_options',
+			$parent . '-builder',
+			array($this, "render_admin_page")
+		);
+	}
+
+	/**
+	 * Renders the Builder admin page
+	 */
+	public function render_admin_page () {
+		if (!class_exists('Upfront_Thx_InitialPage_VirtualSubpage')) require_once(dirname(__FILE__) . '/class_thx_endpoint.php');
+		Upfront_Thx_InitialPage_VirtualSubpage::out();
 	}
 
 	/**

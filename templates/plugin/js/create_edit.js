@@ -2,8 +2,10 @@
 
 function edit_theme (theme) {
 	var search = window.location.search.toString(),
-		url = window.location.pathname.toString().replace(/\/theme/, '/' + theme)
+		url = (window._thx || {}).editor_base.replace(/\/theme/, '/' + theme)
 	;
+	if (!url) return false;
+
 	if (search.length && search.match(/[?&]dev=/)) {
 		url += '?dev=true';
 	}
@@ -31,6 +33,7 @@ function init_new () {
 			e.stopPropagation();
 
 			var data = get_data(),
+				base_url = (window._thx || {}).editor_base || window.location.pathname,
 				slug
 			;
 			if ('thx-theme-slug' in data) {
@@ -38,6 +41,8 @@ function init_new () {
 			}
 			data.add_global_regions = true;
 
+			// Hack-force current mode to exporter, so this can be reused in admin
+			Upfront.Application.mode.current = Upfront.Application.MODE.THEME;
 			Upfront.Util.post({
 				action: 'upfront_thx-create-theme',
 				form: _.map(data, function(value, key){ return key + '=' + escape(value); }).join('&')
@@ -45,7 +50,7 @@ function init_new () {
 				if (!slug && response && "theme" in response) {
 					slug = (response.theme || {directory: false}).directory;
 				}
-				if (slug) window.location.pathname = window.location.pathname.replace(/\/theme/, '/' + slug);
+				if (slug) window.location = base_url.replace(/\/theme/, '/' + slug);
 				else window.location.reload();
 			}).error(function(){
 				console.log("error");
@@ -59,14 +64,16 @@ function init_new () {
 
 			var data = get_data();
 			if (!data['thx-theme-slug']) return false;
-			
+
 			data.add_global_regions = true;
 
+			// Hack-force current mode to exporter, so this can be reused in admin
+			Upfront.Application.mode.current = Upfront.Application.MODE.THEME;
 			Upfront.Util.post({
 				action: 'upfront_thx-update-theme',
 				form: _.map(data, function(value, key){ return key + '=' + escape(value); }).join('&')
 			}).success(function(response) {
-				window.location.reload();
+				//window.location.reload();
 			}).error(function(){
 				console.log("error");
 			});
@@ -76,19 +83,19 @@ function init_new () {
 		.on("click", "button.edit.theme", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
-			
+
 			var current = $.trim($(this).attr('data-theme'));
 			if (!current) return false;
-			
+
 			edit_theme(current);
 
-			return false;			
+			return false;
 		})
 		.on("click", ".uf-thx-theme_screenshot", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 
-			return false;	
+			return false;
 		})
 	;
 }
@@ -110,24 +117,24 @@ function init_existing () {
 		.on("click", "button.edit.info", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
-			
+
 			var current = $(".uf-thx-existing_theme .uf-thx-theme.selected a").attr('href');
 			if (!current) return false;
-			
+
 			window.location = current;
 
-			return false;			
+			return false;
 		})
 		.on("click", "button.edit.theme", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
-			
+
 			var current = $.trim($(".uf-thx-existing_theme .uf-thx-theme.selected").attr('data-theme'));
 			if (!current) return false;
-			
+
 			edit_theme(current);
 
-			return false;			
+			return false;
 		})
 	;
 }

@@ -19,23 +19,23 @@
 </header>
 
 <div class="uf-thx-initial clearfix">
-	
+
 	<div class="uf-thx-existing_theme uf-thx-pane">
 	<?php if (!empty($themes)) { ?>
 		<h3><?php esc_html_e('Modify existing theme:', UpfrontThemeExporter::DOMAIN); ?></h3>
-		
+
 		<label class="inline"><span class="description"><?php esc_html_e('Select a theme to modify:', UpfrontThemeExporter::DOMAIN); ?></span></label>
 		<div class="uf-thx-themes_container clearfix">
 		<?php foreach ($themes as $key => $theme) { ?>
-			<div class="uf-thx-theme <?php 
-			if (!empty($_GET['theme']) && $theme->get_stylesheet() === $_GET['theme']) echo 'selected'; 
+			<div class="uf-thx-theme <?php
+			if (!empty($_GET['theme']) && $theme->get_stylesheet() === $_GET['theme']) echo 'selected';
 		?> <?php
 			if ($theme->get_stylesheet() === $current_theme) {
-				echo 'current'; 
+				echo 'current';
 				if (empty($_GET['theme'])) echo ' selected';
 			}
 		?>" data-theme="<?php echo esc_attr($theme->get_stylesheet()); ?>">
-				<a href="?theme=<?php echo esc_attr($theme->get_stylesheet()); ?>">
+				<a href="<?php echo esc_attr(add_query_arg('theme', $theme->get_stylesheet())); ?>">
 					<?php $screenshot = $theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot; ?>
 					<img src="<?php echo esc_url($screenshot); ?>" />
 					<div class="uf-thx-caption">
@@ -45,7 +45,7 @@
 			</div>
 		<?php } ?>
 		</div>
-		
+
 		<button type="button" class="edit theme">
 			<?php esc_html_e('Edit theme', UpfrontThemeExporter::DOMAIN); ?>
 		</button>
@@ -72,7 +72,7 @@
 		<?php $theme = wp_get_theme($_GET['theme']); ?>
 		<h3><?php echo esc_html(sprintf(__('Edit &quot;%s&quot;:', UpfrontThemeExporter::DOMAIN), $theme->get('Name'))); ?></h3>
 
-		<?php 
+		<?php
 			Thx_Template::plugin()->load('theme_form', array(
 				'name' => $theme->get('Name'),
 				'slug' => $theme->get_stylesheet(),
@@ -86,7 +86,7 @@
 				'tags' => $theme->get('Tags'),
 				'text_domain' => $theme->get('TextDomain'),
 				'screenshot' => ($theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot)
-			)); 
+			));
 		?>
 
 		<button type="button" class="edit info">

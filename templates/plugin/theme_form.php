@@ -24,33 +24,33 @@
 			<span class="description"><?php esc_html_e('Theme directory:', UpfrontThemeExporter::DOMAIN); ?></span>
 			<input readonly type="text" id="theme-slug" placeholder="<?php esc_attr_e('Base directory for your theme', UpfrontThemeExporter::DOMAIN); ?>" value="<?php if (!empty($slug)) echo esc_attr($slug); ?>" />
 		</label>
-		<label for="description">
+		<label for="theme-description">
 			<span class="description"><?php esc_html_e('Theme description:', UpfrontThemeExporter::DOMAIN); ?></span>
-			<textarea id="description"><?php if (!empty($description)) echo esc_textarea($description); ?></textarea>
+			<textarea id="theme-description"><?php if (!empty($description)) echo esc_textarea($description); ?></textarea>
 		</label>
-		<label for="version">
+		<label for="theme-version">
 			<span class="description"><?php esc_html_e('Theme version:', UpfrontThemeExporter::DOMAIN); ?></span>
-			<input type="text" id="version" value="<?php if (!empty($version)) echo esc_attr($version); ?>" />
+			<input type="text" id="theme-version" value="<?php if (!empty($version)) echo esc_attr($version); ?>" />
 		</label>
 		<label for="theme-uri">
 			<span class="description"><?php esc_html_e('Theme URL:', UpfrontThemeExporter::DOMAIN); ?></span>
 			<input type="text" id="theme-uri" value="<?php if (!empty($theme_uri)) echo esc_attr($theme_uri); ?>" />
 		</label>
-		<label for="licence">
+		<label for="theme-licence">
 			<span class="description"><?php esc_html_e('Theme licence:', UpfrontThemeExporter::DOMAIN); ?></span>
-			<input type="text" id="licence" value="<?php if (!empty($licence)) echo esc_attr($licence); ?>" />
+			<input type="text" id="theme-licence" value="<?php if (!empty($licence)) echo esc_attr($licence); ?>" />
 		</label>
-		<label for="licence-uri">
+		<label for="theme-licence-uri">
 			<span class="description"><?php esc_html_e('Licence URL:', UpfrontThemeExporter::DOMAIN); ?></span>
-			<input type="text" id="licence-uri" value="<?php if (!empty($licence_uri)) echo esc_attr($licence_uri); ?>" />
+			<input type="text" id="theme-licence-uri" value="<?php if (!empty($licence_uri)) echo esc_attr($licence_uri); ?>" />
 		</label>
-		<label for="tags">
+		<label for="theme-tags">
 			<span class="description"><?php esc_html_e('Theme tags:', UpfrontThemeExporter::DOMAIN); ?></span>
-			<input type="text" id="tags" value="<?php if (!empty($tags)) echo esc_attr(join(', ', $tags)); ?>" />
+			<input type="text" id="theme-tags" value="<?php if (!empty($tags)) echo esc_attr(join(', ', $tags)); ?>" />
 		</label>
-		<label for="text-domain">
+		<label for="theme-text-domain">
 			<span class="description"><?php esc_html_e('Theme text domain:', UpfrontThemeExporter::DOMAIN); ?></span>
-			<input type="text" id="text-domain" value="<?php if (!empty($text_domain)) echo esc_attr($text_domain); ?>" />
+			<input type="text" id="theme-text-domain" value="<?php if (!empty($text_domain)) echo esc_attr($text_domain); ?>" />
 		</label>
 	<?php } ?>
 

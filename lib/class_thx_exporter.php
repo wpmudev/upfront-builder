@@ -1,6 +1,5 @@
 <?php
 
-define('UF_THX_TMP_SWITCH', true); // tmp
 class Thx_Exporter {
 
 	const TEMP_STYLES_KEY = 'uf-thx-temporary_styles';
