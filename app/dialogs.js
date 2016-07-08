@@ -407,113 +407,116 @@
 				var me = {},
 					step_one_tpl = _.template($(getting_started_tpl).find('#upfront-getting-started-step-one-tpl').html()),
 					step_two_tpl = _.template($(getting_started_tpl).find('#upfront-getting-started-step-two-tpl').html()),
-					step_three_tpl = _.template($(getting_started_tpl).find('#upfront-getting-started-step-three-tpl').html())
+					step_three_tpl = _.template($(getting_started_tpl).find('#upfront-getting-started-step-three-tpl').html()),
+					$sidebar_ui = $('#sidebar-ui')
 				;
 				
-				// spawning popup
-				var popup = Upfront.Popup.open(
-					function (data, $top, $bottom) {
-						var $me = $(this);
-						$me.empty()
-							.append(step_one_tpl)
-							.addClass('getting_started_content');
+				if ( $sidebar_ui.length ) {
+					// spawning popup
+					var popup = Upfront.Popup.open(
+						function (data, $top, $bottom) {
+							var $me = $(this);
+							$me.empty()
+								.append(step_one_tpl)
+								.addClass('getting_started_content');
 
-						me.$popup = {
-							"top": $top,
-							"content": $me,
-							"bottom": $bottom
-						};
-					},
-					{
-						width: 520
-					},
-					'getting-started-popup'
-				);
-				
-				// toggling step one
-				me.toggle_step_one = function() {
-					$('#sidebar-ui').removeClass('show-sidebar-panel-settings');
-					$('#sidebar-ui .no-click-overlay').remove();
-					$('#sidebar-ui .sidebar-panels li.sidebar-panel-settings').removeClass('expanded');
-					$('#sidebar-ui').addClass('show-primary-sidebar');
-					$('#sidebar-ui ul.sidebar-commands-primary').prepend('<li class="no-click-overlay"></li>');
-				};
-				
-				// toggling step two
-				me.toggle_step_two = function() {
-					$('#sidebar-ui').removeClass('show-primary-sidebar');
-					$('#sidebar-ui').removeClass('show-sidebar-commands-control');
-					$('#sidebar-ui .no-click-overlay').remove();
-					$('#sidebar-ui').addClass('show-sidebar-panel-settings');
-					$('#sidebar-ui .sidebar-panels li.sidebar-panel-settings').addClass('expanded');
-					$('#sidebar-ui .sidebar-panels li.sidebar-panel-settings').prepend('<div class="no-click-overlay"></div>');
-				}
-				
-				// toggling step three
-				me.toggle_step_three = function() {
-					$('#sidebar-ui').removeClass('show-sidebar-panel-settings');
-					$('#sidebar-ui .sidebar-panels li.sidebar-panel-settings').removeClass('expanded');
-					$('#sidebar-ui .no-click-overlay').remove();
-					$('#sidebar-ui').addClass('show-sidebar-commands-control');
-					$('#sidebar-ui ul.sidebar-commands-control').prepend('<li class="no-click-overlay"></li>');
-				}
-				
-				me.close_popup = function() {
-					Upfront.Popup.close();
-					$('#sidebar-ui').removeClass('show-primary-sidebar');
-					$('#sidebar-ui').removeClass('show-sidebar-panel-settings');
-					$('#sidebar-ui').removeClass('show-sidebar-commands-control');
-					$('#sidebar-ui .no-click-overlay').remove();
-				}
-				
-				// button events
-				me.$popup.content.on('click', 'button.skip', function() {
-					if (Upfront.Application.is_builder()) {
-						Upfront.Util.post({
-							action: 'upfront_thx-skip-getting-started',
-							data: {
-								key: _upfront_storage_key + '_show_builder_exp'
-							}
-						});
+							me.$popup = {
+								"top": $top,
+								"content": $me,
+								"bottom": $bottom
+							};
+						},
+						{
+							width: 520
+						},
+						'getting-started-popup'
+					);
+					
+					// toggling step one
+					me.toggle_step_one = function() {
+						$sidebar_ui.removeClass('show-sidebar-panel-settings');
+						$sidebar_ui.find('.no-click-overlay').remove();
+						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').removeClass('expanded');
+						$sidebar_ui.addClass('show-primary-sidebar');
+						$sidebar_ui.find('ul.sidebar-commands-primary').prepend('<li class="no-click-overlay"></li>');
+					};
+					
+					// toggling step two
+					me.toggle_step_two = function() {
+						$sidebar_ui.removeClass('show-primary-sidebar');
+						$sidebar_ui.removeClass('show-sidebar-commands-control');
+						$sidebar_ui.find('.no-click-overlay').remove();
+						$sidebar_ui.addClass('show-sidebar-panel-settings');
+						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').addClass('expanded');
+						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').prepend('<div class="no-click-overlay"></div>');
 					}
-					me.close_popup();
-				});
-				
-				me.$popup.content.on('click', 'button.next.step-one', function() {
-					$(this).parents('#upfront-popup').addClass('step-two-popup');
-					me.$popup.content.html(step_two_tpl);
-					me.toggle_step_two();
-				});
-				
-				me.$popup.content.on('click', 'button.prev.step-two', function() {
-					$(this).parents('#upfront-popup').removeClass('step-two-popup');
-					me.$popup.content.html(step_one_tpl);
+					
+					// toggling step three
+					me.toggle_step_three = function() {
+						$sidebar_ui.removeClass('show-sidebar-panel-settings');
+						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').removeClass('expanded');
+						$sidebar_ui.find('.no-click-overlay').remove();
+						$sidebar_ui.addClass('show-sidebar-commands-control');
+						$sidebar_ui.find('ul.sidebar-commands-control').prepend('<li class="no-click-overlay"></li>');
+					}
+					
+					me.close_popup = function() {
+						Upfront.Popup.close();
+						$sidebar_ui.removeClass('show-primary-sidebar');
+						$sidebar_ui.removeClass('show-sidebar-panel-settings');
+						$sidebar_ui.removeClass('show-sidebar-commands-control');
+						$sidebar_ui.find('.no-click-overlay').remove();
+					}
+					
+					// button events
+					me.$popup.content.on('click', 'button.skip', function() {
+						if (Upfront.Application.is_builder()) {
+							Upfront.Util.post({
+								action: 'upfront_thx-skip-getting-started',
+								data: {
+									key: _upfront_storage_key + '_show_builder_exp'
+								}
+							});
+						}
+						me.close_popup();
+					});
+					
+					me.$popup.content.on('click', 'button.next.step-one', function() {
+						$(this).parents('#upfront-popup').addClass('step-two-popup');
+						me.$popup.content.html(step_two_tpl);
+						me.toggle_step_two();
+					});
+					
+					me.$popup.content.on('click', 'button.prev.step-two', function() {
+						$(this).parents('#upfront-popup').removeClass('step-two-popup');
+						me.$popup.content.html(step_one_tpl);
+						me.toggle_step_one();
+					});
+					
+					me.$popup.content.on('click', 'button.next.step-two', function() {
+						$(this).parents('#upfront-popup').removeClass('step-two-popup');
+						$(this).parents('#upfront-popup').addClass('step-three-popup');
+						me.$popup.content.html(step_three_tpl);
+						me.toggle_step_three();
+					});
+					
+					me.$popup.content.on('click', 'button.prev.step-three', function() {
+						$(this).parents('#upfront-popup').removeClass('step-three-popup');
+						$(this).parents('#upfront-popup').addClass('step-two-popup');
+						me.$popup.content.html(step_two_tpl);
+						me.toggle_step_two();
+					});
+					
+					me.$popup.content.on('click', 'button.finish.step-three', function() {
+						me.close_popup();
+					});
+					
+					// do not allow clicking from outside
+					Upfront.Popup.$background.off("click");
+					
+					// default view
 					me.toggle_step_one();
-				});
-				
-				me.$popup.content.on('click', 'button.next.step-two', function() {
-					$(this).parents('#upfront-popup').removeClass('step-two-popup');
-					$(this).parents('#upfront-popup').addClass('step-three-popup');
-					me.$popup.content.html(step_three_tpl);
-					me.toggle_step_three();
-				});
-				
-				me.$popup.content.on('click', 'button.prev.step-three', function() {
-					$(this).parents('#upfront-popup').removeClass('step-three-popup');
-					$(this).parents('#upfront-popup').addClass('step-two-popup');
-					me.$popup.content.html(step_two_tpl);
-					me.toggle_step_two();
-				});
-				
-				me.$popup.content.on('click', 'button.finish.step-three', function() {
-					me.close_popup();
-				});
-				
-				// do not allow clicking from outside
-				Upfront.Popup.$background.off("click");
-				
-				// default view
-				me.toggle_step_one();
+				}
 			},
 		};
 	});
