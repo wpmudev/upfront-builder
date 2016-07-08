@@ -68,4 +68,139 @@
     width: 50%;
     float: left; }
 
+/* Getting Started Experience */
+#upfront-popup.getting-started-popup {
+  max-width: 520px;
+  margin: initial;
+  z-index: 10001005;
+  left: 250px; }
+  #upfront-popup.getting-started-popup:before {
+    border-bottom: 8px solid transparent;
+    border-top: 8px solid transparent;
+    border-right: 8px solid #fff;
+    content: '';
+    height: 0;
+    margin-left: -8px;
+    margin-top: 95px;
+    position: absolute;
+    width: 0; }
+  #upfront-popup.getting-started-popup #upfront-popup-close {
+    display: none; }
+  #upfront-popup.getting-started-popup .getting_started_content {
+    background: #fff;
+    position: relative;
+    border-radius: 5px; }
+    #upfront-popup.getting-started-popup .getting_started_content .description {
+      padding: 30px;
+      line-height: 1.4; }
+      #upfront-popup.getting-started-popup .getting_started_content .description strong {
+        font-weight: bold; }
+      #upfront-popup.getting-started-popup .getting_started_content .description a {
+        border-bottom: 1px solid rgba(55, 147, 255, 0.6);
+        color: #3793ff;
+        font-weight: 600;
+        padding-bottom: 2px; }
+    #upfront-popup.getting-started-popup .getting_started_content .controls {
+      position: absolute;
+      width: 100%;
+      padding: 10px 30px 0 30px; }
+      #upfront-popup.getting-started-popup .getting_started_content .controls .left {
+        float: left; }
+      #upfront-popup.getting-started-popup .getting_started_content .controls .right {
+        float: right; }
+      #upfront-popup.getting-started-popup .getting_started_content .controls:after {
+        content: ' ';
+        display: table;
+        clear: both; }
+      #upfront-popup.getting-started-popup .getting_started_content .controls button, #upfront-popup.getting-started-popup .getting_started_content .controls .pagination {
+        display: inline-block;
+        width: auto;
+        padding-left: 15px;
+        padding-right: 15px; }
+      #upfront-popup.getting-started-popup .getting_started_content .controls .pagination {
+        padding-left: 0;
+        color: #b9b9b9;
+        font-size: 18px; }
+        #upfront-popup.getting-started-popup .getting_started_content .controls .pagination strong {
+          color: #fff;
+          padding-right: 5px; }
+        #upfront-popup.getting-started-popup .getting_started_content .controls .pagination em {
+          font-style: italic;
+          font-family: Georgia, Times, serif;
+          padding-right: 5px; }
+      #upfront-popup.getting-started-popup .getting_started_content .controls button {
+        background: #445462;
+        border: none;
+        border-radius: 2px;
+        padding: 5px 20px;
+        color: #fff;
+        text-transform: none; }
+      #upfront-popup.getting-started-popup .getting_started_content .controls button.skip {
+        border: none;
+        color: #65bcf0;
+        font-weight: 600;
+        background: transparent; }
+      #upfront-popup.getting-started-popup .getting_started_content .controls button.prev {
+        background: transparent;
+        margin-right: 10px; }
+      #upfront-popup.getting-started-popup .getting_started_content .controls button.finish {
+        background: #1fcd8f; }
+
+#sidebar-ui .no-click-overlay {
+  position: absolute;
+  width: 100%;
+  height: 450px;
+  z-index: 10;
+  background: transparent;
+  margin-left: -15px;
+  cursor: initial; }
+
+#sidebar-ui.show-primary-sidebar {
+  z-index: 10001004; }
+  #sidebar-ui.show-primary-sidebar #preventUsageOverlay {
+    display: block; }
+  #sidebar-ui.show-primary-sidebar ul.sidebar-commands-primary {
+    z-index: 11;
+    position: relative; }
+    #sidebar-ui.show-primary-sidebar ul.sidebar-commands-primary li.no-click-overlay {
+      cursor: initial; }
+
+#sidebar-ui.show-sidebar-panel-settings {
+  z-index: 10001004; }
+  #sidebar-ui.show-sidebar-panel-settings #preventUsageOverlay {
+    display: block; }
+  #sidebar-ui.show-sidebar-panel-settings li.sidebar-panel-settings {
+    z-index: 11;
+    position: relative; }
+    #sidebar-ui.show-sidebar-panel-settings li.sidebar-panel-settings .sidebar-panel-content {
+      height: auto; }
+    #sidebar-ui.show-sidebar-panel-settings li.sidebar-panel-settings .no-click-overlay {
+      margin-left: 0; }
+
+#sidebar-ui.show-sidebar-commands-control {
+  z-index: 10001004; }
+  #sidebar-ui.show-sidebar-commands-control #preventUsageOverlay {
+    display: block; }
+  #sidebar-ui.show-sidebar-commands-control ul.sidebar-commands-control {
+    z-index: 11;
+    position: relative; }
+    #sidebar-ui.show-sidebar-commands-control ul.sidebar-commands-control li.no-click-overlay {
+      height: 400px;
+      margin: 0;
+      padding: 0;
+      cursor: initial; }
+
+#upfront-popup.getting-started-popup.step-two-popup {
+  top: 200px;
+  left: 280px; }
+
+#upfront-popup.getting-started-popup.step-three-popup {
+  top: 190px;
+  left: 265px; }
+  #upfront-popup.getting-started-popup.step-three-popup:before {
+    margin-top: 70px; }
+  #upfront-popup.getting-started-popup.step-three-popup .getting_started_content .controls {
+    top: -45px;
+    padding: 0 30px 10px 30px; }
+
 /*# sourceMappingURL=exporter.css.map */

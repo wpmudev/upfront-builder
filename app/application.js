@@ -26,6 +26,10 @@
 				}
 
 				this.listenToOnce(Upfront.Events, 'layout:render', Upfront.Behaviors.GridEditor.apply_grid);
+				this.listenToOnce(Upfront.Events, 'layout:after_render', function(){
+					var skip_getting_started = parseInt(_upfront_builder_getting_started, 10);
+					if ( skip_getting_started !== 1 ) Dialogs.getting_started_exp();
+				});
 				this.listenTo(Upfront.Events, "command:layout:edit_structure", Upfront.Behaviors.GridEditor.edit_structure);
 				this.listenTo(Upfront.Events, "builder:load_theme", Exporter.load_theme);
 
