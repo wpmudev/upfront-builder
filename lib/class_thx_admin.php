@@ -23,9 +23,13 @@ class Thx_Admin {
 	 */
 	public function version_info () {
 		$version = UpfrontThemeExporter::get_version();
+		$version = !empty($version) ? $version : '0.0.0';
+
+		$name = Thx_L10n::get('plugin_name');
+		$name = !empty($name) ? $name : 'Builder';
 		?>
 <div class="upfront-debug-block">
-	Builder <span>V <?php echo esc_html($version); ?></span>
+	 <?php echo esc_html($name); ?> <span>V <?php echo esc_html($version); ?></span>
 </div>
 		<?php
 	}

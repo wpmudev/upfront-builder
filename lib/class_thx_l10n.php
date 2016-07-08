@@ -43,6 +43,7 @@ class Thx_L10n {
 	 */
 	private function _populate_strings () {
 		self::$_data = array(
+			'plugin_name' => __('Builder', UpfrontThemeExporter::DOMAIN),
 			// Inherited from Upfront core l10n server
 			'page_layout_name' => __('Page name (leave empty for single-page.php)', UpfrontThemeExporter::DOMAIN),
 			'start_fresh' => __('Start fresh', UpfrontThemeExporter::DOMAIN),
@@ -56,7 +57,7 @@ class Thx_L10n {
 			'edit_layout' => __('Edit Layout', UpfrontThemeExporter::DOMAIN),
 			'edit_existing_layout' => __('Edit Existing Layout', UpfrontThemeExporter::DOMAIN),
 			'loading' => __('Loading...', UpfrontThemeExporter::DOMAIN),
-			
+
 			// sidebar.js
 			'current_layout' => __('Current Layout: <b>%s</b>', UpfrontThemeExporter::DOMAIN),
 			'layouts' => __('Layouts', UpfrontThemeExporter::DOMAIN),
