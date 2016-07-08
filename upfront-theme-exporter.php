@@ -3,7 +3,7 @@
 Plugin Name: Upfront Theme Exporter
 Plugin URI: http://premium.wpmudev.com/
 Description: Exports upfront page layouts to theme.
-Version: 0.0.1
+Version: 0.1.0
 Author: WPMU DEV
 Text Domain: upfront_thx
 Author URI: http://premium.wpmudev.com
