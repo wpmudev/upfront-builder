@@ -135,6 +135,21 @@ class UpfrontThemeExporter {
 		;
 	}
 
+	/**
+	 * Fetches (and caches) the plugin version number
+	 *
+	 * @return string Plugin version number
+	 */
+	public static function get_version () {
+		static $version;
+		if (!empty($version)) return $version;
+
+		$data = get_plugin_data(__FILE__);
+		if (!empty($data['Version'])) $version = $data['Version'];
+
+		return $version;
+	}
+
 }
 
 UpfrontThemeExporter::serve();
