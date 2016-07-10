@@ -48,7 +48,7 @@ abstract class Thx_Sanitize {
 		// We can't start with number, or have only numbers
 		if (preg_match('/^[0-9]+$/', $str)) return false; // Only numbers, can't do this
 		if (preg_match('/^[0-9]/', $str)) $str = "uf-{$str}"; // Can't start with numbers
-		
+
 		return Thx_Sanitize::is_not_reserved($str) && Thx_Sanitize::is_not_declared($str)
 			? $str
 			: false
@@ -80,12 +80,17 @@ abstract class Thx_Sanitize {
 	public static function path_endpoint ($frag) {
 		if (!stristr($frag, '.')) return Thx_Sanitize::path_fragment($frag);
 
-		// We have a dot. Let's treat this
-		
-		$parts = explode('.', $frag);
-		if (count($parts) > 2) return ''; // Don't allow multiple extensions, or multiple dots at all
+		// Do not allow parent directory reference
+		if (strpos($frag, '..') !== false) return false;
 
-		return Thx_Sanitize::path_endpoint($parts[0]) . '.' . Thx_Sanitize::path_endpoint($parts[1]);
+		// We have a dot or dots. Let's treat this (potential domain name in directory structure)
+		$parts = explode('.', $frag);
+		$result = '';
+		foreach ($parts as $part) {
+			$result .= Thx_Sanitize::path_endpoint($part) . '.';
+		}
+
+		return rtrim($result, '.');
 	}
 
 	/**

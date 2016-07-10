@@ -110,6 +110,10 @@ function init () {
 			/* : */ init_normal_exporter()
 		;
 	});
+
+	Upfront.Events.on('sidebar:add_classes', function(sidebarEl) {
+		sidebarEl.addClass('create-theme-sidebar');
+	});
 }
 
 return {
