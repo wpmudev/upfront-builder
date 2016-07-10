@@ -103,7 +103,7 @@ class UpfrontThemeExporter {
 		$toolbar->add_menu(array(
 			'id' => $root_item_id,
 			'title' => '<span style="top:2px" class="ab-icon dashicons-hammer"></span><span class="ab-label">' . $main_title . '</span>',
-			'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/theme'),
+			'href' => admin_url('admin.php?page=upfront-builder'),
 			'meta' => array( 'class' => 'upfront-create_theme' )
 		));
 
@@ -112,13 +112,13 @@ class UpfrontThemeExporter {
 				'parent' => $root_item_id,
 				'id' => 'upfront-builder-current_theme',
 				'title' => __('Edit current theme', self::DOMAIN),
-				'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/' . $child)
+				'href' => admin_url('admin.php?page=upfront-builder&theme=' . $child),
 			));
 			$toolbar->add_menu(array(
 				'parent' => $root_item_id,
 				'id' => 'upfront-builder-create_theme',
 				'title' => $create_title,
-				'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/theme')
+				'href' => admin_url('admin.php?page=upfront-builder'),
 			));
 		}
 	}

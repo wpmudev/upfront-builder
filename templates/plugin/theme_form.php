@@ -3,6 +3,7 @@
 		<label>
 			<span class="description"><?php esc_html_e('Theme listing preview:', UpfrontThemeExporter::DOMAIN); ?></span>
 			<img src="<?php if (!empty($screenshot)) echo esc_url($screenshot); ?>" width="370" height="255" />
+			<input type="hidden" id="theme-screenshot" value="" />
 		</label>
 	</div>
 	<div class="uf-thx-theme_meta">

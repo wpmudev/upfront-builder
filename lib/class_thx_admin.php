@@ -48,7 +48,7 @@ class Thx_Admin {
 	 */
 	public function render_admin_page () {
 		if (!class_exists('Upfront_Thx_InitialPage_VirtualSubpage')) require_once(dirname(__FILE__) . '/class_thx_endpoint.php');
-		Upfront_Thx_InitialPage_VirtualSubpage::out();
+		Upfront_Thx_InitialPage_VirtualSubpage::out(false);
 	}
 
 	/**

@@ -27,6 +27,8 @@ function get_data () {
 }
 
 function init_new () {
+	var frame;
+
 	$(".uf-thx-new_theme")
 		.on("click", "button.create.theme", function (e) {
 			e.preventDefault();
@@ -41,10 +43,9 @@ function init_new () {
 			}
 			data.add_global_regions = true;
 
-			// Hack-force current mode to exporter, so this can be reused in admin
-			Upfront.Application.mode.current = Upfront.Application.MODE.THEME;
-			Upfront.Util.post({
+			$.post(_thx.admin_ajax, {
 				action: 'upfront_thx-create-theme',
+				mode: "theme",
 				form: _.map(data, function(value, key){ return key + '=' + escape(value); }).join('&')
 			}).success(function(response) {
 				if (!slug && response && "theme" in response) {
@@ -67,13 +68,12 @@ function init_new () {
 
 			data.add_global_regions = true;
 
-			// Hack-force current mode to exporter, so this can be reused in admin
-			Upfront.Application.mode.current = Upfront.Application.MODE.THEME;
-			Upfront.Util.post({
+			$.post(_thx.admin_ajax, {
 				action: 'upfront_thx-update-theme',
+				mode: "theme",
 				form: _.map(data, function(value, key){ return key + '=' + escape(value); }).join('&')
 			}).success(function(response) {
-				//window.location.reload();
+				window.location.reload();
 			}).error(function(){
 				console.log("error");
 			});
@@ -94,6 +94,42 @@ function init_new () {
 		.on("click", ".uf-thx-theme_screenshot", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
+
+			var $me = $(this),
+				$img = $me.find("img"),
+				$use = $me.find('#theme-screenshot')
+			;
+
+			if (frame) {
+				frame.open();
+				return false;
+			}
+
+			frame = wp.media({
+				title: 'Select or Upload Media Of Your Chosen Persuasion',
+				library: {
+		      type: 'image'
+		   },
+				button: {
+					text: 'Use this media'
+				},
+				multiple: false  // Set to true to allow multiple files to be selected
+			});
+
+			frame.on("select", function () {
+				var img = frame.state().get('selection').first().toJSON(),
+					url = (img || {}).url || false,
+					id = (img || {}).id || false
+				;
+				if (!url || !id) return false;
+
+				$use.val(id);
+				$img.attr("src", url);
+			});
+
+			frame.open();
+
+
 
 			return false;
 		})
@@ -140,10 +176,15 @@ function init_existing () {
 }
 
 function init () {
+	if (this._initialized) {
+		console.log("already booted");
+		return false;
+	}
+	this._initialized = true;
 	init_new();
 	init_existing();
 }
 
-$(document).on("upfront-load", init);
+$(init);
 
 })(jQuery);

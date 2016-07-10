@@ -85,7 +85,7 @@
 				'licence_uri' => $theme->get('LicenceURI'),
 				'tags' => $theme->get('Tags'),
 				'text_domain' => $theme->get('TextDomain'),
-				'screenshot' => ($theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot)
+				'screenshot' => ($theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot),
 			));
 		?>
 

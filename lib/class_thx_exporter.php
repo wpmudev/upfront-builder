@@ -1753,6 +1753,10 @@ error_log(debug_backtrace());
 		if ($current !== $theme_slug && !empty($form['thx-activate_theme'])) {
 			switch_theme($theme_slug);
 		}
+		if (!empty($form['thx-theme-screenshot']) && is_numeric($form['thx-theme-screenshot'])) {
+			$screenshot_media_id = (int)$form['thx-theme-screenshot'];
+			if (!empty($screenshot_media_id)) $this->_update_theme_screenshot($theme_slug, $screenshot_media_id);
+		}
 
 		die;
 	}
@@ -1853,6 +1857,12 @@ error_log(debug_backtrace());
 			switch_theme($theme_slug);
 		}
 
+
+		if (!empty($form['thx-theme-screenshot']) && is_numeric($form['thx-theme-screenshot'])) {
+			$screenshot_media_id = (int)$form['thx-theme-screenshot'];
+			if (!empty($screenshot_media_id)) $this->_update_theme_screenshot($theme_slug, $screenshot_media_id);
+		}
+
 		//$this->json_get_themes();
 		wp_send_json(array(
 			'theme' => array(
@@ -1860,6 +1870,29 @@ error_log(debug_backtrace());
 				'name' => $form['thx-theme-name']
 			)
 		));
+	}
+
+	/**
+	 * Updates the screenshot.png file in the theme directory
+	 *
+	 * @param string $theme_slug Theme slug of the theme to update
+	 * @param int $media_id Media library ID of the image to use
+	 *
+	 * @return bool
+	 */
+	private function _update_theme_screenshot ($theme_slug, $media_id) {
+		if (empty($media_id) || !is_numeric($media_id)) return false;
+		$path = get_attached_file($media_id);
+		if (empty($path) || !is_readable($path)) return false;
+
+		$destination = $this->_fs->get_path('screenshot.png', false);
+
+		$editor = wp_get_image_editor($path);
+		if (!is_wp_error($editor)) {
+			$editor->save($destination, 'image/png');
+		}
+
+		return true;
 	}
 
 	public function add_styles () {

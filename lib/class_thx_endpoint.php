@@ -60,7 +60,7 @@ class Upfront_Thx_InitialPage_VirtualSubpage extends Thx_VirtualSubpage {
 	/**
 	 * Centralized initial page output rendering
 	 */
-	public static function out () {
+	public static function out ($full=true) {
 		if (!class_exists('Thx_Sanitize')) require_once (dirname(__FILE__) . '/class_thx_sanitize.php');
 		if (!class_exists('Thx_Template')) require_once (dirname(__FILE__) . '/class_thx_template.php');
 
@@ -72,9 +72,20 @@ class Upfront_Thx_InitialPage_VirtualSubpage extends Thx_VirtualSubpage {
 		wp_enqueue_script('create_edit', $tpl->url('js/create_edit.js'), array('jquery'));
 		wp_localize_script('create_edit', '_thx', array(
 			'editor_base' => esc_url(Upfront_Thx_Builder_VirtualPage::get_url(Upfront_Thx_Builder_VirtualPage::get_initial_url())),
+			'admin_ajax' => admin_url('admin-ajax.php'),
 		));
 
-		load_template($tpl->path('initial_page'));
+		wp_enqueue_media();
+
+		$path = !empty($full)
+			? 'initial_page'
+			: 'create_edit'
+		;
+		load_template($tpl->path($path));
+	}
+
+	public static function test () {
+		return false;
 	}
 
 }

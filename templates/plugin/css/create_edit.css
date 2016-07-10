@@ -1,3 +1,10 @@
+button {
+	border: none;
+}
+a:focus {
+	outline: none;
+	box-shadow: none;
+}
 header.builder {
 	border-bottom: 1px solid rgb(216, 216, 216);
 	padding: 40px;
