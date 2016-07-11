@@ -112,7 +112,7 @@ class UpfrontThemeExporter {
 				'parent' => $root_item_id,
 				'id' => 'upfront-builder-current_theme',
 				'title' => __('Edit current theme', self::DOMAIN),
-				'href' => admin_url('admin.php?page=upfront-builder&theme=' . $child),
+				'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/' . $child),
 			));
 			$toolbar->add_menu(array(
 				'parent' => $root_item_id,
