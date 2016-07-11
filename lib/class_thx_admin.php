@@ -25,7 +25,7 @@ class Thx_Admin {
 	 */
 	public function add_menu_item () {
 		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) return false;
-		
+
 		$parent = class_exists('Upfront_Admin') && !empty(Upfront_Admin::$menu_slugs['main'])
 			? Upfront_Admin::$menu_slugs['main']
 			: false
@@ -43,6 +43,7 @@ class Thx_Admin {
 			$parent . '-builder',
 			array($this, "render_admin_page")
 		);
+		Upfront_Admin::$menu_slugs['builder'] = 'upfront-builder';
 	}
 
 	/**
