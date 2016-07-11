@@ -408,7 +408,7 @@
 
 				this.listenToOnce(Upfront.Events, 'layout:render', apply_grid);
 				this.listenToOnce(Upfront.Events, 'layout:after_render', function(){
-					var skip_getting_started = parseInt(_upfront_builder_getting_started, 10);
+					var skip_getting_started = parseInt((window._upfront_builder_getting_started || '0'), 10);
 					if ( skip_getting_started !== 1 ) Dialogs.getting_started_exp();
 				});
 				this.listenTo(Upfront.Events, "command:layout:edit_structure", edit_structure);
