@@ -67,7 +67,11 @@ class UpfrontThemeExporter {
 	 * No need to wait for the rest of Upfront, set our stuff up right now.
 	 */
 	private function _add_global_hooks () {
+		/*
+		// Not adding the toolbar item since the admin page move
 		add_action('upfront-admin_bar-process', array($this, 'add_toolbar_item'), 10, 2);
+		*/
+
 		if (is_admin() && !(defined('DOING_AJAX') && DOING_AJAX)) {
 			require_once(dirname(__FILE__) . '/lib/class_thx_admin.php');
 			Thx_Admin::serve();
@@ -88,7 +92,17 @@ class UpfrontThemeExporter {
 		add_action('upfront-core-initialized', array('Thx_Exporter', 'serve'));
 	}
 
+	/**
+	 * Adds the builder toolbar item
+	 *
+	 * Deprecated since v0.9
+	 *
+	 * @param object $toolbar
+	 * @param array $item
+	 */
 	public function add_toolbar_item ($toolbar, $item) {
+		return false; // Deprecated since v0.9
+
 		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) return false;
 		if (empty($item['meta'])) return false; // Only actual boot item has meta set
 
