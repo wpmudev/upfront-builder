@@ -17,9 +17,7 @@ class Thx_Admin {
 		add_action('admin_notices', array($this, 'dispatch_notices'));
 		add_action('upfront-admin-general_settings-versions', array($this, 'version_info'));
 
-		if (Upfront_Permissions::current(Upfront_Permissions::BOOT)) {
-			add_action('admin_menu', array($this, "add_menu_item"), 99);
-		}
+		add_action('admin_menu', array($this, "add_menu_item"), 99);
 	}
 
 	/**
@@ -50,7 +48,7 @@ class Thx_Admin {
 	 */
 	public function render_admin_page () {
 		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) wp_die("Nope.");
-		
+
 		if (!class_exists('Upfront_Thx_InitialPage_VirtualSubpage')) require_once(dirname(__FILE__) . '/class_thx_endpoint.php');
 		Upfront_Thx_InitialPage_VirtualSubpage::out(false);
 	}
