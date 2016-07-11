@@ -667,7 +667,12 @@ error_log(debug_backtrace());
 		if (!empty($stylesheet)) $this->_delete_element_style($stylesheet, $data);
 	}
 
+	/**
+	 * AJAX handler for recording the getting started experience dismissal
+	 */
 	public function json_skip_getting_started () {
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) die;
+
 		$data = !empty($_POST) ? stripslashes_deep($_POST) : array();
 		if (empty($data)) die;
 
@@ -683,7 +688,7 @@ error_log(debug_backtrace());
 		if (!$theme->exists()) die;
 
 
-		update_option($key, 1); // Only update this if we don't have the option
+		update_user_option(get_current_user_id(), $key, 1, true); // Only update this if we don't have the option
 		wp_send_json(array());
 	}
 
