@@ -158,7 +158,7 @@
 							});
 							if ( parameters.deleteDatas.length > 0 ) {
 								Upfront.Views.Editor.notify(Upfront.Settings.l10n.global.behaviors.cleaning_region_css);
-								deleteFunc(0); // Start deleting
+								parameters.deleteFunc(0); // Start deleting
 							}
 						});
 					},
