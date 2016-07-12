@@ -129,7 +129,7 @@
 							// Rewrite slide images because in builder mode they will be just paths of theme images
 							// and slider needs image objects to work.
 							//slide_images = images;
-							_.each(slide_images, function(id){
+							_.each(parameters.slide_images, function(id){
 								var image = _.isNumber(id) || id.match(/^\d+$/) ? images[id] : _.find(images, function(img){
 										return img.full[0].split(/[\\/]/).pop() == id.split(/[\\/]/).pop();
 									}),
@@ -137,7 +137,7 @@
 								if (image && image.full) $image.append('<img src="' + image.full[0] + '" />');
 								parameters.typeEl.append($image);
 							});
-							parameters.me.slide_images = slide_images;
+							parameters.me.slide_images = parameters.slide_images;
 							parameters.typeEl.trigger('refresh');
 						});
 					},
