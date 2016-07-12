@@ -7,11 +7,19 @@
 .uf-thx-theme a img {
 	width:100%;
 }
+.uf-thx-theme a img {
+	position: absolute;
+	top:0;bottom:0;left:0;right:0;
+	margin:auto;
+}
+
 
 .uf-thx-theme {
-	width:31%;
+	width:30%;
 	display:inline-block;
 	margin:0 15px 15px 0;
+	margin-right:4%;
+	line-height: 0;
 }
 .uf-thx-theme:nth-child(3n) {
 	margin-right:0;
@@ -23,8 +31,10 @@
 	text-decoration:none;
 	position: relative;
 	width:100%;
-	height:100%;
+	height:0;
 	display:block;
+	padding-bottom: 66%;
+	overflow: hidden;
 }
 
 .uf-thx-caption {
@@ -38,8 +48,115 @@
 	font-size:18px;
 	font-family: 'Roboto Condensed';
 	font-weight:100;
+	line-height: 1;
 }
 
-.uf-thx-themes_container {
+.uf-thx-themes_container,
+.uf-thx-theme_info {
 	padding:30px;
+}
+
+/* Form Styling */
+
+
+.uf-thx-theme_meta,
+.uf-thx-theme_screenshot {
+	display:inline-block;
+	vertical-align: top;
+}
+
+.uf-thx-theme_screenshot {
+	width:40%;
+	margin-right:15px;
+}
+.uf-thx-theme_screenshot .description {
+	line-height: 1;
+}
+.uf-thx-theme_screenshot img {
+	width:100%;
+	height:auto;
+	background:#c0c0c0;
+	margin-top: 5px;
+    text-align: center;
+    padding: 80px 0;
+    border-radius: 3px;
+    color:#fff;
+    text-transform: uppercase;
+    font-family: 'Roboto Condensed';
+    font-size:18px;
+    line-height: 1;
+    box-shadow:inset 0 0 15px rgba(0,0,0,.25);
+}
+.uf-thx-theme_screenshot img.nostyle {
+	background:transparent;
+    text-align: center;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none
+}
+
+.uf-thx-theme_meta {
+	width:56%;
+}
+.uf-thx-theme {
+	position: relative;
+	opacity: 0.85;
+}
+.uf-thx-theme.selected {
+	box-shadow:0 0 0 3px #00cf8d;
+	opacity: 1;
+}
+.uf-thx-theme.current:after {
+	content:'Active';
+	position: absolute;
+	font-size:14px;
+	background-color: #4A90E2;
+	color:#fff;
+	top:-3px;
+	left:-3px;
+	display: block;
+	height: 1px;
+	padding: 10px;
+	text-transform: uppercase;
+    font-family: 'Roboto Condensed';
+    -webkit-font-smoothing: antialiased;
+
+}
+
+.uf-thx-theme_meta span,
+.uf-thx-theme_meta input {
+	margin-bottom:15px;
+	display:block;
+	line-height: 1;
+}
+.uf-thx-theme_meta input[type="text"] {
+	height:40px;
+} 
+.uf-thx-theme_meta .check {
+	display: inline-block;
+	width:49%;
+	padding-top: 10px;
+}
+.uf-thx-theme_meta .check span,
+.uf-thx-theme_meta .check input {
+	display:inline-block;
+	vertical-align: top;
+}
+
+.uf-thx-theme_meta label input[type="text"],
+ .uf-thx-theme_meta label textarea {
+	width: 100%;
+}
+.uf-thx-theme_meta label span,
+.uf-thx-theme_screenshot span {
+	margin-bottom:5px;
+	font-style: normal;
+	font-size:13px;
+} 
+.postbox .buttons {
+	padding:0 30px 30px 30px;
+	text-align: center;
+}
+.postbox .edit.theme {
+	margin-right:30px;
 }

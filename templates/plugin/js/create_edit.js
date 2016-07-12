@@ -14,7 +14,7 @@ function edit_theme (theme) {
 
 function get_data () {
 	var data = {},
-		$ins = $(".uf-thx-new_theme input, .uf-thx-new_theme textarea, .uf-thx-new_theme select")
+		$ins = $("#new-theme input, #new-theme textarea, #new-theme select")
 	;
 	$ins.each(function () {
 		var $me = $(this),
@@ -27,9 +27,12 @@ function get_data () {
 }
 
 function init_new () {
-	var frame;
+	var frame,
+		screenshot = $(".uf-thx-theme_screenshot").find('img');
 
-	$(".uf-thx-new_theme")
+	if (screenshot.attr("src")) { screenshot.addClass('nostyle'); }
+
+	$("#new-theme")
 		.on("click", "button.create.theme", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -108,8 +111,8 @@ function init_new () {
 			frame = wp.media({
 				title: 'Select or Upload Media Of Your Chosen Persuasion',
 				library: {
-		      type: 'image'
-		   },
+		      	type: 'image'
+		   	},
 				button: {
 					text: 'Use this media'
 				},
@@ -125,6 +128,7 @@ function init_new () {
 
 				$use.val(id);
 				$img.attr("src", url);
+				$img.addClass('nostyle');
 			});
 
 			frame.open();
@@ -137,7 +141,7 @@ function init_new () {
 }
 
 function init_existing () {
-	$(".uf-thx-existing_theme")
+	$("#existing-theme")
 		.on("click", ".uf-thx-theme a", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -145,7 +149,7 @@ function init_existing () {
 			var $me = $(this).closest(".uf-thx-theme");
 			if (!$me.length) return false;
 
-			$(".uf-thx-existing_theme .uf-thx-theme").removeClass("selected");
+			$(".uf-thx-themes_container .uf-thx-theme").removeClass("selected");
 			$me.addClass("selected");
 
 			return false;
@@ -154,7 +158,7 @@ function init_existing () {
 			e.preventDefault();
 			e.stopPropagation();
 
-			var current = $(".uf-thx-existing_theme .uf-thx-theme.selected a").attr('href');
+			var current = $(".uf-thx-theme.selected a").attr('href');
 			if (!current) return false;
 
 			window.location = current;
@@ -165,7 +169,7 @@ function init_existing () {
 			e.preventDefault();
 			e.stopPropagation();
 
-			var current = $.trim($(".uf-thx-existing_theme .uf-thx-theme.selected").attr('data-theme'));
+			var current = $.trim($(".uf-thx-theme.selected").attr('data-theme'));
 			if (!current) return false;
 
 			edit_theme(current);

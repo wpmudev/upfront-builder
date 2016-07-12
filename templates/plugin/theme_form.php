@@ -2,7 +2,7 @@
 	<div class="uf-thx-theme_screenshot">
 		<label>
 			<span class="description"><?php esc_html_e('Theme listing preview:', UpfrontThemeExporter::DOMAIN); ?></span>
-			<img src="<?php if (!empty($screenshot)) echo esc_url($screenshot); ?>" width="370" height="255" />
+			<img src="<?php if (!empty($screenshot)) echo esc_url($screenshot); ?>" alt="Add Image" />
 			<input type="hidden" id="theme-screenshot" value="" />
 		</label>
 	</div>
@@ -56,6 +56,8 @@
 	<?php } ?>
 
 	<?php if (empty($name)) { /* if are creating a new theme, show preset selection */ ?>
+
+		<?php /*
 		<label for="">
 			<span class="description"><?php esc_html_e('Initial theme preset:', UpfrontThemeExporter::DOMAIN); ?></span>
 			<select id="selected_preset">
@@ -63,15 +65,19 @@
 				<option value="test"><?php esc_html_e('Test', UpfrontThemeExporter::DOMAIN); ?></option>
 			</select>
 		</label>
+		*/ ?>
 	<?php } ?>
-
-		<label for="activate_theme" class="inline">
-			<input type="checkbox" checked id="activate_theme" />
-			<span class="description"><?php esc_html_e('Activate theme', UpfrontThemeExporter::DOMAIN); ?></span>
-		</label>
-		<label for="export_with_images" class="inline">
-			<input type="checkbox" checked id="export_with_images" />
-			<span class="description"><?php esc_html_e('Export with images', UpfrontThemeExporter::DOMAIN); ?></span>
-		</label>
+		<div class="check">
+			<label for="activate_theme" class="inline">
+				<input type="checkbox" checked id="activate_theme" />
+				<span class="description"><?php esc_html_e('Activate theme', UpfrontThemeExporter::DOMAIN); ?></span>
+			</label>
+		</div>
+		<div class="check">
+			<label for="export_with_images" class="inline">
+				<input type="checkbox" checked id="export_with_images" />
+				<span class="description"><?php esc_html_e('Export with images', UpfrontThemeExporter::DOMAIN); ?></span>
+			</label>
+		</div>
 	</div>
 </div>
