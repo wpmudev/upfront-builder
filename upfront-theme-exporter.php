@@ -175,4 +175,4 @@ class UpfrontThemeExporter {
 
 }
 
-UpfrontThemeExporter::serve();
+if( upfont_thx_is_current_theme_upfront_child() ) UpfrontThemeExporter::serve();
