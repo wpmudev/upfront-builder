@@ -9,8 +9,6 @@ abstract class Thx_VirtualSubpage extends Upfront_VirtualSubpage {
 	const INITIAL_SLUG = 'theme';
 	const INITIAL_STYLESHEET = 'upfront';
 
-	const BOOTSTRAP_EXP_SLUG = '_show_builder_exp';
-
 	protected $_stylesheet;
 	protected $_slug;
 
@@ -39,7 +37,7 @@ abstract class Thx_VirtualSubpage extends Upfront_VirtualSubpage {
 		upfront_exporter_clear_conversion_cache($this->get_slug());
 		//echo upfront_boot_editor_trigger('theme');
 		$storage_key = apply_filters('upfront-data-storage-key', Upfront_Layout::STORAGE_KEY);
-		$show_exp = (int)get_user_option($storage_key . self::BOOTSTRAP_EXP_SLUG);
+		$show_exp = (int)get_user_option($storage_key . Thx_Exposed::BOOTSTRAP_EXP_SLUG);
 		echo '<script type="text/javascript">
 			var _upfront_builder_getting_started = ' . $show_exp . ';
 		</script>';

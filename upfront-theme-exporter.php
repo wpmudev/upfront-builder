@@ -54,11 +54,11 @@ class UpfrontThemeExporter {
 	 * This is where we dispatch the context-sensitive/global hooks.
 	 */
 	private function _add_hooks () {
+		$this->_add_exposed_hooks();
 		// Just dispatch specific scope hooks.
 		if (upfront_exporter_is_running()) {
 			$this->_add_exporter_hooks();
 		}
-
 		$this->_add_global_hooks();
 	}
 
@@ -77,6 +77,15 @@ class UpfrontThemeExporter {
 			Thx_Admin::serve();
 		}
 		$this->_load_textdomain();
+	}
+	/**
+	 * These hooks will *always* trigger even when doing AJAX either via admin or builder
+	 */
+	private function _add_exposed_hooks () {
+		if ( is_admin() || upfront_exporter_is_running() ) {
+			require_once(dirname(__FILE__) . '/lib/class_thx_exposed.php');
+			Thx_Exposed::serve();
+		}
 	}
 
 	private function _load_textdomain () {
