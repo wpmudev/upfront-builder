@@ -158,7 +158,7 @@
 #sidebar-ui.show-primary-sidebar {
   z-index: 10001004; }
   #sidebar-ui.show-primary-sidebar #preventUsageOverlay {
-    display: block; }
+    display: block !important; }
   #sidebar-ui.show-primary-sidebar ul.sidebar-commands-primary {
     z-index: 11;
     position: relative; }
@@ -168,7 +168,7 @@
 #sidebar-ui.show-sidebar-panel-settings {
   z-index: 10001004; }
   #sidebar-ui.show-sidebar-panel-settings #preventUsageOverlay {
-    display: block; }
+    display: block !important; }
   #sidebar-ui.show-sidebar-panel-settings li.sidebar-panel-settings {
     z-index: 11;
     position: relative; }
@@ -180,7 +180,7 @@
 #sidebar-ui.show-sidebar-commands-control {
   z-index: 10001004; }
   #sidebar-ui.show-sidebar-commands-control #preventUsageOverlay {
-    display: block; }
+    display: block !important; }
   #sidebar-ui.show-sidebar-commands-control ul.sidebar-commands-control {
     z-index: 11;
     position: relative; }

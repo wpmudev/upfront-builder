@@ -180,7 +180,7 @@
 	z-index: 10001004;
 	
 	#preventUsageOverlay {
-		display: block;
+		display: block !important; // overriding css internals
 	}
 	
 	ul.sidebar-commands-primary {
@@ -197,7 +197,7 @@
 	z-index: 10001004;
 	
 	#preventUsageOverlay {
-		display: block;
+		display: block !important; // overriding css internals
 	}
 	
 	li.sidebar-panel-settings {
@@ -218,7 +218,7 @@
 	z-index: 10001004;
 	
 	#preventUsageOverlay {
-		display: block;
+		display: block !important; // overriding css internals
 	}
 	
 	ul.sidebar-commands-control {
