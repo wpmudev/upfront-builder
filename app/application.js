@@ -14,7 +14,7 @@
 			;
 
 			var Command_ExportLayout = Upfront.Views.Editor.Command.extend({
-				className: "command-export upfront-icon upfront-icon-export",
+				className: "command-export",
 				render: function (){
 					this.$el.text(l10n.export_str);
 				},

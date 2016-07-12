@@ -62,8 +62,8 @@ class Thx_L10n {
 			'current_layout' => __('Current Layout: <b>%s</b>', UpfrontThemeExporter::DOMAIN),
 			'layouts' => __('Layouts', UpfrontThemeExporter::DOMAIN),
 			'media' => __('Media', UpfrontThemeExporter::DOMAIN),
-			'theme_images' => __('Theme Images', UpfrontThemeExporter::DOMAIN),
-			'theme_sprites' => __('Theme Sprites', UpfrontThemeExporter::DOMAIN),
+			'theme_images' => __('Media', UpfrontThemeExporter::DOMAIN),
+			'theme_sprites' => __('UI / Sprites', UpfrontThemeExporter::DOMAIN),
 		);
 	}
 }
