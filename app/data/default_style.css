@@ -1,0 +1,33 @@
+/* Default typography styles */
+p, h1, h2, h3, h4, h5, h6, ul, ol, pre, blockquote {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+ul, ol {
+	margin-left: 15px;
+}
+ul ul, ul ol, ol ul, ol ol {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+pre {
+	background: #4F616E;
+}
+
+blockquote {
+	border-left: 5px solid #C1C1C1;
+	margin-left: 15px;
+	padding-left: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+blockquote.upfront-quote-alternative {
+	border-top: 1px solid #C1C1C1;
+	border-bottom: 1px solid #C1C1C1;
+	border-left: none;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}

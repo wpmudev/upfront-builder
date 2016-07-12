@@ -2,8 +2,9 @@
 
 	require([
 		Upfront.themeExporter.root + 'app/dialogs.js',
-		Upfront.themeExporter.root + 'app/exporter.js'
-	], function (Dialogs, Exporter) {
+		Upfront.themeExporter.root + 'app/exporter.js',
+		Upfront.themeExporter.root + 'app/default_data.js'
+	], function (Dialogs, Exporter, DefaultData) {
 
 		// JUST A BIG BLOCK OF STUFF MOVED FROM UPFRONT TO EXPORTER
 		if (Upfront && Upfront.plugins) {
@@ -96,6 +97,9 @@
 					},
 					'add-sidebar-commands-class': function(parameters) {
 						return parameters.className + ' sidebar-commands-theme';
+					},
+					'get-default-typography': function(parameters) {
+						return DefaultData.default_typography;
 					},
 					'cancel-post-layout': function() {
 						Upfront.Events.trigger("post:layout:post:style:cancel");
@@ -388,7 +392,7 @@
 
 		((Upfront || {}).Application || {}).ThemeEditor = new (Upfront.Subapplication.extend({
 			boot: function () {
-
+				this.listenToOnce(Upfront.Events, 'upfront:layout:loaded', this.set_up_default_styles);
 			},
 
 			start: function () {
@@ -423,6 +427,14 @@
 
 			stop: function () {
 				return this.stopListening(Upfront.Events);
+			},
+
+			set_up_default_styles: function () {
+				if ( !this.layout ) return;
+				var layout_style = this.layout.get_property_value_by_name('layout_style');
+				if ( false !== layout_style ) return;
+				// No layout style defined, let's apply default
+				this.layout.set_property('layout_style', DefaultData.default_style, true);
 			}
 
 		}))();
