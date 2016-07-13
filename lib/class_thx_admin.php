@@ -52,8 +52,24 @@ class Thx_Admin {
 	public function render_admin_page () {
 		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) wp_die("Nope.");
 
-		if (!class_exists('Upfront_Thx_InitialPage_VirtualSubpage')) require_once(dirname(__FILE__) . '/class_thx_endpoint.php');
-		Upfront_Thx_InitialPage_VirtualSubpage::out(false);
+		if (!class_exists('Thx_Sanitize')) require_once (dirname(__FILE__) . '/class_thx_sanitize.php');
+		if (!class_exists('Thx_Template')) require_once (dirname(__FILE__) . '/class_thx_template.php');
+
+		if (!class_exists('Upfront_Thx_Builder_VirtualPage')) require_once (dirname(__FILE__) . '/class_thx_endpoint.php');
+
+		$tpl = Thx_Template::plugin();
+
+		wp_enqueue_style('create_edit', $tpl->url('css/create_edit.css'));
+
+		wp_enqueue_script('create_edit', $tpl->url('js/create_edit.js'), array('jquery'));
+		wp_localize_script('create_edit', '_thx', array(
+			'editor_base' => esc_url(Upfront_Thx_Builder_VirtualPage::get_url(Upfront_Thx_Builder_VirtualPage::get_initial_url())),
+			'admin_ajax' => admin_url('admin-ajax.php'),
+		));
+
+		wp_enqueue_media();
+
+		load_template($tpl->path('create_edit'));
 	}
 
 	/**

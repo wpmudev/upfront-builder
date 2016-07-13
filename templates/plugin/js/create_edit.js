@@ -181,7 +181,6 @@ function init_existing () {
 
 function init () {
 	if (this._initialized) {
-		console.log("already booted");
 		return false;
 	}
 	this._initialized = true;
