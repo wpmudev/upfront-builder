@@ -35,7 +35,7 @@ class Thx_Admin {
 		$name = Thx_L10n::get('plugin_name');
 		$name = !empty($name) ? $name : 'Builder';
 
-		add_submenu_page(
+		$full_page_suffix = add_submenu_page(
 			$parent,
 			$name,
 			$name,
@@ -44,12 +44,26 @@ class Thx_Admin {
 			array($this, "render_admin_page")
 		);
 		Upfront_Admin::$menu_slugs['builder'] = 'upfront-builder';
+
+		add_action("load-{$full_page_suffix}", array($this, 'set_up_dependencies'));
 	}
 
 	/**
-	 * Renders the Builder admin page
+	 * Add admin dependencies load action.
+	 *
+	 * Admin page load hook handler.
 	 */
-	public function render_admin_page () {
+	public function set_up_dependencies () {
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) wp_die("Nope.");
+		add_action('admin_enqueue_scripts', array($this, 'enqueue_dependencies'));
+	}
+
+	/**
+	 * Set up admin page dependencies.
+	 *
+	 * Admin page enqueue scripts handler, registered in `set_up_dependencies()` method
+	 */
+	public function enqueue_dependencies () {
 		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) wp_die("Nope.");
 
 		if (!class_exists('Thx_Sanitize')) require_once (dirname(__FILE__) . '/class_thx_sanitize.php');
@@ -68,8 +82,18 @@ class Thx_Admin {
 		));
 
 		wp_enqueue_media();
+	}
 
-		load_template($tpl->path('create_edit'));
+	/**
+	 * Renders the Builder admin page
+	 */
+	public function render_admin_page () {
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) wp_die("Nope.");
+
+		if (!class_exists('Thx_Sanitize')) require_once (dirname(__FILE__) . '/class_thx_sanitize.php');
+		if (!class_exists('Thx_Template')) require_once (dirname(__FILE__) . '/class_thx_template.php');
+
+		load_template(Thx_Template::plugin()->path('create_edit'));
 	}
 
 	/**
