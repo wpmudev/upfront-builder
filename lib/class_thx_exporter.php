@@ -1653,7 +1653,11 @@ error_log(debug_backtrace());
 		// Populate missing info from the current theme
 		if (is_object($theme) && $theme->exists()) {
 			foreach ($data as $idx => $info) {
-				if (!empty($info)) continue; // If we have stuff here, we're all good to go for this property, so carry on
+				// If we have stuff here, we're all good to go for this property, so carry on (sanitize first though)
+				if (!empty($info)) {
+					$data[$idx] = preg_replace('/\s+/', ' ', preg_replace('/\n|\r/', ' ', $info));
+					continue;
+				}
 
 				// Because both theme headers and our data keys are so super-consistent,
 				// let's make sure we have what it takes
@@ -1684,7 +1688,6 @@ error_log(debug_backtrace());
 		}
 		$content = $this->_template('style', $data);
 
-		//$content = preg_replace('/^\s*[A-Z][^:]+:\s*%[^%]+%\s*$/m', '', $content);
 		// Collapse missing properties instead
 		$carr = explode("\n", preg_replace('/\R/u', "\n", $content));
 		foreach ($carr as $cidx => $cnt) {
