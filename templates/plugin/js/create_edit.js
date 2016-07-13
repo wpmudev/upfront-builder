@@ -1,10 +1,27 @@
 ;(function ($, undefined) {
 
+function show_error (msg) {
+	msg = msg || ((_thx || {}).l10n || {}).oops;
+	if (!msg) return false;
+
+	hide_errors();
+
+	$(".upfront_admin.upfront-builder h1").after(
+		'<div class="error after-h2 upfront-error"><p>' + msg + '</p></div>'
+	);
+
+	return true;
+}
+
+function hide_errors () { return $(".upfront_admin.upfront-builder .upfront-error").remove(); }
+
 function edit_theme (theme) {
 	var search = window.location.search.toString(),
 		url = (window._thx || {}).editor_base.replace(/\/theme/, '/' + theme)
 	;
 	if (!url) return false;
+
+	hide_errors();
 
 	if (search.length && search.match(/[?&]dev=/)) {
 		url += '?dev=true';
@@ -46,6 +63,8 @@ function init_new () {
 			}
 			data.add_global_regions = true;
 
+			hide_errors();
+
 			$.post(_thx.admin_ajax, {
 				action: 'upfront_thx-create-theme',
 				mode: "theme",
@@ -57,7 +76,7 @@ function init_new () {
 				if (slug) window.location = base_url.replace(/\/theme/, '/' + slug);
 				else window.location.reload();
 			}).error(function(){
-				console.log("error");
+				show_error();
 			});
 
 			return false;
@@ -71,6 +90,8 @@ function init_new () {
 
 			data.add_global_regions = true;
 
+			hide_errors();
+
 			$.post(_thx.admin_ajax, {
 				action: 'upfront_thx-update-theme',
 				mode: "theme",
@@ -78,7 +99,7 @@ function init_new () {
 			}).success(function(response) {
 				window.location.reload();
 			}).error(function(){
-				console.log("error");
+				show_error();
 			});
 
 			return false;
@@ -132,8 +153,6 @@ function init_new () {
 			});
 
 			frame.open();
-
-
 
 			return false;
 		})

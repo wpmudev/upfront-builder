@@ -79,6 +79,9 @@ class Thx_Admin {
 		wp_localize_script('create_edit', '_thx', array(
 			'editor_base' => esc_url(Upfront_Thx_Builder_VirtualPage::get_url(Upfront_Thx_Builder_VirtualPage::get_initial_url())),
 			'admin_ajax' => admin_url('admin-ajax.php'),
+			'l10n' => array(
+				'oops' => __('Oops, something went wrong with processing your request.', UpfrontThemeExporter::DOMAIN),
+			)
 		));
 
 		wp_enqueue_media();
