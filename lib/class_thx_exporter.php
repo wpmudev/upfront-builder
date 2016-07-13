@@ -1755,7 +1755,7 @@ error_log(debug_backtrace());
 
 		// Also, let's activate this, if requested
 		$current = get_option('stylesheet');
-		if ($current !== $theme_slug && !empty($form['thx-activate_theme'])) {
+		if ($current !== $theme_slug && !empty($form['thx-activate_theme']) && $form['thx-activate_theme'] == 'true' ) {
 			switch_theme($theme_slug);
 		}
 		if (!empty($form['thx-theme-screenshot']) && is_numeric($form['thx-theme-screenshot'])) {
@@ -1800,7 +1800,7 @@ error_log(debug_backtrace());
 
 		// This is important to set *before* we create the theme
 		remove_all_filters('upfront-thx-theme_exports_images'); // This is for the duration of this request - so we don't inherit old values, whatever they are
-		$this->_theme_exports_images = !empty($form['thx-export_with_images']);
+		$this->_theme_exports_images = ( !empty($form['thx-export_with_images']) && $form['thx-export_with_images'] == 'true' );
 		// Allright, good to go
 
 		// Write functions.php to add stylesheet for theme
@@ -1858,7 +1858,7 @@ error_log(debug_backtrace());
 		}
 
 		// Activate the theme, if requested so
-		if (!empty($form['thx-activate_theme'])) {
+		if ( !empty($form['thx-activate_theme']) && $form['thx-activate_theme'] == 'true' ) {
 			switch_theme($theme_slug);
 		}
 
