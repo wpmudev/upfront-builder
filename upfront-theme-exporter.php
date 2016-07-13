@@ -72,12 +72,34 @@ class UpfrontThemeExporter {
 		add_action('upfront-admin_bar-process', array($this, 'add_toolbar_item'), 10, 2);
 		*/
 
+		add_filter('extra_theme_headers', array($this, 'process_extra_child_theme_headers'));
+
 		if (is_admin() && !(defined('DOING_AJAX') && DOING_AJAX)) {
 			require_once(dirname(__FILE__) . '/lib/class_thx_admin.php');
 			Thx_Admin::serve();
 		}
 		$this->_load_textdomain();
 	}
+
+	/**
+	 * Introduces additional theme headers, supported by exporter
+	 *
+	 * Filters the `extra_theme_headers` hook
+	 *
+	 * @param array $headers Existing headers
+	 *
+	 * @return array Augmented headers
+	 */
+	public function process_extra_child_theme_headers ($headers=array()) {
+		if (!is_array($headers)) return $headers;
+
+		if (!in_array('WDP ID', $headers)) $headers[] = 'WDP ID';
+		if (!in_array('License', $headers)) $headers[] = 'License';
+		if (!in_array('License URI', $headers)) $headers[] = 'License URI';
+
+		return $headers;
+	}
+
 	/**
 	 * These hooks will *always* trigger even when doing AJAX either via admin or builder
 	 */
