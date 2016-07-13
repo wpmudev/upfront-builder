@@ -6,8 +6,8 @@ Template: %thx-theme-template%
 Author: %thx-author%
 Author URI: %thx-author-uri%
 Theme URI: %thx-theme-uri%
-Licence: %thx-theme-licence%
-Licence URI: %thx-theme-licence-uri%
+License: %thx-theme-licence%
+License URI: %thx-theme-licence-uri%
 Tags: %thx-theme-tags%
 Text Domain: %thx-theme-text-domain%
 */
