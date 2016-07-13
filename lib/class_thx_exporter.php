@@ -1571,20 +1571,30 @@ error_log(debug_backtrace());
 		;
 
 		$result = array();
+		
+		// Check if element is related to posts
+		$post_element = $this->is_post_element_preset($presetProperty);
 
 		// Make sure we only iterate over what can be iterated over...
 		if (is_array($presets)) foreach ($presets as $preset) {
 			if ($preset['id'] === $properties['id']) {
 				continue;
 			}
-			// Make sure we escape preset_style
-			$preset['preset_style'] = addslashes($preset['preset_style']);
+
+			if(!$post_element) {
+				// Make sure we escape preset_style
+				$preset['preset_style'] = addslashes($preset['preset_style']);
+			}
+
 			$result[] = $preset;
 		}
 
 		if (!$delete) {
-			// Make sure we escape preset_style
-			$properties['preset_style'] = addslashes($properties['preset_style']);
+			if(!$post_element) {
+				// Make sure we escape preset_style
+				$properties['preset_style'] = addslashes($properties['preset_style']);
+			}
+
 			$result[] = $properties;
 		}
 
@@ -1592,10 +1602,26 @@ error_log(debug_backtrace());
 			update_option('upfront_new-' . $presetProperty, json_encode($result));
 			return;
 		}
+		
+		// Check if post data element
+		if($post_element) {
+			// Add slashes to whole posts related presets else JSON is broken by markup stored into preset
+			$result = addslashes(json_encode($result));
+		} else {
+			$result = json_encode($result);
+		}
 
 		// Note: `addslashes` here, because theme settings will call `stripslashes` in the `get` method
 		// Second note: we do not need to addslashes here because we already do on saving settings.php which make enourmous amount of slashes
-		$this->_theme_settings->set($presetProperty, json_encode($result));
+		$this->_theme_settings->set($presetProperty, $result);
+	}
+	
+	protected function is_post_element_preset($presetProperty) {
+		if($presetProperty == "post_data_element_presets" || $presetProperty == "author_element_presets" || $presetProperty == "featured_image_element_presets" || $presetProperty == "taxonomy_element_presets" || $presetProperty == "comments_element_presets") {
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**
