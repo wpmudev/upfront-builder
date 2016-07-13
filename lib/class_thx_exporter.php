@@ -111,6 +111,12 @@ class Thx_Exporter {
 
 		add_action('upfront_update_button_presets', array($this, 'update_button_presets'));
 		add_action('init', array($this, 'dispatch_preset_handling'), 99);
+		
+		// Null options to load them from files instead of DB
+		add_action('upfront_get_theme_fonts', array($this, 'getEmptyArray'), 5, 2);
+		add_action('upfront_get_icon_fonts', array($this, 'getEmptyArray'), 5, 2);
+		add_action('upfront_get_theme_colors', array($this, 'getEmptyArray'), 5, 2);
+		add_action('upfront_get_post_image_variants', array($this, 'getEmptyArray'), 5, 2);
 
 		add_action('upfront_get_stylesheet_directory', array($this, 'get_stylesheet_directory'));
 		add_action('upfront_get_stylesheet', array($this, 'get_stylesheet'));
@@ -283,6 +289,7 @@ class Thx_Exporter {
 		if (empty($preset_servers)) return false;
 
 		foreach (array_keys($preset_servers) as $server) {
+			add_action("upfront_get_{$server}_presets", array($this, 'getEmptyArray'), 5, 2);
 			add_action("upfront_save_{$server}_preset", array($this, 'save_preset'), 10, 2);
 			add_action("upfront_delete_{$server}_preset", array($this, 'delete_preset'), 10, 2);
 		}
@@ -1522,7 +1529,11 @@ error_log(debug_backtrace());
 		}
 		$this->_theme_settings->set('post_image_variants', json_encode($post_image_variant));
 	}
-
+	
+	public function getEmptyArray($presets, $args) {
+		if (isset($args['json']) && $args['json']) return '';
+		return array();
+	}
 
 	public function save_preset ($properties, $slug) {
 		$this->_update_element_preset($slug);
