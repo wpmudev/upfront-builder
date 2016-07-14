@@ -59,7 +59,6 @@
 					'show publish layout command',
 					'show save layout command',
 					'show preview layout command',
-					'toggle first sidebar panel',
 					'show sidebar profile',
 					'initialize featured image selector',
 					'show save as dialog',
@@ -91,9 +90,10 @@
 							parameters.rootEl.find('.panel-section-content').append(edit_structure.el);
 					},
 					'do-action-after-sidebar-settings-render': function(parameters) {
-						setTimeout( function() {
-							parameters.settingsEl.find('.sidebar-panel-title').trigger('click');
-						}, 50);
+						// not needed for now as Draggable Elements will be the default expanded
+						// setTimeout( function() {
+							// parameters.settingsEl.find('.sidebar-panel-title').trigger('click');
+						// }, 50);
 					},
 					'add-sidebar-commands-class': function(parameters) {
 						return parameters.className + ' sidebar-commands-theme';
