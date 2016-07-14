@@ -436,6 +436,7 @@
 					me.toggle_step_one = function() {
 						$sidebar_ui.removeClass('show-sidebar-panel-settings');
 						$sidebar_ui.find('.no-click-overlay').remove();
+						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-elements').addClass('expanded');
 						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').removeClass('expanded');
 						$sidebar_ui.addClass('show-primary-sidebar');
 						$sidebar_ui.find('ul.sidebar-commands-primary').prepend('<li class="no-click-overlay"></li>');
@@ -447,6 +448,7 @@
 						$sidebar_ui.removeClass('show-sidebar-commands-control');
 						$sidebar_ui.find('.no-click-overlay').remove();
 						$sidebar_ui.addClass('show-sidebar-panel-settings');
+						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-elements').removeClass('expanded');
 						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').addClass('expanded');
 						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').prepend('<div class="no-click-overlay"></div>');
 					}
@@ -454,6 +456,7 @@
 					// toggling step three
 					me.toggle_step_three = function() {
 						$sidebar_ui.removeClass('show-sidebar-panel-settings');
+						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-elements').addClass('expanded');
 						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').removeClass('expanded');
 						$sidebar_ui.find('.no-click-overlay').remove();
 						$sidebar_ui.addClass('show-sidebar-commands-control');
