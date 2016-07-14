@@ -440,6 +440,7 @@
 						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').removeClass('expanded');
 						$sidebar_ui.addClass('show-primary-sidebar');
 						$sidebar_ui.find('ul.sidebar-commands-primary').prepend('<li class="no-click-overlay"></li>');
+						$('#upfront-popup').removeClass('step-three-popup');
 					};
 					
 					// toggling step two
@@ -521,6 +522,16 @@
 					me.toggle_step_one();
 				}
 			},
+			register_quick_tour: function() {
+				var me = this,
+					$replay = $('#page .upfront-replay-quick-tour a.upfront_cta')
+				;
+				if ( $replay.length ) {
+					$replay.on('click', function() {
+						me.getting_started_exp();
+					});
+				}
+			}
 		};
 	});
 })(jQuery);
