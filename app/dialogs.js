@@ -434,13 +434,17 @@
 					
 					// toggling step one
 					me.toggle_step_one = function() {
+						var $upfront_popup = $('#upfront-popup');
+						if ( $upfront_popup.length ) {
+							$upfront_popup.removeClass('step-two-popup');
+							$upfront_popup.removeClass('step-three-popup');
+						}
 						$sidebar_ui.removeClass('show-sidebar-panel-settings');
 						$sidebar_ui.find('.no-click-overlay').remove();
 						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-elements').addClass('expanded');
 						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').removeClass('expanded');
 						$sidebar_ui.addClass('show-primary-sidebar');
 						$sidebar_ui.find('ul.sidebar-commands-primary').prepend('<li class="no-click-overlay"></li>');
-						$('#upfront-popup').removeClass('step-three-popup');
 					};
 					
 					// toggling step two
