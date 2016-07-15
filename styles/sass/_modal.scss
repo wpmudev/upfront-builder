@@ -191,6 +191,12 @@
 			cursor: initial;
 		}
 	}
+	
+	li.sidebar-panel-elements {
+		.sidebar-panel-content {
+			height: auto;
+		}
+	}
 }
 
 #sidebar-ui.show-sidebar-panel-settings {
@@ -232,6 +238,12 @@
 			cursor: initial;
 		}
 	}
+	
+	li.sidebar-panel-elements {
+		.sidebar-panel-content {
+			height: auto;
+		}
+	}
 }
 
 #upfront-popup.getting-started-popup.step-two-popup {
@@ -240,11 +252,11 @@
 }
 
 #upfront-popup.getting-started-popup.step-three-popup {
-	top: 190px;
+	top: 370px;
   left: 265px;
 	
 	&:before {
-		margin-top: 70px;
+		margin-top: 110px;
 	}
 	
 	.getting_started_content {

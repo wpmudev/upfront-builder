@@ -226,6 +226,8 @@
     position: relative; }
     #sidebar-ui.show-primary-sidebar ul.sidebar-commands-primary li.no-click-overlay {
       cursor: initial; }
+  #sidebar-ui.show-primary-sidebar li.sidebar-panel-elements .sidebar-panel-content {
+    height: auto; }
 
 #sidebar-ui.show-sidebar-panel-settings {
   z-index: 10001004; }
@@ -251,16 +253,18 @@
       margin: 0;
       padding: 0;
       cursor: initial; }
+  #sidebar-ui.show-sidebar-commands-control li.sidebar-panel-elements .sidebar-panel-content {
+    height: auto; }
 
 #upfront-popup.getting-started-popup.step-two-popup {
   top: 200px;
   left: 280px; }
 
 #upfront-popup.getting-started-popup.step-three-popup {
-  top: 190px;
+  top: 370px;
   left: 265px; }
   #upfront-popup.getting-started-popup.step-three-popup:before {
-    margin-top: 70px; }
+    margin-top: 110px; }
   #upfront-popup.getting-started-popup.step-three-popup .getting_started_content .controls {
     top: -45px;
     padding: 0 30px 10px 30px; }

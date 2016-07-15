@@ -59,7 +59,6 @@
 					'show publish layout command',
 					'show save layout command',
 					'show preview layout command',
-					'toggle first sidebar panel',
 					'show sidebar profile',
 					'initialize featured image selector',
 					'show save as dialog',
@@ -91,9 +90,10 @@
 							parameters.rootEl.find('.panel-section-content').append(edit_structure.el);
 					},
 					'do-action-after-sidebar-settings-render': function(parameters) {
-						setTimeout( function() {
-							parameters.settingsEl.find('.sidebar-panel-title').trigger('click');
-						}, 50);
+						// not needed for now as Draggable Elements will be the default expanded
+						// setTimeout( function() {
+							// parameters.settingsEl.find('.sidebar-panel-title').trigger('click');
+						// }, 50);
 					},
 					'add-sidebar-commands-class': function(parameters) {
 						return parameters.className + ' sidebar-commands-theme';
@@ -414,6 +414,7 @@
 				this.listenToOnce(Upfront.Events, 'layout:after_render', function(){
 					var skip_getting_started = parseInt((window._upfront_builder_getting_started || '0'), 10);
 					if ( skip_getting_started !== 1 ) Dialogs.getting_started_exp();
+					Dialogs.register_quick_tour();
 				});
 				this.listenTo(Upfront.Events, "command:layout:edit_structure", edit_structure);
 				this.listenTo(Upfront.Events, "builder:load_theme", Exporter.load_theme);
