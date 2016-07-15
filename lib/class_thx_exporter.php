@@ -111,7 +111,7 @@ class Thx_Exporter {
 
 		add_action('upfront_update_button_presets', array($this, 'update_button_presets'));
 		add_action('init', array($this, 'dispatch_preset_handling'), 99);
-		
+
 		// Null options to load them from files instead of DB
 		add_action('upfront_get_theme_fonts', array($this, 'getEmptyArray'), 5, 2);
 		add_action('upfront_get_icon_fonts', array($this, 'getEmptyArray'), 5, 2);
@@ -1529,7 +1529,7 @@ error_log(debug_backtrace());
 		}
 		$this->_theme_settings->set('post_image_variants', json_encode($post_image_variant));
 	}
-	
+
 	public function getEmptyArray($presets, $args) {
 		if (isset($args['json']) && $args['json']) return '';
 		return array();
@@ -1582,7 +1582,7 @@ error_log(debug_backtrace());
 		;
 
 		$result = array();
-		
+
 		// Check if element is related to posts
 		$post_element = $this->is_post_element_preset($presetProperty);
 
@@ -1613,7 +1613,7 @@ error_log(debug_backtrace());
 			update_option('upfront_new-' . $presetProperty, json_encode($result));
 			return;
 		}
-		
+
 		// Check if post data element
 		if($post_element) {
 			// Add slashes to whole posts related presets else JSON is broken by markup stored into preset
@@ -1626,12 +1626,12 @@ error_log(debug_backtrace());
 		// Second note: we do not need to addslashes here because we already do on saving settings.php which make enourmous amount of slashes
 		$this->_theme_settings->set($presetProperty, $result);
 	}
-	
+
 	protected function is_post_element_preset($presetProperty) {
 		if($presetProperty == "post_data_element_presets" || $presetProperty == "author_element_presets" || $presetProperty == "featured_image_element_presets" || $presetProperty == "taxonomy_element_presets" || $presetProperty == "comments_element_presets") {
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -1847,7 +1847,7 @@ error_log(debug_backtrace());
 		$this->_create_functions_file($theme_slug);
 
 		// Adding default layouts
-		$preset = !empty($form['thx-selected_preset']) ? $form['thx-selected_preset'] : 'default';
+		$preset = /*!empty($form['thx-selected_preset']) ? $form['thx-selected_preset'] :*/ 'default';
 		$default_layouts_dir = trailingslashit(Thx_Template::theme()->dirpath("default_layouts/{$preset}", false));
 		$theme_layouts_dir = trailingslashit($this->_fs->construct_path(array(
 			Thx_Fs::PATH_LAYOUTS
