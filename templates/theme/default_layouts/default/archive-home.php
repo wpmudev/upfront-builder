@@ -180,7 +180,7 @@ $main->add_element("PlainTxt", array (
   array (
     "view_class" => "PlainTxtView",
     "id_slug" => "plain_text",
-    "content" => "<h1 style=\"text-align: center;\">Welcome to ". wp_get_theme()->get("Name") ." Homepage</h1>",
+    "content" => "<h2 style=\"text-align: center;\">Welcome to ". wp_get_theme()->get("Name") ." Homepage</h2>",
     "type" => "PlainTxtModel",
     "element_id" => "text-object-1468409923826-1943",
     "class" => "c24 upfront-plain_txt",

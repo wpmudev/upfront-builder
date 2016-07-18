@@ -31,33 +31,3 @@ blockquote.upfront-quote-alternative {
 	padding-top: 20px;
 	padding-bottom: 20px;
 }
-
-.upfront-object-content h1 {
-	color: rgb(153, 153, 153);
-	font-family: Arial;
-	font-size: 38px;
-	font-weight: 600;
-	font-style: normal;
-}
-
-.upfront-object-content p {
-	color: rgb(94, 94, 94);
-	font-family: Arial;
-	font-size: 20px;
-	font-weight: 400;
-	font-style: normal;
-}
-
-/* Default button styles */
-.upfront-output-ubutton a.upfront_cta {
-	color: rgb(255, 255, 255);
-	font-family: Arial;
-	font-size: 14px;
-	font-weight: 400;
-	font-style: normal;
-	line-height: 2;
-	border: none;
-	border-radius: 20px 20px 20px 20px;
-	background-color: rgb(64, 64, 64);
-	transition: none;
-}
