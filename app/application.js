@@ -101,6 +101,10 @@
 					'get-default-typography': function(parameters) {
 						return DefaultData.default_typography;
 					},
+					// Get long loading notice message.
+					'long-loading-notice': function() {
+						return Upfront.Settings.l10n.exporter.long_loading_notice;
+					},
 					'cancel-post-layout': function() {
 						Upfront.Events.trigger("post:layout:post:style:cancel");
 					},
