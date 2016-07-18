@@ -24,9 +24,8 @@
   float: left;
   line-height: 34px;
   padding: 0 10px;
-  border: 2px solid #25394d;
   font-size: 15px;
-  height: 40px;
+  height: 35px;
   width: 116px;
   text-align: center;
   opacity: .8;
@@ -39,11 +38,12 @@
 #sidebar-ui .create-theme-sidebar .sidebar-commands-primary .command-open-exporter_media {
   max-width: 120px;
   font-size: 11px;
-  line-height: 20px; }
+  line-height: 18px; }
   #sidebar-ui .create-theme-sidebar .sidebar-commands-primary .command-open-exporter_media a {
     color: #adc3d8;
     display: block;
-    margin: 0 0 0 20px; }
+    margin: 0 0 0 20px;
+    opacity: 0.7; }
     #sidebar-ui .create-theme-sidebar .sidebar-commands-primary .command-open-exporter_media a:before {
       content: " ";
       display: inline-block;
@@ -58,6 +58,8 @@
       background-position: -196px -182px; }
     #sidebar-ui .create-theme-sidebar .sidebar-commands-primary .command-open-exporter_media a.sprites:before {
       background-position: -196px -284px; }
+    #sidebar-ui .create-theme-sidebar .sidebar-commands-primary .command-open-exporter_media a:hover {
+      opacity: 1; }
 
 #sidebar-ui .sidebar-commands-control .command-grid {
   float: right;
