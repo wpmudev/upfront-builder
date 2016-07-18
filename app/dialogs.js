@@ -404,13 +404,17 @@
 				});
 			},
 			getting_started_exp: function() {
+				// Could be subsequent layout edit after "skip tour" has been clicked
+				if (1 === parseInt((window._upfront_builder_getting_started || '0'), 10)) return false;
+
+				// No? carry on as usual
 				var me = {},
 					step_one_tpl = _.template($(getting_started_tpl).find('#upfront-getting-started-step-one-tpl').html()),
 					step_two_tpl = _.template($(getting_started_tpl).find('#upfront-getting-started-step-two-tpl').html()),
 					step_three_tpl = _.template($(getting_started_tpl).find('#upfront-getting-started-step-three-tpl').html()),
 					$sidebar_ui = $('#sidebar-ui')
 				;
-				
+
 				if ( $sidebar_ui.length ) {
 					// spawning popup
 					var popup = Upfront.Popup.open(
@@ -484,44 +488,47 @@
 								data: {
 									key: _upfront_storage_key + '_show_builder_exp'
 								}
+							}).done(function () {
+								// Record the local global state change as well
+								window._upfront_builder_getting_started = 1;
 							});
 						}
 						me.close_popup();
 					});
-					
+
 					me.$popup.content.on('click', 'button.next.step-one', function() {
 						$(this).parents('#upfront-popup').addClass('step-two-popup');
 						me.$popup.content.html(step_two_tpl);
 						me.toggle_step_two();
 					});
-					
+
 					me.$popup.content.on('click', 'button.prev.step-two', function() {
 						$(this).parents('#upfront-popup').removeClass('step-two-popup');
 						me.$popup.content.html(step_one_tpl);
 						me.toggle_step_one();
 					});
-					
+
 					me.$popup.content.on('click', 'button.next.step-two', function() {
 						$(this).parents('#upfront-popup').removeClass('step-two-popup');
 						$(this).parents('#upfront-popup').addClass('step-three-popup');
 						me.$popup.content.html(step_three_tpl);
 						me.toggle_step_three();
 					});
-					
+
 					me.$popup.content.on('click', 'button.prev.step-three', function() {
 						$(this).parents('#upfront-popup').removeClass('step-three-popup');
 						$(this).parents('#upfront-popup').addClass('step-two-popup');
 						me.$popup.content.html(step_two_tpl);
 						me.toggle_step_two();
 					});
-					
+
 					me.$popup.content.on('click', 'button.finish.step-three', function() {
 						me.close_popup();
 					});
-					
+
 					// do not allow clicking from outside
 					Upfront.Popup.$background.off("click");
-					
+
 					// default view
 					me.toggle_step_one();
 				}
