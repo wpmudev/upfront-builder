@@ -101,7 +101,7 @@
 						?>
 						<div class="buttons">
 							<button type="button" class="edit info">
-								<?php esc_html_e('Edit info', UpfrontThemeExporter::DOMAIN); ?>
+								<?php esc_html_e('Save Changes', UpfrontThemeExporter::DOMAIN); ?>
 							</button>
 							<button type="button" class="download" data-download_url="<?php
 								echo esc_url(add_query_arg(array(
