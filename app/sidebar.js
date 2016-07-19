@@ -1,6 +1,6 @@
 (function ($, undefined) {
 
-define(function() {
+define(['scripts/upfront/upfront-views-editor/commands/command-logo'], function (Command_Logo) {
 
 
 var l10n = Upfront.Settings && Upfront.Settings.l10n ?
@@ -78,10 +78,24 @@ var Command_ThemeImagesSprites = Upfront.Views.Editor.Command.extend({
 	}
 });
 
+var Logo = Command_Logo.extend({
+	on_click: function (e) {
+		if (e && e.preventDefault) e.preventDefault();
+		if (e && e.stopPropagation) e.stopPropagation();
+
+		if ((window.location.search || '').length) window.location.search = '';
+		else window.location.reload();
+
+		return false;
+	}
+});
+
 
 function init_normal_exporter () {
 	Upfront.Application.sidebar.sidebar_commands.primary = new SidebarCommands_PrimaryLayout({model: Upfront.Application.sidebar.model});
 	Upfront.Application.sidebar.sidebar_commands.additional = false;
+
+	Upfront.Application.sidebar.sidebar_commands.header.commands = _([new Logo({model: Upfront.Application.sidebar.model})]);
 
 	Upfront.Application.sidebar.render();
 }
