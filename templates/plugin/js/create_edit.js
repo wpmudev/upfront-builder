@@ -104,6 +104,17 @@ function init_new () {
 
 			return false;
 		})
+		.on("click", "button.download", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			var url = $(this).attr('data-download_url');
+			if (!url) return false;
+
+			window.location = url;
+
+			return false;
+		})
 		.on("click", "button.edit.theme", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
