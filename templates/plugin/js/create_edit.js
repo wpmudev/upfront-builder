@@ -104,17 +104,6 @@ function init_new () {
 
 			return false;
 		})
-		.on("click", "button.download", function (e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			var url = $(this).attr('data-download_url');
-			if (!url) return false;
-
-			window.location = url;
-
-			return false;
-		})
 		.on("click", "button.edit.theme", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -203,6 +192,17 @@ function init_existing () {
 			if (!current) return false;
 
 			edit_theme(current);
+
+			return false;
+		})
+		.on("click", "button.download", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			var current = $(".uf-thx-theme.selected a").attr('data-download_url');
+			if (!current) return false;
+
+			window.location = current;
 
 			return false;
 		})
