@@ -10,6 +10,21 @@
 .upfront-export-postpart:hover {
   border-color: #3ea; }
 
+#sidebar-ui .create-theme-sidebar .sidebar-commands-header {
+  background: #1f2933; }
+
+#sidebar-ui .create-theme-sidebar .command-logo:after {
+  content: 'BUILDER';
+  float: right;
+  background: rgba(221, 223, 224, 0.8);
+  font: 600 11px Open Sans;
+  color: #1f2933;
+  position: relative;
+  right: 10px;
+  top: 5px;
+  padding: 3px 5px;
+  border-radius: 6px; }
+
 #sidebar-ui .create-theme-sidebar .sidebar-commands-primary .info-panel {
   font-size: 11px;
   line-height: 16px;
