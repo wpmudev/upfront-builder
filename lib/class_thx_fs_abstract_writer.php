@@ -13,6 +13,44 @@ abstract class Thx_Fs_AbstractWriter {
 	}
 
 	/**
+	 * Get the recursive list of all files in root theme dir
+	 *
+	 * @return array
+	 */
+	public function ls () {
+		$root = $this->get_root_path();
+		return $this->_list_from($root);
+	}
+
+	/**
+	 * Recursive list working method
+	 *
+	 * @param string $path Path
+	 *
+	 * @return array
+	 */
+	protected function _list_from ($path) {
+		$list = array();
+
+		$all = glob(trailingslashit(wp_normalize_path($path)) . '/*');
+		foreach ($all as $item) {
+			if ('.' === $item || '..' === $item || $path === $item) continue;
+			$item = wp_normalize_path($item);
+
+			$list[] = $item;
+			
+			if (!is_dir($item)) continue;
+
+			$tmp = $this->_list_from($item);
+			foreach ($tmp as $tmp_item) {
+				$list[] = $tmp_item;
+			}
+		}
+
+		return $list;
+	}
+
+	/**
 	 * Sets up internal names which are used in FS resolution.
 	 *
 	 * @param string $theme Theme name
@@ -93,7 +131,7 @@ abstract class Thx_Fs_AbstractWriter {
 			: $this->_root_path
 		;
 	}
-	
+
 	/**
 	 * Write to a file within theme-relative path.
 	 *
@@ -129,7 +167,7 @@ abstract class Thx_Fs_AbstractWriter {
 
 		return unlink($path);
 	}
-	
+
 	/**
 	 * Check filesystem path for existence.
 	 *
@@ -141,7 +179,7 @@ abstract class Thx_Fs_AbstractWriter {
 		if (empty($fspath)) return false;
 		return file_exists($fspath);
 	}
-	
+
 	/**
 	 * Create a directory indicated by filesystem path argument.
 	 *
@@ -154,7 +192,7 @@ abstract class Thx_Fs_AbstractWriter {
 
 		$fspath = $this->_escape_path($fspath);
 		if (!$this->within_root(dirname($fspath))) return false; // This is also used to create child theme path, so check root
-		
+
 		return mkdir($fspath);
 	}
 
@@ -221,7 +259,7 @@ abstract class Thx_Fs_AbstractWriter {
 	 */
 	protected function _within ($fscheck, $fsroot) {
 		if (empty($fscheck) || empty($fsroot)) return false;
-		
+
 		$cfscheck = wp_normalize_path(realpath($fscheck));
 		$cfsroot = wp_normalize_path(realpath($fsroot));
 		if (empty($fscheck) || empty($fsroot)) return false;
