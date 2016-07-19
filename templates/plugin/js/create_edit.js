@@ -195,6 +195,17 @@ function init_existing () {
 
 			return false;
 		})
+		.on("click", "button.download", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			var current = $(".uf-thx-theme.selected a").attr('data-download_url');
+			if (!current) return false;
+
+			window.location = current;
+
+			return false;
+		})
 	;
 }
 

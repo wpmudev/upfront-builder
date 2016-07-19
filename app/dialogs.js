@@ -405,7 +405,7 @@
 			},
 			getting_started_exp: function() {
 				// Could be subsequent layout edit after "skip tour" has been clicked
-				if (1 === parseInt((window._upfront_builder_getting_started || '0'), 10)) return false;
+				//if (1 === parseInt((window._upfront_builder_getting_started || '0'), 10)) return false;
 
 				// No? carry on as usual
 				var me = {},

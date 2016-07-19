@@ -7,6 +7,18 @@
 		if ($theme->get('Template') !== 'upfront') continue;
 		$themes[$stylesheet] = $theme;
 	}
+
+	/**
+	 * Base URL for redirection and download URL building
+	 *
+	 * @var string
+	 */
+	$redirection = remove_query_arg(array(
+		'theme',
+		'nonce',
+		'action',
+		'error'
+	));
 ?>
 
 <div class="wrap upfront_admin upfront-builder">
@@ -16,6 +28,8 @@
 		<?php esc_html_e('Build your own, slick, customizable, intuitive Upfront themes.', UpfrontThemeExporter::DOMAIN); ?>
 		<?php esc_html_e('Creating a WordPress theme has never been easier.', UpfrontThemeExporter::DOMAIN); ?>
 	</p>
+
+	<?php load_template(dirname(__FILE__) . '/admin_errors.php'); ?>
 
 	<div class="uf-thx-initial clearfix">
 		<!-- Left Side UI Column -->
@@ -35,7 +49,15 @@
 								if (empty($_GET['theme'])) echo ' selected';
 							}
 						?>" data-theme="<?php echo esc_attr($theme->get_stylesheet()); ?>">
-								<a href="<?php echo esc_attr(add_query_arg('theme', $theme->get_stylesheet())); ?>">
+								<a href="<?php
+									echo esc_attr(add_query_arg('theme', $theme->get_stylesheet()));
+								?>" data-download_url="<?php
+									echo esc_url(add_query_arg(array(
+										'action' => 'download',
+										'theme' => $theme->get_stylesheet(),
+										'nonce' => wp_create_nonce('download-' . $theme->get_stylesheet()),
+									), $redirection));
+								?>" >
 									<?php $screenshot = $theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot; ?>
 									<img src="<?php echo esc_url($screenshot); ?>" />
 									<div class="uf-thx-caption">
@@ -51,6 +73,9 @@
 							</button>
 							<button type="button" class="edit info">
 								<?php esc_html_e('Edit theme details', UpfrontThemeExporter::DOMAIN); ?>
+							</button>
+							<button type="button" class="download">
+								<?php esc_html_e('Download theme', UpfrontThemeExporter::DOMAIN); ?>
 							</button>
 						</div>
 					<?php } else { ?>
@@ -99,7 +124,7 @@
 						?>
 						<div class="buttons">
 							<button type="button" class="edit info">
-								<?php esc_html_e('Edit info', UpfrontThemeExporter::DOMAIN); ?>
+								<?php esc_html_e('Save Changes', UpfrontThemeExporter::DOMAIN); ?>
 							</button>
 						</div>
 					<?php } ?>
