@@ -17,6 +17,8 @@
 		<?php esc_html_e('Creating a WordPress theme has never been easier.', UpfrontThemeExporter::DOMAIN); ?>
 	</p>
 
+	<?php load_template(dirname(__FILE__) . '/admin_errors.php'); ?>
+
 	<div class="uf-thx-initial clearfix">
 		<!-- Left Side UI Column -->
 		<div class="upfront-col-left">
@@ -100,6 +102,14 @@
 						<div class="buttons">
 							<button type="button" class="edit info">
 								<?php esc_html_e('Edit info', UpfrontThemeExporter::DOMAIN); ?>
+							</button>
+							<button type="button" class="download" data-download_url="<?php
+								echo esc_url(add_query_arg(array(
+									'action' => 'download',
+									'nonce' => wp_create_nonce('download-' . $theme->get_stylesheet()),
+								)));
+							?>">
+								<?php esc_html_e('Download theme', UpfrontThemeExporter::DOMAIN); ?>
 							</button>
 						</div>
 					<?php } ?>

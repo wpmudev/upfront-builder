@@ -2,6 +2,10 @@
 
 class Thx_Admin {
 
+	const ERROR_DEFAULT = 1;
+	const ERROR_PARAM = 2;
+	const ERROR_PERMISSION = 3;
+
 	private function __construct () {}
 	private function __clone () {}
 
@@ -46,6 +50,11 @@ class Thx_Admin {
 		Upfront_Admin::$menu_slugs['builder'] = 'upfront-builder';
 
 		add_action("load-{$full_page_suffix}", array($this, 'set_up_dependencies'));
+
+		// Dispatch theme download
+		if (!empty($_GET['page']) && $parent . '-builder' === $_GET['page']) {
+			if (!empty($_GET['action']) && 'download' === $_GET['action']) return $this->_download_theme();
+		}
 	}
 
 	/**
@@ -97,6 +106,83 @@ class Thx_Admin {
 		if (!class_exists('Thx_Template')) require_once (dirname(__FILE__) . '/class_thx_template.php');
 
 		load_template(Thx_Template::plugin()->path('create_edit'));
+	}
+
+	/**
+	 * Packs up and serves a theme for download
+	 */
+	private function _download_theme () {
+		// Check prerequisites
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) return $this->_error_redirect(self::ERROR_PERMISSION);
+		if (!class_exists('ZipArchive')) return $this->_error_redirect();
+
+		$data = stripslashes_deep($_GET);
+
+		// Verify nonce existence
+		$nonce = !empty($data['nonce']) ? $data['nonce'] : false;
+		if (empty($nonce)) return $this->_error_redirect(self::ERROR_PARAM);
+
+		// Load dependencies
+		if (!class_exists('Thx_Sanitize')) require_once (dirname(__FILE__) . '/class_thx_sanitize.php');
+		if (!class_exists('Thx_Fs')) require_once (dirname(__FILE__) . '/class_thx_fs.php');
+
+		// Validate theme
+		$slug = !empty($data['theme']) ? $data['theme'] : false;
+		$theme = wp_get_theme($slug);
+		$name = $theme->get('Name');
+		if (empty($slug) || empty($name)) return $this->_error_redirect(self::ERROR_PARAM);
+
+		// Verify nonce
+		$nonce_action = 'download-' . $theme->get_stylesheet();
+		if (!wp_verify_nonce($nonce, $nonce_action)) return $this->_error_redirect(self::ERROR_PARAM);
+
+		// Alright, so we're good. Let's pack this up
+
+		$fs = Thx_Fs::get($slug);
+		$root = $fs->get_root_path();
+
+		$archive_name = basename($root);
+		$prefix = trailingslashit(dirname($root));
+
+		$version = $theme->get('Version');
+		$version = !empty($version) ? $version : '0.0.0';
+
+		$list = $fs->ls();
+		if (empty($list))  return $this->_error_redirect();
+
+		$file = tempnam("tmp", "zip");
+		$zip = new ZipArchive();
+		if (true !== $zip->open($file, ZipArchive::OVERWRITE))  return $this->_error_redirect();
+
+		foreach ($list as $item) {
+			$relative = preg_replace('/^' . preg_quote($prefix, '/') . '/', '', $item);
+			if (is_dir($item)) $zip->addEmptyDir($relative);
+			else $zip->addFile($item, $relative);
+		}
+
+		// Close and send to users
+		$zip->close();
+		header('Content-Type: application/zip');
+		header('Content-Length: ' . filesize($file));
+		header('Content-Disposition: attachment; filename="' . $archive_name . '-' . $version . '.zip"');
+		readfile($file);
+		unlink($file);
+		die;
+	}
+
+	/**
+	 * Error redirection helper
+	 *
+	 * @param int $error Optional error type
+	 */
+	private function _error_redirect ($error=false) {
+		$redirection = remove_query_arg(array(
+			'nonce',
+			'action'
+		));
+		$error = !empty($error) && is_numeric($error) ? (int)$error : self::ERROR_DEFAULT;
+		wp_safe_redirect(add_query_arg('error', $error, $redirection));
+		die;
 	}
 
 	/**
