@@ -3,6 +3,7 @@ jQuery(document).on("upfront-load", function () {
 	Upfront.themeExporter = {
 		root: '<?php echo esc_url($root_url); ?>',
 		includes: '<?php echo esc_url($includes_url); ?>',
+		admin_url: '<?php echo esc_url($admin_url); ?>',
 		themes: <?php echo json_encode($themes) ?>,
 		templates: [
 			{filename: 'archive-home', name: 'Home'},

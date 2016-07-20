@@ -1,6 +1,9 @@
 (function ($, undefined) {
 
-define(['scripts/upfront/upfront-views-editor/commands/command-logo'], function (Command_Logo) {
+define([
+	'scripts/upfront/upfront-views-editor/commands/command-logo',
+	'scripts/upfront/upfront-views-editor/commands/command-exit'
+], function (Command_Logo, Command_Exit) {
 
 
 var l10n = Upfront.Settings && Upfront.Settings.l10n ?
@@ -90,12 +93,29 @@ var Logo = Command_Logo.extend({
 	}
 });
 
+var Exit = Command_Exit.extend({
+	on_click: function (e) {
+		if (e && e.preventDefault) e.preventDefault();
+		if (e && e.stopPropagation) e.stopPropagation();
+
+		var admin_url = ((Upfront || {}).themeExporter || {}).admin_url || '',
+			rx = new RegExp('https?:\/\/' + window.location.host)
+		;
+		if (admin_url && !!admin_url.match(rx)) window.location = admin_url;
+
+		return false;
+	}
+});
+
 
 function init_normal_exporter () {
 	Upfront.Application.sidebar.sidebar_commands.primary = new SidebarCommands_PrimaryLayout({model: Upfront.Application.sidebar.model});
 	Upfront.Application.sidebar.sidebar_commands.additional = false;
 
-	Upfront.Application.sidebar.sidebar_commands.header.commands = _([new Logo({model: Upfront.Application.sidebar.model})]);
+	Upfront.Application.sidebar.sidebar_commands.header.commands = _([
+		new Logo({model: Upfront.Application.sidebar.model}),
+		new Exit({model: Upfront.Application.sidebar.model})
+	]);
 
 	Upfront.Application.sidebar.render();
 }

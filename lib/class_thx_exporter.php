@@ -485,6 +485,7 @@ error_log(debug_backtrace());
 
 		Thx_Template::plugin()->load('dependencies', array(
 			'root_url' =>  $this->_plugin_dir_url,
+			'admin_url' => admin_url('admin.php?page=upfront-builder'),
 			'includes_url' => includes_url() . 'js/',
 			'themes' => $this->_get_themes(),
 			'layout' => Upfront_EntityResolver::layout_to_name($layout),
