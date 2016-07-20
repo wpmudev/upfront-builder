@@ -45,9 +45,13 @@ function get_data () {
 
 function init_new () {
 	var frame,
-		screenshot = $(".uf-thx-theme_screenshot").find('img');
+		$screenshot = $(".uf-thx-theme_screenshot").find('img'),
+		$selected = $("#existing-theme").find('.uf-thx-theme.selected'),
+		$name = $selected.find('.uf-thx-caption > span').text();
+		
+	$("#existing-theme .theme-name").html($name);
 
-	if (screenshot.attr("src")) { screenshot.addClass('nostyle'); }
+	if ($screenshot.attr("src")) { $screenshot.addClass('nostyle'); }
 
 	$("#new-theme")
 		.on("click", "button.create.theme", function (e) {
@@ -165,11 +169,13 @@ function init_existing () {
 			e.preventDefault();
 			e.stopPropagation();
 
-			var $me = $(this).closest(".uf-thx-theme");
+			var $me = $(this).closest(".uf-thx-theme"),
+				$name = $me.find('.uf-thx-caption > span').text();
 			if (!$me.length) return false;
 
 			$(".uf-thx-themes_container .uf-thx-theme").removeClass("selected");
 			$me.addClass("selected");
+			$("#existing-theme .theme-name").html($name);
 
 			return false;
 		})

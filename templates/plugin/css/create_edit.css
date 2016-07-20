@@ -160,3 +160,49 @@
 .postbox .edit.theme {
 	margin-right:30px;
 }
+
+.postbox.themes .buttons {
+	border-radius:0 0 3px 3px;
+	background: #F5F5F5;
+	padding:15px 30px;
+	text-align: right;
+	position: relative;
+}
+.postbox.themes .btn-wrap {
+	background: #999;
+	width:auto;
+	display: inline-block;
+	padding:1px;
+	border-radius: 4px;
+
+}
+.postbox.themes .btn-wrap button {
+	margin:0;
+	display: inline-block;
+	border-radius: 0;
+	letter-spacing: 0px;
+	font:400 13px/1.2 'Roboto', Helvetica Neueu, Helvetica, Arial, sans-serif;
+}
+.postbox.themes .edit.theme:hover {
+	background: #999;
+}
+
+.postbox.themes .btn-wrap button:nth-child(2) {
+	margin-right:-2px;
+	margin-left:-3px;
+}
+.postbox.themes .btn-label-hidden {
+	font-size: 0;
+    height: 1px;
+    overflow: hidden;
+    display: block;
+}
+.postbox.themes .theme-name {
+	text-align: left;
+	position: absolute;
+	left:30px;
+	top:18px;
+	text-transform: uppercase;
+	font:400 18px/1.2 'Roboto Condensed', Helvetica Neueu, Helvetica, Arial, sans-serif;
+	color:#777;
+}

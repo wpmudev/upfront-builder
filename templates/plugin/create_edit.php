@@ -35,7 +35,7 @@
 		<!-- Left Side UI Column -->
 		<div class="upfront-col-left">
 			<div class="postbox-container">
-				<div class="postbox" id="existing-theme">
+				<div class="postbox themes" id="existing-theme">
 					<?php if (!empty($themes)) { ?>
 						<h2 class="title"><?php esc_html_e('Modify existing theme', UpfrontThemeExporter::DOMAIN); ?></h2>
 
@@ -68,15 +68,22 @@
 						<?php } ?>
 						</div>
 						<div class="buttons">
-							<button type="button" class="edit theme">
-								<?php esc_html_e('Edit theme', UpfrontThemeExporter::DOMAIN); ?>
-							</button>
-							<button type="button" class="edit info">
-								<?php esc_html_e('Edit theme details', UpfrontThemeExporter::DOMAIN); ?>
-							</button>
-							<button type="button" class="download">
-								<?php esc_html_e('Download theme', UpfrontThemeExporter::DOMAIN); ?>
-							</button>
+							<span class="theme-name">Theme</span>
+							<div class="btn-wrap">
+								<button type="button" class="download" alt="" >
+									<span class="btn-label-hidden">
+									<?php esc_html_e('Download theme', UpfrontThemeExporter::DOMAIN); ?>
+									</span>
+								</button>
+								<button type="button" class="edit info">
+									<span class="btn-label-hidden">
+									<?php esc_html_e('Edit theme details', UpfrontThemeExporter::DOMAIN); ?>
+									</span>
+								</button>
+								<button type="button" class="edit theme">
+									<?php esc_html_e('Edit With Builder', UpfrontThemeExporter::DOMAIN); ?>
+								</button>
+							</div>
 						</div>
 					<?php } else { ?>
 						<label class="inline"><span class="description">
@@ -91,7 +98,7 @@
 		<!-- Right Side UI Column -->
 		<div class="upfront-col-right">
 			<div class="postbox-container">
-				<div class="postbox" id="new-theme">
+				<div class="postbox newtheme" id="new-theme">
 
 					<?php if (empty($_GET['theme'])) { ?>
 						<h2 class="title"><?php esc_html_e('Build a new theme', UpfrontThemeExporter::DOMAIN); ?></h2>
