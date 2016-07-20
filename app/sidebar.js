@@ -121,6 +121,8 @@ function init_normal_exporter () {
 }
 
 function init_responsive_exporter () {
+	return false;
+	/*
 	var browse = new Command_LayoutModal({model: Upfront.Application.sidebar.model});
 	if (Upfront.Application.sidebar.sidebar_commands.responsive.views[2].$el.is(".command-browse-layout")) {
 		Upfront.Application.sidebar.sidebar_commands.responsive.views[2].remove();
@@ -130,6 +132,7 @@ function init_responsive_exporter () {
 	}
 
 	Upfront.Application.sidebar.render();
+	*/
 }
 
 function init () {
