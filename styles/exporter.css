@@ -17,12 +17,12 @@
   content: 'BUILDER';
   float: right;
   background: rgba(221, 223, 224, 0.8);
-  font: 600 11px Open Sans;
+  font: 600 9px Open Sans;
   color: #1f2933;
   position: relative;
   right: 10px;
-  top: 5px;
-  padding: 3px 5px;
+  top: 8px;
+  padding: 2px 5px;
   border-radius: 6px; }
 
 #sidebar-ui .create-theme-sidebar .sidebar-commands-primary .info-panel {
