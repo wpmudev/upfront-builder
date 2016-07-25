@@ -20,23 +20,48 @@ var LayoutsModal = Upfront.Views.Editor.Modal.extend({
 		this.header.on("close", this.close, this);
 		this.available.on("selected", this.close, this);
 		this.existing.on("selected", this.close, this);
+
+		// Clear output on export
+		this.listenTo(Upfront.Events, 'command:layout:export_theme', this.clear_content);
 	},
 	open: function () {
 		Upfront.Views.Editor.Modal.prototype.open.apply(this, [function ($content, $modal) {
 			if (!$content.is(":empty")) return;
-
-			$content.addClass('thx-browse_layouts thx-all_layouts');
-
-			this.header.render();
-			this.existing.render();
-			this.available.render();
-
-			$content.empty();
-			$content.append(this.header.$el);
-			$content.append(this.existing.$el);
-			$content.append(this.available.$el);
-
+			this.$content = $content;
+			this.render_content();
 		}, this]);
+	},
+
+	/**
+	 * Cleans content, forcing reload
+	 */
+	clear_content: function () {
+		this.$content.empty(); // Force whole content to repaint
+		this.existing.data = false; // Force existing layouts reload
+		this.existing.layout_field = false; // Force layout field repaint
+	},
+
+	/**
+	 * (Re)paints the content
+	 *
+	 * @return {Boolean}
+	 */
+	render_content: function () {
+		if (!this.$content) return false;
+
+		this.header.render();
+		this.existing.render();
+		this.available.render();
+
+		this.header.delegateEvents();
+
+		this.$content.addClass('thx-browse_layouts thx-all_layouts');
+		this.$content.empty();
+		this.$content.append(this.header.$el);
+		this.$content.append(this.existing.$el);
+		this.$content.append(this.available.$el);
+
+		return true;
 	}
 });
 
@@ -154,6 +179,7 @@ var LayoutsModal_Available = LayoutsModal_Pane.extend({
 			this._page_field = new LayoutsModal_AvailablePane_SinglePage();
 		}
 	},
+
 	pane: function () {
 		var me = this,
 			field = this.get_field()
@@ -218,6 +244,7 @@ var LayoutsModal_Available = LayoutsModal_Pane.extend({
 var LayoutsModal_Existing = LayoutsModal_Pane.extend({
 	paneType: 'existing',
 	action_label:  Upfront.Settings.l10n.exporter.edit_layout,
+
 	pane: function () {
 		var field = this.get_field();
 		if (this.data) {
@@ -230,6 +257,7 @@ var LayoutsModal_Existing = LayoutsModal_Pane.extend({
 		this.$el.append(field.$el);
 		field.delegateEvents();
 	},
+
 	get_data: function () {
 		return Upfront.Util.post({
 			action: 'upfront_list_theme_layouts'
