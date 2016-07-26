@@ -123,6 +123,7 @@ class Thx_Exporter {
 
 		add_action('upfront_upload_icon_font', array($this, 'upload_icon_font'));
 		add_action('upfront_update_active_icon_font', array($this, 'update_active_icon_font'));
+		add_action('upfront_remove_icon_font_file', array($this, 'remove_icon_font_file'));
 
 		// Intercept theme images loading and verify that the destination actually exists
 		add_action('wp_ajax_upfront-media-list_theme_images', array($this, 'check_theme_images_destination_exists'), 5);
@@ -462,7 +463,7 @@ error_log(debug_backtrace());
 
 		$family = $data['family'];
 
-		$fonts = json_decode($this->_theme_settings->get('icon_fonts'), true);;
+		$fonts = json_decode($this->_theme_settings->get('icon_fonts'), true);
 
 		$result = array();
 
@@ -477,6 +478,63 @@ error_log(debug_backtrace());
 
 		$this->_theme_settings->set('icon_fonts', json_encode($result));
 		die;
+	}
+
+	/**
+	 * AJAX handler for icon font file removal
+	 */
+	public function remove_icon_font_file () {
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) {
+			return $this->_json->error_msg(__('Not allowed to do this.', UpfrontThemeExporter::DOMAIN));
+		}
+		$data = stripslashes_deep($_POST);
+		$name = !empty($data['name']) ? $data['name'] : false;
+		$idx = !empty($data['idx']) ? $data['idx'] : false;
+
+		if (empty($name) || empty($idx)) return $this->_json->error_msg(__('Invalid font file info.', UpfrontThemeExporter::DOMAIN));
+
+		$full_path = $this->_fs->get_path(array(
+			Thx_Fs::PATH_ICONS,
+			$name
+		), true);
+		if (empty($full_path)) return $this->_json->error_msg(__('Could not locate file.', UpfrontThemeExporter::DOMAIN));
+
+		$fonts = json_decode($this->_theme_settings->get('icon_fonts'), true);
+		$found = false;
+
+		foreach ($fonts as $fidx => $font) {
+			if (empty($font['files'])) continue; // wtf, no files
+			if (!in_array($idx, array_keys($font['files']))) continue; // unknown index, carrying on
+
+			// Indices match - now match basenames to make sure
+			$known = basename($font['files'][$idx]);
+			if (basename($name) !== $known) continue;
+
+			// Alright, so we're fairly sure we got a proper file now.
+			// Mark as found, unset, and short out
+
+			$found = true;
+			unset($fonts[$fidx]['files'][$idx]);
+			break;
+		}
+
+		// Remove actual file
+		$status = $this->_fs->drop(array(
+			Thx_Fs::PATH_ICONS,
+			$name
+		));
+
+		// If we're good there, let's also update list
+		// and report success yay!
+		if ($status) {
+			$this->_theme_settings->set('icon_fonts', json_encode($fonts));
+			return $this->_json->out(array('data' => array(
+				'idx' => $idx,
+			)));
+		}
+
+		// Bah :/
+		return $this->_json->error_msg(__('Error removing file.', UpfrontThemeExporter::DOMAIN));
 	}
 
 	public function get_stylesheet_directory ($stylesheetDirectory) {
