@@ -380,27 +380,32 @@ error_log(debug_backtrace());
 		$result = $uploadHandler->post(false);
 
 		if (isset($result['media'][0]->error)) {
-			$out = new Upfront_JsonResponse_Error(array(
-				'message' => 'Font file failed to upload.'
-			));
-			status_header($out->get_status());
-			header("Content-type: " . $out->get_content_type() . "; charset=utf-8");
-			die($out->get_output());
-			return;
+			return $this->_json->error_msg('Font file failed to upload.');
 		}
+
+		// Validate file, make sure we're actually dealing
+		// with an icon font file type
+		if (!empty($result['media'][0]->name)) {
+			$valid_extensions = array(
+				'eot',
+				'woff',
+				'ttf',
+				'svg',
+			);
+			$file = $result['media'][0]->name;
+			$file_ext = pathinfo($file, PATHINFO_EXTENSION);
+			if (!in_array(strtolower($file_ext), $valid_extensions)) {
+				return $this->_json->error_msg('Invalid font file type');
+			}
+		}
+		// Suppose all is good, file extension matches one of the allowed ones.
 
 		$fonts = json_decode($this->_theme_settings->get('icon_fonts'), true);
 		$name_parts = explode('.', $result['media'][0]->name);
 
 		// Reserve 'icomoon' family for UpFont
 		if ($name_parts[0] === 'icomoon') {
-			$out = new Upfront_JsonResponse_Error(array(
-				'message' => __('Please rename font. Default Upfront font is called "icomoon".', UpfrontThemeExporter::DOMAIN),
-			));
-			status_header($out->get_status());
-			header("Content-type: " . $out->get_content_type() . "; charset=utf-8");
-			die($out->get_output());
-			return;
+			return $this->_json->error_msg(__('Please rename font. Default Upfront font is called "icomoon".', UpfrontThemeExporter::DOMAIN));
 		}
 
 		$font_added = false;
@@ -436,20 +441,19 @@ error_log(debug_backtrace());
 		}
 
 		$this->_theme_settings->set('icon_fonts', json_encode($new_fonts));
-		$out = new Upfront_JsonResponse_Success(array(
+		return $this->_json->out(array('data' => array(
 			'font' => end($new_fonts)
-		));
-		status_header($out->get_status());
-		header("Content-type: " . $out->get_content_type() . "; charset=utf-8");
-		die($out->get_output());
+		)));
 	}
 
 	public function update_active_icon_font () {
-		if (!isset($_POST['family'])) {
-			return;
+		$data = stripslashes_deep($_POST);
+
+		if (!isset($data['family'])) {
+			die;
 		}
 
-		$family = $_POST['family'];
+		$family = $data['family'];
 
 		$fonts = json_decode($this->_theme_settings->get('icon_fonts'), true);;
 
@@ -465,6 +469,7 @@ error_log(debug_backtrace());
 		}
 
 		$this->_theme_settings->set('icon_fonts', json_encode($result));
+		die;
 	}
 
 	public function get_stylesheet_directory ($stylesheetDirectory) {
