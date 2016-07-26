@@ -366,7 +366,7 @@ error_log(debug_backtrace());
 	public function upload_icon_font () {
 		$font_path = $this->_fs->get_path(Thx_Fs::PATH_ICONS, false);
 		$options = array(
-			'upload_dir' => $font_path,
+			'upload_dir' => trailingslashit($font_path),
 			'upload_url' => 'get_stylesheet/' . Thx_Fs::PATH_ICONS, // whatever
 			'param_name' => 'media',
 		);
