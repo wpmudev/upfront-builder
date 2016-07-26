@@ -360,6 +360,9 @@ error_log(debug_backtrace());
 		return upfront_exporter_get_stylesheet();
 	}
 
+	/**
+	 * AJAX handler for icon font uploads
+	 */
 	public function upload_icon_font () {
 		$font_path = $this->_fs->get_path(Thx_Fs::PATH_ICONS, false);
 		$options = array(
@@ -389,6 +392,7 @@ error_log(debug_backtrace());
 			$valid_extensions = array(
 				'eot',
 				'woff',
+				'woff2',
 				'ttf',
 				'svg',
 			);
@@ -446,6 +450,9 @@ error_log(debug_backtrace());
 		)));
 	}
 
+	/**
+	 * AJAX handler for switching active icon font type
+	 */
 	public function update_active_icon_font () {
 		$data = stripslashes_deep($_POST);
 
