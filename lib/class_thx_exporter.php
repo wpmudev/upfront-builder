@@ -515,6 +515,13 @@ error_log(debug_backtrace());
 
 			$found = true;
 			unset($fonts[$fidx]['files'][$idx]);
+
+			// Also check if we should remove the whole family
+			// After all, a custom family with no font files does no good
+			if (empty($fonts[$fidx]['files'])) {
+				unset($fonts[$fidx]);
+			}
+
 			break;
 		}
 
