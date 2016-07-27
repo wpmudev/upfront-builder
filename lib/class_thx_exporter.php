@@ -675,7 +675,7 @@ error_log(debug_backtrace());
 
 	public function json_export_element_styles () {
 		$data = stripslashes_deep($_POST['data']);
-		if (empty($data['stylename']) || empty($data['styles']) || empty($data['elementType'])) {
+		if (empty($data['stylename']) || empty($data['elementType'])) {
 			$this->_json->error_msg(__('Some data is missing.', UpfrontThemeExporter::DOMAIN), 'missing_data');
 		}
 
@@ -695,8 +695,14 @@ error_log(debug_backtrace());
 			: false
 		;
 
-		if (!empty($stylesheet)) $this->_export_element_style($stylesheet, $_POST['data']);
-		else $this->_temporarily_store_export_file($data);
+		if (!empty($stylesheet)) {
+			// If the styles content is empty, let's delete the style instead
+			if ( empty($data['styles']) ) $this->_delete_element_style($stylesheet, $_POST['data']);
+			else $this->_export_element_style($stylesheet, $_POST['data']);
+		}
+		else {
+			$this->_temporarily_store_export_file($data);
+		}
 		$this->_json->out(__('Exported', UpfrontThemeExporter::DOMAIN));
 	}
 
@@ -776,7 +782,7 @@ error_log(debug_backtrace());
 		$this->_fs->drop(array(
 			Thx_Fs::PATH_STYLES,
 			$data['elementType'],
-			$data['stylename']
+			$data['stylename'] . '.css'
 		));
 	}
 
