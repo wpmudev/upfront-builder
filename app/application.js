@@ -435,7 +435,7 @@
 				var layout_style = this.layout.get_property_value_by_name('layout_style');
 				if ( false !== layout_style ) return;
 				// No layout style defined, let's apply default
-				this.layout.set_property('layout_style', DefaultData.default_style, true);
+				//this.layout.set_property('layout_style', DefaultData.default_style, true); // Let's not... :/
 			}
 
 		}))();
