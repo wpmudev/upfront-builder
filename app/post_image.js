@@ -151,6 +151,12 @@ var PostImageVariant = Backbone.View.extend({
         // hide group's resize handles
         this.$self.find(".upfront-icon-control").hide();
 
+        // set group's width to a round number, always ceil to give some room for child items
+        this.$self.css({
+            width: Math.ceil(this.$self.outerWidth()),
+            maxWidth: 'none'
+        });
+
         // explicitly set group's height
         //this.$self.css("height", this.$(".ueditor-insert-variant").height());
 
@@ -175,6 +181,12 @@ var PostImageVariant = Backbone.View.extend({
         this.$self.resizable("option", "disabled", false);
 
         this.$self.removeClass("editing");
+
+        // remove set width
+        this.$self.css({
+            width: '',
+            maxWidth: ''
+        });
 
         // Show group's resize handles
         this.$self.find(".upfront-icon-control").show();
@@ -217,14 +229,14 @@ var PostImageVariant = Backbone.View.extend({
                     var $this = $(this),
                         $other = $this.is( self.$image ) ? self.$caption : self.$image,
                         data = $this.data('ui-resizable'),
-                        height = Math.round($this.outerHeight()),
-                        width = Math.round($this.outerWidth()),
+                        height = Math.floor($this.outerHeight()),
+                        width = Math.floor($this.outerWidth()),
                         offset = $this.offset(),
-                        other_height = Math.round($other.outerHeight()),
-                        other_width = Math.round($other.outerWidth()),
+                        other_height = Math.floor($other.outerHeight()),
+                        other_width = Math.floor($other.outerWidth()),
                         other_offset = $other.offset(),
-                        self_height = Math.round(self.$self.outerHeight()),
-                        self_width = Math.round(self.$self.outerWidth()),
+                        self_height = Math.floor(self.$self.outerHeight()),
+                        self_width = Math.floor(self.$self.outerWidth()),
                         self_offset = self.$self.offset();
 
                     // Setting up position data
@@ -443,7 +455,7 @@ var PostImageVariant = Backbone.View.extend({
                             $drop.css('height', (drop.bottom-drop.top));
                             // If drop is current element, add width too
                             if ( drop.is_me ){
-                                $drop.css('width', drop.right-drop.left);
+                                $drop.css('width', this_pos.width);
                                 if ( drop.type == 'side-before' ) $drop.css('margin-right', this_pos.width*-1);
                                 else $drop.css('margin-left', this_pos.width*-1);
                             }
@@ -460,7 +472,7 @@ var PostImageVariant = Backbone.View.extend({
 
                     // Now set the movement of our element and show it in preview
                     if ( drop.is_me ){
-                        drop_col = Math.round( self_pos.width / col_size );
+                        drop_col = Math.round( this_pos.width / col_size );
                     }
                     else {
                         drop_col = drop.type == 'full' ? Math.round( self_pos.width / col_size ) : Math.round( self_pos.width / 2 / col_size );
@@ -592,27 +604,29 @@ var PostImageVariant = Backbone.View.extend({
                     var $this = $(this),
                         $other = $this.is( self.$image ) ? self.$caption : self.$image,
                         data = $this.data('ui-resizable'),
-                        height = Math.round(ui.originalSize.height),
-                        width = Math.round(ui.originalSize.width),
+                        height = Math.floor(ui.originalSize.height),
+                        width = Math.floor(ui.originalSize.width),
                         offset = $this.offset(),
-                        other_height = Math.round($other.height()),
-                        other_width = Math.round($other.width()),
-                        other_offset = $other.offset();
+                        other_height = Math.floor($other.outerHeight()),
+                        other_width = Math.floor($other.outerWidth()),
+                        other_offset = $other.offset()
+                    ;
+
                     this_pos = {
                         width: width,
                         height: height,
-                        top: Math.round(offset.top),
-                        left: Math.round(offset.left),
-                        bottom: Math.round(offset.top + height),
-                        right: Math.round(offset.left + width)
+                        top: Math.floor(offset.top),
+                        left: Math.floor(offset.left),
+                        bottom: Math.floor(offset.top + height),
+                        right: Math.floor(offset.left + width)
                     };
                     other_pos = {
                         width: other_width,
                         height: other_height,
-                        top: Math.round(other_offset.top),
-                        left: Math.round(other_offset.left),
-                        bottom: Math.round(other_offset.top + other_height),
-                        right: Math.round(other_offset.left + other_width)
+                        top: Math.floor(other_offset.top),
+                        left: Math.floor(other_offset.left),
+                        bottom: Math.floor(other_offset.top + other_height),
+                        right: Math.floor(other_offset.left + other_width)
                     };
 
                     max_col = self.model.get('group').col;
@@ -628,7 +642,7 @@ var PostImageVariant = Backbone.View.extend({
                         minWidth: width,
                         maxWidth: width,
                         position: 'absolute'
-                    })
+                    });
                     if ( axis == 'nw' || axis == 'w' ) {
                         $resize.css({
                             top: offset.top,
@@ -644,6 +658,7 @@ var PostImageVariant = Backbone.View.extend({
                     $('body').append($resize);
 
                     $(ui.helper).find('.ui-resizable-ghost').css('opacity', 1);
+                    $this.css('width', width);
 
                     // A little hack to normalize originalPosition, to better handle nw resizing
                     /*var pos = $this.position();
@@ -671,16 +686,20 @@ var PostImageVariant = Backbone.View.extend({
                     event.stopPropagation();
 
                     var $this = $(this),
+                        $other = $this.is( self.$image ) ? self.$caption : self.$image,
                         model = $this.is( self.$image ) ? self.model.get("image") : self.model.get("caption"),
                         other_model = $this.is( self.$image ) ? self.model.get("caption") : self.model.get("image"),
+                        current_width = ui.size.width,
                         current_col = Math.round(ui.size.width/col_size),
                         current_row = Upfront.Util.grid.height_to_row(ui.size.height),
                         current_top = model.top + Math.round((ui.position.top-ui.originalPosition.top)/ge.baseline),
                         current_left = model.left + Math.round((ui.position.left-ui.originalPosition.left)/col_size),
                         rsz_max_col = ( axis == 'w' || axis == 'e' ) ? max_col - 1 : max_col,
+                        rsz_max_width = Math.floor(rsz_max_col * col_size),
                         group_row = self.model.get('group').row,
                         is_other_on_right = ( other_pos.left >= this_pos.right && other_pos.top < this_pos.bottom && other_pos.bottom > this_pos.top )
                     ;
+                    current_width = current_width > rsz_max_width ? rsz_max_width : current_width;
                     rsz_top = 0;
                     rsz_left = 0;
                     if ( axis == 'nw' ) {
@@ -722,8 +741,14 @@ var PostImageVariant = Backbone.View.extend({
                         //marginLeft: ( axis == 'nw' || axis == 'w' ? this_pos.left - (model.left*col_size) : 0 ),
                         height: ( rsz_row >= rsz_max_row ? rsz_row*ge.baseline : ui.size.height )
                     });
-                    if ( axis == 'nw' && rsz_row >= rsz_max_row )
+                    if ( (axis == 'w' || axis == 'e') && other_rsz_col > 0 ) {
+                        $other.css('width', other_pos.width + (this_pos.width-current_width));
+                        if ( axis == 'w' ) $other.css('margin-right', current_width-this_pos.width-1);
+                        else $other.css('margin-left', current_width-this_pos.width-1);
+                    }
+                    if ( axis == 'nw' && rsz_row >= rsz_max_row ) {
                         $(ui.helper).css('top', this_pos.top - (model.top*ge.baseline));
+                    }
                 },
                 stop : function(event, ui){
                     event.stopPropagation();
@@ -770,6 +795,11 @@ var PostImageVariant = Backbone.View.extend({
                         clear: "",
                         visibility: ""
                     });
+                    $other.css({
+                        width: "",
+                        marginLeft: "",
+                        marginRight: ""
+                    });
                     self.render_model_data();
                 }
             };
@@ -815,6 +845,7 @@ var PostImageVariant = Backbone.View.extend({
             parent_col = content_view.model ? ge.get_class_num(content_view.model.get_property_value_by_name('class'), ge.grid.class) : module_col,
             padding_left = content_view.model.get_property_value_by_name('padding_left'),
             padding_right = content_view.model.get_property_value_by_name('padding_right'),
+            min_col = 1,
             max_col = parent_col,
             group = this.model.get('group'),
             $content = content_view.$el.find('> .upfront-editable_entity'),
@@ -823,6 +854,9 @@ var PostImageVariant = Backbone.View.extend({
             $resize,
             col_size, axis, rsz_row, rsz_col, rsz_left, rsz_float
         ;
+
+        parent_col = parent_col > module_col ? module_col : parent_col;
+        max_col = parent_col;
 
         // Get left/right indent from object_group_view
         if ( object_group_view ) {
@@ -868,7 +902,7 @@ var PostImageVariant = Backbone.View.extend({
                 //s: '.upfront-resize-handle-s'
             },
             minHeight: 20,
-            minWidth: 45,
+            minWidth: col_size,
             containment: "document",
             ghost: true,
             //alsoResize: '.ueditor-insert-variant-image',
@@ -883,9 +917,11 @@ var PostImageVariant = Backbone.View.extend({
                     height = ui.originalSize.height,
                     width = ui.originalSize.width,
                     offset = $this.offset(),
-                    floatval = self.model.get('group').float;
+                    floatval = self.model.get('group').float
+                ;
 
-                axis = data.axis ? data.axis : 'se';
+                axis = data.axis ? data.axis : 'e';
+                min_col = ( !self.$image.hasClass('is-full') && !self.$caption.hasClass('is-full') ) ? 2 : 1;
 
                 $resize = $('<div class="upfront-resize" style="height:'+height+'px;"></div>');
                 $resize.css({
@@ -933,12 +969,14 @@ var PostImageVariant = Backbone.View.extend({
                 var $this = $(this),
                     current_col = Math.round(ui.size.width/col_size),
                     rsz_max_col = max_col,
-                    floatval = self.model.get('group').float;
+                    floatval = self.model.get('group').float
+                ;
                 if ( axis == 'nw' || axis == 'w' )
                     rsz_max_col = Math.round((ui.originalPosition.left+ui.originalSize.width+content_padding_left)/col_size);
                 else
                     rsz_max_col = Math.round(((max_col*col_size)-ui.originalPosition.left-content_padding_left)/col_size) + padding_left + padding_right;
                 rsz_col = ( current_col > rsz_max_col ? rsz_max_col : current_col );
+                rsz_col = ( rsz_col < min_col ? min_col : rsz_col );
                 rsz_row = Upfront.Util.grid.height_to_row(ui.size.height);
                 rsz_left = Math.round((ui.position.left+content_padding_left)/col_size) - padding_left;
 
@@ -968,7 +1006,7 @@ var PostImageVariant = Backbone.View.extend({
                 // Let's control the helper resize, don't let it overflow
                 // Also fix the nw axis resize
                 $(ui.helper).css({
-                    width: ( rsz_col >= rsz_max_col ? rsz_col*col_size : ui.size.width ),
+                    width: ( rsz_col >= rsz_max_col || rsz_col <= min_col ? rsz_col*col_size : ui.size.width ),
                     marginLeft: ( axis == 'nw' || axis == 'w' ? $parent.offset().left - (padding_left*col_size) : 0 )
                 });
             },
@@ -976,7 +1014,8 @@ var PostImageVariant = Backbone.View.extend({
                 var $this = $(this),
                     height =  rsz_row * ge.baseline,
                     rsz_margin_left = rsz_left < 0 ? rsz_left : 0,
-                    rsz_margin_right = rsz_left + rsz_col - max_col;
+                    rsz_margin_right = rsz_left + rsz_col - max_col
+                ;
                 rsz_margin_right = rsz_margin_right > 0 ? rsz_margin_right*-1 : 0;
 
                 Upfront.Util.grid.update_class($this, ge.grid.class, rsz_col);
@@ -994,6 +1033,9 @@ var PostImageVariant = Backbone.View.extend({
                     //Upfront.Util.grid.update_class($this, ge.grid.left_margin_class, 0);
                     self.model.get("group").left = 0;
                 }
+
+                // Also update the child items
+                self.update_items_size(rsz_col);
 
                 $resize.remove();
 
@@ -1019,13 +1061,27 @@ var PostImageVariant = Backbone.View.extend({
             }
         });
     },
-    update_class :  function ($el, class_name, class_size) {
-        var rx = new RegExp('\\b' + class_name + '\\d+');
-        if ( ! $el.hasClass( class_name + class_size) ){
-            if ( $el.attr('class').match(rx) )
-                $el.attr('class', $el.attr('class').replace(rx, class_name + class_size));
-            else
-                $el.addClass( class_name + class_size );
+
+    update_items_size: function (parent_col) {
+        var ge = Upfront.Behaviors.GridEditor,
+            image_model = this.model.get('image'),
+            caption_model = this.model.get('caption'),
+            image_col = parent_col,
+            caption_col = parent_col
+        ;
+        if ( !this.$image.hasClass('is-full') && !this.$caption.hasClass('is-full') ) {
+            // Image and caption is side-by-side, let's use the same ratio and update the columns
+            image_col = Math.ceil( image_model.col / (image_model.col+caption_model.col) * parent_col );
+            if ( image_col == parent_col ) image_col -= 1; // Special case when image col is the same as parent, leave 1 col for caption
+            caption_col = parent_col - image_col;
+        }
+        if ( image_col != image_model.col ) {
+            Upfront.Util.grid.update_class(this.$image, ge.grid.class, image_col);
+            image_model.col = image_col;
+        }
+        if ( caption_col != caption_model.col ) {
+            Upfront.Util.grid.update_class(this.$caption, ge.grid.class, caption_col);
+            caption_model.col = caption_col;
         }
     }
 });
