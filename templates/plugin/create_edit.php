@@ -23,7 +23,13 @@
 
 <div class="wrap upfront_admin upfront-builder">
 
-	<h1><?php esc_html_e('Upfront Builder', UpfrontThemeExporter::DOMAIN); ?><span class="upfront_logo"></span></h1>
+	<h1>
+		<?php esc_html_e('Upfront Builder', UpfrontThemeExporter::DOMAIN); ?>
+		<span class="upfront-thx-create_new">
+			<a href="<?php echo esc_url(admin_url('admin.php?page=upfront-builder')); ?>"><?php esc_html_e('Create New', UpfrontThemeExporter::DOMAIN); ?></a>
+		</span>
+		<span class="upfront_logo"></span>
+	</h1>
 	<p class="info">
 		<?php esc_html_e('Build your own, slick, customizable, intuitive Upfront themes.', UpfrontThemeExporter::DOMAIN); ?>
 		<?php esc_html_e('Creating a WordPress theme has never been easier.', UpfrontThemeExporter::DOMAIN); ?>

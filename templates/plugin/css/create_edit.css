@@ -13,6 +13,10 @@
 	margin:auto;
 }
 
+.upfront_admin.upfront-builder .upfront-thx-create_new {
+	font-size: .5em;
+}
+
 
 .uf-thx-theme {
 	width:30%;
@@ -132,7 +136,7 @@
 }
 .uf-thx-theme_meta input[type="text"] {
 	height:40px;
-} 
+}
 .uf-thx-theme_meta .check {
 	display: inline-block;
 	width:49%;
@@ -153,7 +157,7 @@
 	margin-bottom:5px;
 	font-style: normal;
 	font-size:13px;
-} 
+}
 .postbox .buttons {
 	padding:0 30px 30px 30px;
 	text-align: center;
