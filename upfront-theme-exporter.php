@@ -45,9 +45,32 @@ class UpfrontThemeExporter {
 	/**
 	 * Boot point.
 	 */
-	public static function serve () {
+	public static function dispatch () {
+		if (upfront_thx_is_current_theme_upfront_related()) {
+			return self::_serve_exporter();
+		}
+		return self::_serve_kickstart();
+	}
+
+	/**
+	 * Serves exporter kickstart
+	 *
+	 * @return object
+	 */
+	private static function _serve_kickstart () {
+		require_once dirname(__FILE__) . '/lib/class_thx_kickstart.php';
+		return Thx_Kickstart::serve();
+	}
+
+	/**
+	 * Serves exporter, ready to work
+	 *
+	 * @return object
+	 */
+	private static function _serve_exporter () {
 		$me = new self;
 		$me->_add_hooks();
+		return $me;
 	}
 
 	/**
@@ -197,4 +220,4 @@ class UpfrontThemeExporter {
 
 }
 
-if( upfront_thx_is_current_theme_upfront_related() ) UpfrontThemeExporter::serve();
+UpfrontThemeExporter::dispatch();
