@@ -22,6 +22,23 @@ class Thx_Admin {
 		add_action('upfront-admin-general_settings-versions', array($this, 'version_info'));
 
 		add_action('admin_menu', array($this, "add_menu_item"), 99);
+
+		add_filter('upfront-admin-admin_notices', array($this, 'process_core_notices'));
+	}
+
+	/**
+	 * Processes the core notices and shifts off the ones that
+	 * don't make sense anymore.
+	 *
+	 * Hooks up to `upfront-admin-admin_notices` core filter.
+	 *
+	 * @param array $notices Admin notices hash
+	 *
+	 * @return array
+	 */
+	public function process_core_notices ($notices) {
+		if (!empty($notices['core_activation'])) unset($notices['core_activation']);
+		return $notices;
 	}
 
 	/**
