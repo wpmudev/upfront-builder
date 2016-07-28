@@ -88,14 +88,28 @@ function upfront_exporter_is_running() {
  *
  * @return bool False if not, stylesheet name (true-ish) if it is.
  */
-function upfont_thx_is_current_theme_upfront_child () {
+function upfront_thx_is_current_theme_upfront_child () {
 	$current = wp_get_theme(get_option('stylesheet'));
 	$parent = $current->parent();
-	
+
 	if (empty($parent)) return false; // Current theme is not a child theme, carry on...
 	if ('upfront' !== $parent->get_template()) return false; // Not an Upfront child, carry on...
 
 	return $current->get_stylesheet();
+}
+
+/**
+ * Checks if the current theme is Upfront core, or an Upfront child theme
+ *
+ * Used to check whether we can do builder stuff or not
+ *
+ * @return bool
+ */
+function upfront_thx_is_current_theme_upfront_related () {
+	$current = wp_get_theme(get_option('stylesheet'));
+	if ('upfront' === $current->get_template()) return true;
+
+	return (bool)upfront_thx_is_current_theme_upfront_child();
 }
 
 

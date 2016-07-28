@@ -137,7 +137,7 @@ class UpfrontThemeExporter {
 		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) return false;
 		if (empty($item['meta'])) return false; // Only actual boot item has meta set
 
-		$child = upfont_thx_is_current_theme_upfront_child();
+		$child = upfront_thx_is_current_theme_upfront_child();
 		$create_title = __('Create New Theme', self::DOMAIN);
 		$main_title = (bool)$child
 			? __('Builder', self::DOMAIN)
@@ -197,4 +197,4 @@ class UpfrontThemeExporter {
 
 }
 
-if( upfont_thx_is_current_theme_upfront_child() ) UpfrontThemeExporter::serve();
+if( upfront_thx_is_current_theme_upfront_related() ) UpfrontThemeExporter::serve();
