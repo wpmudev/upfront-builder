@@ -74,7 +74,7 @@
 					size: "16",
 					style: "",
 					weight: "400",
-					color: "#FFFFFF"
+					color: "#676767"
 				},
 				'blockquote': {
 					font_face: "Georgia",
