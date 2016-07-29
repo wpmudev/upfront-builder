@@ -45,6 +45,7 @@ class Thx_L10n {
 		self::$_data = array(
 			'plugin_name' => __('Builder', UpfrontThemeExporter::DOMAIN),
 			// Inherited from Upfront core l10n server
+			'long_loading_notice' => __('The Upfront builder may take a while to load (especially first time), please hang in there :)', UpfrontThemeExporter::DOMAIN),
 			'page_layout_name' => __('Page name (leave empty for single-page.php)', UpfrontThemeExporter::DOMAIN),
 			'start_fresh' => __('Start fresh', UpfrontThemeExporter::DOMAIN),
 			'start_from_existing' => __('Start from existing layout', UpfrontThemeExporter::DOMAIN),
