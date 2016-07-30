@@ -424,7 +424,7 @@
 				this.listenTo(Upfront.Events, "builder:load_theme", Exporter.load_theme);
 
 				this.listenTo(Upfront.Events, "command:themefontsmanager:open", Dialogs.open_theme_fonts_manager);
-				this.listenToOnce(Upfront.Events, 'command:layout:save_done', Dialogs.first_save_dialog);
+				//this.listenToOnce(Upfront.Events, 'command:layout:save_done', Dialogs.first_save_dialog); // Deprecated, we're not doing this anymore
 				this.listenTo(Upfront.Events, "command:layout:create", Dialogs.create_layout_dialog); // DEPRECATED
 				this.listenTo(Upfront.Events, "command:layout:browse", Dialogs.browse_layout_dialog); // DEPRECATED
 				this.listenTo(Upfront.Events, "command:layout:export_theme", Dialogs.export_dialog);

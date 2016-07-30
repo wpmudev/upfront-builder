@@ -5,14 +5,23 @@
 	], function (Exporter, getting_started_tpl) {
 
 		return {
-			// This function can probably be deleted.
+			/**
+			 * Shows a "well done" type dialog on first save
+			 *
+			 * Deprecated, we're not doing this anymore
+			 *
+			 * @param {Boolean} success Save status
+			 */
 			first_save_dialog: function (success) {
+				return false;
+				/*
 				var app = Upfront.Application,
 					ed = Upfront.Behaviors.LayoutEditor,
 					current_layout = app.layout.get('current_layout');
 				if ( success && (!current_layout || current_layout == 'archive-home') ){
 					Exporter.message_dialog(Upfront.Settings.l10n.global.behaviors.excellent_start, Upfront.Settings.l10n.global.behaviors.homepage_created);
 				}
+				*/
 			},
 			/**
 			 * DEPRECATED
