@@ -235,6 +235,7 @@ var LayoutsModal_Available = LayoutsModal_Pane.extend({
 
 		Upfront.Application.create_layout(data.layout, {layout_slug: layout_slug, use_existing: data.use_existing}).done(function() {
 			Upfront.Application.layout.set('current_layout', layout);
+			Upfront.Events.trigger("grid:toggle"); // Make sure the grid toggle button reverts back to its original state
 			// Immediately export layout to write initial state to file.
 			Exporter._export_layout();
 		});
@@ -265,7 +266,8 @@ var LayoutsModal_Existing = LayoutsModal_Pane.extend({
 	},
 	selected: function (layout) {
 		var layout_slug = Upfront.Application.layout.get('layout_slug'),
-			data = this.data[layout]
+			data = this.data[layout],
+			loading = false
 		;
 		if (!data) return false;
 
@@ -273,7 +275,11 @@ var LayoutsModal_Existing = LayoutsModal_Pane.extend({
 
 		if (data.latest_post) _upfront_post_data.post_id = data.latest_post;
 		Upfront.Application.layout.set('current_layout', layout);
-		Upfront.Application.load_layout(data.layout, {layout_slug: layout_slug});
+		loading = Upfront.Application.load_layout(data.layout, {layout_slug: layout_slug});
+
+		if (loading && loading.done) loading.done(function () {
+			Upfront.Events.trigger("grid:toggle"); // Make sure the grid toggle button reverts back to its original state
+		});
 	}
 });
 
