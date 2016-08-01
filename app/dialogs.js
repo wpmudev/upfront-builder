@@ -487,6 +487,7 @@
 						$sidebar_ui.removeClass('show-sidebar-panel-settings');
 						$sidebar_ui.removeClass('show-sidebar-commands-control');
 						$sidebar_ui.find('.no-click-overlay').remove();
+						Upfront.Events.trigger('upfront:getting_started:done');
 					};
 
 					// button events

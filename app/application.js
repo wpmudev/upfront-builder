@@ -63,7 +63,8 @@
 					'initialize featured image selector',
 					'show save as dialog',
 					'show region list trash',
-					'trigger post editor'
+					'trigger post editor',
+					'show import image dialog'
 				],
 				required: [
 					'generate fake post id',
@@ -417,7 +418,15 @@
 				this.listenToOnce(Upfront.Events, 'layout:render', apply_grid);
 				this.listenToOnce(Upfront.Events, 'layout:after_render', function(){
 					var skip_getting_started = parseInt((window._upfront_builder_getting_started || '0'), 10);
-					if ( skip_getting_started !== 1 ) Dialogs.getting_started_exp();
+					if ( skip_getting_started !== 1 ) {
+						Dialogs.getting_started_exp();
+						// Delay import image dialog until getting started experience done
+						Upfront.Events.once('upfront:getting_started:done', Upfront.Behaviors.LayoutEditor.import_image_dialog);
+					}
+					else {
+						// Show import image dialog immediately otherwise
+						Upfront.Behaviors.LayoutEditor.import_image_dialog();
+					}
 					Dialogs.register_quick_tour();
 				});
 				this.listenTo(Upfront.Events, "command:layout:edit_structure", edit_structure);
