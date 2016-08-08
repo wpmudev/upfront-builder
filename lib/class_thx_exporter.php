@@ -63,11 +63,27 @@ class Thx_Exporter {
 	}
 
 	/**
+	 * Nerfs all Hummingbird minification attempts
+	 *
+	 * @param bool $result Hummingbird processing switch
+	 *
+	 * @return bool
+	 */
+	public function wphb_nerf ($result) {
+		return Upfront_Permissions::current(Upfront_Permissions::BOOT)
+			? false
+			: $result
+		;
+	}
+
+	/**
 	 * Set up exporter context in Upfront core boot hook handler.
 	 * This is where all the exporter context-sensitive stuff happens.
 	 * Fires when the rest of the Upfront is already initialized.
 	 */
 	private function _add_hooks () {
+		// Fix up Hummingbird conflicts with minification setup
+		add_filter('wphb_send_resource_to_footer', array($this, 'wphb_nerf'), 999);
 
 		// Clean up the temporary styles on each load, if not doing AJAX
 		if (!is_admin() && !(defined('DOING_AJAX') && DOING_AJAX) && is_user_logged_in()) update_option(self::TEMP_STYLES_KEY, array());
