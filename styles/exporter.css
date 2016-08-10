@@ -234,6 +234,12 @@
   margin-left: -15px;
   cursor: initial; }
 
+#sidebar-ui .no-click-overlay.highlighted {
+  background: #013d61;
+  height: 100%;
+  margin-top: -15px;
+  z-index: -1; }
+
 #sidebar-ui.show-primary-sidebar {
   z-index: 10001004; }
   #sidebar-ui.show-primary-sidebar #preventUsageOverlay {
@@ -326,10 +332,10 @@
 
 .upfront-structure-modal .upfront-edit-grid-custom .upfront-grid-width-preview {
   float: right;
-  margin-top: -22px; }
+  margin-top: -21px; }
 
 .upfront-structure-modal .upfront-edit-grid-custom .upfront-field-number[type=number] {
-  width: 60px; }
+  width: 50px; }
 
 .upfront-structure-modal .upfront-edit-page-color .upfront-field-wrap-color {
   line-height: 30px; }

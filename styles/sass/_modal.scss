@@ -176,6 +176,13 @@
 	cursor: initial;
 }
 
+#sidebar-ui .no-click-overlay.highlighted {
+	background: rgb(1, 61, 97);
+	height: 100%;
+	margin-top: -15px;
+	z-index: -1;
+}
+
 #sidebar-ui.show-primary-sidebar {
 	z-index: 10001004;
 	
