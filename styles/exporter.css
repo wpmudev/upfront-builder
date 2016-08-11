@@ -172,6 +172,10 @@
     #upfront-popup.getting-started-popup .getting_started_content .description {
       padding: 30px;
       line-height: 1.4; }
+      #upfront-popup.getting-started-popup .getting_started_content .description h3 {
+        font-size: 20px;
+        color: rgba(26, 44, 64, 0.5);
+        font-weight: bold; }
       #upfront-popup.getting-started-popup .getting_started_content .description strong {
         font-weight: bold; }
       #upfront-popup.getting-started-popup .getting_started_content .description a {
