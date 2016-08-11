@@ -194,6 +194,7 @@
 	
 	#preventUsageOverlay {
 		display: block !important; // overriding css internals
+		background: rgba(38,58,77,.95);
 	}
 	
 	ul.sidebar-commands-primary {

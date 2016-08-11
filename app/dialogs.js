@@ -457,7 +457,7 @@
 						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-elements').addClass('expanded');
 						$sidebar_ui.find('.sidebar-panels li.sidebar-panel-settings').removeClass('expanded');
 						$sidebar_ui.addClass('show-primary-sidebar');
-						$sidebar_ui.find('ul.sidebar-commands-primary').prepend('<li class="no-click-overlay highlighted"></li><li class="no-click-overlay"></li>');
+						$sidebar_ui.find('ul.sidebar-commands-primary').prepend('<li class="no-click-overlay"></li>');
 					};
 
 					// toggling step two

@@ -247,7 +247,8 @@
 #sidebar-ui.show-primary-sidebar {
   z-index: 10001004; }
   #sidebar-ui.show-primary-sidebar #preventUsageOverlay {
-    display: block !important; }
+    display: block !important;
+    background: rgba(38, 58, 77, 0.95); }
   #sidebar-ui.show-primary-sidebar ul.sidebar-commands-primary {
     z-index: 11;
     position: relative; }
