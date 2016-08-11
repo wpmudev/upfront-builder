@@ -789,7 +789,7 @@ error_log(debug_backtrace());
 		$key = isset($data['data']) && isset($data['data']['key']) ? trim($data['data']['key']) : false;
 		if (empty($key)) die;
 
-		if (!preg_match('/^' . preg_quote($stylesheet, '/') . preg_quote(Thx_Exposed::BOOTSTRAP_EXP_SLUG, '/') . '$/', $key)) die;
+		if (!preg_match('/^' . preg_quote(Thx_Exposed::BOOTSTRAP_EXP_SLUG, '/') . '$/', $key)) die;
 
 		$theme = wp_get_theme($stylesheet);
 		if (!$theme->exists()) die;

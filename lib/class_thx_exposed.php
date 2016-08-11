@@ -4,7 +4,7 @@
  */
 class Thx_Exposed {
 
-	const BOOTSTRAP_EXP_SLUG = '_show_builder_exp';
+	const BOOTSTRAP_EXP_SLUG = 'upfront_show_builder_exp';
 
 	private function __construct () {}
 	private function __clone () {}
@@ -24,13 +24,7 @@ class Thx_Exposed {
 	*/
 	public function delete_user_options ($store_key) {
 		// check first if option existing
-		$store_key = $store_key . self::BOOTSTRAP_EXP_SLUG;
-		$has_option = get_user_option($store_key);
-		if ( !$has_option ) {
-			// if not found, append "uf-"
-			$store_key = 'uf-' . $store_key;
-			$has_option = get_user_option($store_key);
-		}
-		if( $has_option ) delete_user_option( get_current_user_id(), $store_key, true );
+		$has_option = get_user_option(self::BOOTSTRAP_EXP_SLUG);
+		if( $has_option ) delete_user_option( get_current_user_id(), self::BOOTSTRAP_EXP_SLUG, true );
 	}
 }

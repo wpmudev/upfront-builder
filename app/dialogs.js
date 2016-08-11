@@ -491,21 +491,6 @@
 					};
 
 					// button events
-					me.$popup.content.on('click', 'button.skip', function() {
-						if (Upfront.Application.is_builder()) {
-							Upfront.Util.post({
-								action: 'upfront_thx-skip-getting-started',
-								data: {
-									key: _upfront_storage_key + '_show_builder_exp'
-								}
-							}).done(function () {
-								// Record the local global state change as well
-								window._upfront_builder_getting_started = 1;
-							});
-						}
-						me.close_popup();
-					});
-
 					me.$popup.content.on('click', 'button.next.step-one', function() {
 						$(this).parents('#upfront-popup').addClass('step-two-popup');
 						me.$popup.content.html(step_two_tpl);
@@ -533,6 +518,17 @@
 					});
 
 					me.$popup.content.on('click', 'button.finish.step-three', function() {
+						if (Upfront.Application.is_builder() && 0 === parseInt((window._upfront_builder_getting_started || '0'), 10)) {
+							Upfront.Util.post({
+								action: 'upfront_thx-skip-getting-started',
+								data: {
+									key: 'upfront_show_builder_exp'
+								}
+							}).done(function () {
+								// Record the local global state change as well
+								window._upfront_builder_getting_started = 1;
+							});
+						}
 						me.close_popup();
 					});
 
