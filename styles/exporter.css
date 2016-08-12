@@ -212,7 +212,7 @@
           font-family: Georgia, Times, serif;
           padding-right: 5px; }
       #upfront-popup.getting-started-popup .getting_started_content .controls button {
-        background: #445462;
+        background: #40a0ff;
         border: none;
         border-radius: 2px;
         padding: 5px 20px;
@@ -226,8 +226,6 @@
       #upfront-popup.getting-started-popup .getting_started_content .controls button.prev {
         background: transparent;
         margin-right: 10px; }
-      #upfront-popup.getting-started-popup .getting_started_content .controls button.finish {
-        background: #1fcd8f; }
 
 #sidebar-ui .no-click-overlay {
   position: absolute;
@@ -246,12 +244,10 @@
 
 #sidebar-ui.show-primary-sidebar {
   z-index: 10001004; }
-  #sidebar-ui.show-primary-sidebar #preventUsageOverlay {
-    display: block !important;
-    background: rgba(38, 58, 77, 0.95); }
   #sidebar-ui.show-primary-sidebar ul.sidebar-commands-primary {
     z-index: 11;
-    position: relative; }
+    position: relative;
+    box-shadow: 0 0 10px 99999px rgba(60, 82, 103, 0.9); }
     #sidebar-ui.show-primary-sidebar ul.sidebar-commands-primary li.no-click-overlay {
       cursor: initial; }
   #sidebar-ui.show-primary-sidebar li.sidebar-panel-elements .sidebar-panel-content {
@@ -259,11 +255,10 @@
 
 #sidebar-ui.show-sidebar-panel-settings {
   z-index: 10001004; }
-  #sidebar-ui.show-sidebar-panel-settings #preventUsageOverlay {
-    display: block !important; }
   #sidebar-ui.show-sidebar-panel-settings li.sidebar-panel-settings {
     z-index: 11;
-    position: relative; }
+    position: relative;
+    box-shadow: 0 0 10px 99999px rgba(60, 82, 103, 0.9); }
     #sidebar-ui.show-sidebar-panel-settings li.sidebar-panel-settings .sidebar-panel-content {
       height: auto; }
     #sidebar-ui.show-sidebar-panel-settings li.sidebar-panel-settings .no-click-overlay {
@@ -271,11 +266,10 @@
 
 #sidebar-ui.show-sidebar-commands-control {
   z-index: 10001004; }
-  #sidebar-ui.show-sidebar-commands-control #preventUsageOverlay {
-    display: block !important; }
   #sidebar-ui.show-sidebar-commands-control ul.sidebar-commands-control {
     z-index: 11;
-    position: relative; }
+    position: relative;
+    box-shadow: 0 0 10px 99999px rgba(60, 82, 103, 0.9); }
     #sidebar-ui.show-sidebar-commands-control ul.sidebar-commands-control li.no-click-overlay {
       height: 400px;
       margin: 0;
@@ -290,7 +284,7 @@
 
 #upfront-popup.getting-started-popup.step-three-popup {
   top: 370px;
-  left: 265px; }
+  left: 260px; }
   #upfront-popup.getting-started-popup.step-three-popup:before {
     margin-top: 110px; }
   #upfront-popup.getting-started-popup.step-three-popup .getting_started_content .controls {

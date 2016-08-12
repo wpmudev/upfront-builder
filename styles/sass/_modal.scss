@@ -145,7 +145,7 @@
 			}
 			
 			button {
-				background: rgb(68, 84, 98);
+				background: rgb(64, 160, 255);
 				border: none;
 				border-radius: 2px;
 				padding: 5px 20px;
@@ -163,10 +163,6 @@
 			button.prev {
 				background: transparent;
 				margin-right: 10px;
-			}
-			
-			button.finish {
-				background: rgb(31, 205, 143);
 			}
 		}
 	}
@@ -192,14 +188,10 @@
 #sidebar-ui.show-primary-sidebar {
 	z-index: 10001004;
 	
-	#preventUsageOverlay {
-		display: block !important; // overriding css internals
-		background: rgba(38,58,77,.95);
-	}
-	
 	ul.sidebar-commands-primary {
 		z-index: 11;
 		position: relative;
+		box-shadow: 0 0 10px 99999px rgba(60,82,103,.9);
 		
 		li.no-click-overlay {
 			cursor: initial;
@@ -216,13 +208,10 @@
 #sidebar-ui.show-sidebar-panel-settings {
 	z-index: 10001004;
 	
-	#preventUsageOverlay {
-		display: block !important; // overriding css internals
-	}
-	
 	li.sidebar-panel-settings {
 		z-index: 11;
 		position: relative;
+		box-shadow: 0 0 10px 99999px rgba(60,82,103,.9);
 		
 		.sidebar-panel-content {
 			height: auto;
@@ -237,13 +226,10 @@
 #sidebar-ui.show-sidebar-commands-control {
 	z-index: 10001004;
 	
-	#preventUsageOverlay {
-		display: block !important; // overriding css internals
-	}
-	
 	ul.sidebar-commands-control {
 		z-index: 11;
 		position: relative;
+		box-shadow: 0 0 10px 99999px rgba(60,82,103,.9);
 		
 		li.no-click-overlay {
 			height: 400px;
@@ -267,7 +253,7 @@
 
 #upfront-popup.getting-started-popup.step-three-popup {
 	top: 370px;
-  left: 265px;
+	left: 260px;
 	
 	&:before {
 		margin-top: 110px;
