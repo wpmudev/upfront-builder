@@ -438,6 +438,7 @@
 								"content": $me,
 								"bottom": $bottom
 							};
+							Upfront.Popup.$background.addClass('transparent');
 						},
 						{
 							width: 520
@@ -488,6 +489,7 @@
 						$sidebar_ui.removeClass('show-sidebar-commands-control');
 						$sidebar_ui.find('.no-click-overlay').remove();
 						Upfront.Events.trigger('upfront:getting_started:done');
+						Upfront.Popup.$background.removeClass('transparent');
 					};
 
 					// button events
