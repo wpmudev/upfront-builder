@@ -31,8 +31,7 @@
 		<span class="upfront_logo"></span>
 	</h1>
 	<p class="info">
-		<?php esc_html_e('Build your own, slick, customizable, intuitive Upfront themes.', UpfrontThemeExporter::DOMAIN); ?>
-		<?php esc_html_e('Creating a WordPress theme has never been easier.', UpfrontThemeExporter::DOMAIN); ?>
+		<?php esc_html_e('Create a unique, responsive Upfront theme that you can export, share, sell or tweak to your hearts content.', UpfrontThemeExporter::DOMAIN); ?>
 	</p>
 
 	<?php load_template(dirname(__FILE__) . '/admin_errors.php'); ?>
@@ -107,7 +106,7 @@
 				<div class="postbox newtheme" id="new-theme">
 
 					<?php if (empty($_GET['theme'])) { ?>
-						<h2 class="title"><?php esc_html_e('Build a new theme', UpfrontThemeExporter::DOMAIN); ?></h2>
+						<h2 class="title"><?php esc_html_e('Get Started', UpfrontThemeExporter::DOMAIN); ?></h2>
 
 						<?php Thx_Template::plugin()->load('theme_form'); ?>
 						<div class="buttons">
