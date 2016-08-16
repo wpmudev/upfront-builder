@@ -101,6 +101,7 @@ class Thx_Exporter {
 		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 
 		add_action($ajaxPrefix . 'create-theme', array($this, 'json_create_theme'));
+		add_action($ajaxPrefix . 'get-edit-theme-form', array($this, 'get_edit_theme_form'));
 		add_action($ajaxPrefix . 'update-theme', array($this, 'json_update_theme'));
 		add_action($ajaxPrefix . 'get-themes', array($this, 'json_get_themes'));
 
@@ -2015,6 +2016,32 @@ error_log(debug_backtrace());
 				'name' => $form['thx-theme-name']
 			)
 		));
+	}
+	
+	public function get_edit_theme_form () {
+		if ( isset($_POST['selected']) && !empty($_POST['selected']) ) {
+			$selected = $_POST['selected'];
+			$fallback_screenshot = plugins_url(THX_BASENAME . '/imgs/testImage.jpg');
+			$theme = wp_get_theme($selected);
+			Thx_Template::plugin()->load('theme_form', array(
+				'new' => false,
+				'name' => $theme->get('Name'),
+				'slug' => $theme->get_stylesheet(),
+				'author' => $theme->get('Author'),
+				'author_uri' => $theme->get('AuthorURI'),
+				'description' => $theme->get('Description'),
+				'version' => $theme->get('Version'),
+				'theme_uri' => $theme->get('ThemeURI'),
+				'licence' => $theme->get('License'),
+				'licence_uri' => $theme->get('License URI'),
+				'tags' => $theme->get('Tags'),
+				'text_domain' => $theme->get('TextDomain'),
+				'screenshot' => ($theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot),
+			));
+			die;
+		} else {
+			$this->_json->error_msg(__('Missing required theme selection.', UpfrontThemeExporter::DOMAIN), 'missing_required');
+		}
 	}
 
 	/**

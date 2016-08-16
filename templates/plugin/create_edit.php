@@ -25,9 +25,6 @@
 
 	<h1>
 		<?php esc_html_e('Upfront Builder', UpfrontThemeExporter::DOMAIN); ?>
-		<span class="upfront-thx-create_new">
-			<a href="<?php echo esc_url(admin_url('admin.php?page=upfront-builder')); ?>"><?php esc_html_e('Create New', UpfrontThemeExporter::DOMAIN); ?></a>
-		</span>
 		<span class="upfront_logo"></span>
 	</h1>
 	<p class="info">
@@ -36,114 +33,77 @@
 
 	<?php load_template(dirname(__FILE__) . '/admin_errors.php'); ?>
 
-	<div class="uf-thx-initial clearfix">
-		<!-- Left Side UI Column -->
-		<div class="upfront-col-left">
-			<div class="postbox-container">
-				<div class="postbox themes" id="existing-theme">
-					<?php if (!empty($themes)) { ?>
-						<h2 class="title"><?php esc_html_e('Modify existing theme', UpfrontThemeExporter::DOMAIN); ?></h2>
+	<div class="postbox-container">
+		<!-- Build New Theme -->
+		<div class="postbox newtheme" id="new-theme">
+			<h2 class="title"><?php esc_html_e('Build New Theme', UpfrontThemeExporter::DOMAIN); ?></h2>
+			<?php
+				Thx_Template::plugin()->load('theme_form', array(
+					'new' => true,
+					'name' => '',
+				));
+			?>
+			<div class="buttons">
+				<button type="button" class="create theme">
+					<?php esc_html_e('Start building', UpfrontThemeExporter::DOMAIN); ?>
+				</button>
+			</div>
+		</div>
+		
+		<!-- Existing Themes -->
+		<div class="postbox themes" id="existing-theme">
+			<?php if (!empty($themes)) { ?>
+				<h2 class="title"><?php esc_html_e('Edit existing theme', UpfrontThemeExporter::DOMAIN); ?></h2>
 
-						<div class="uf-thx-themes_container clearfix">
-						<?php foreach ($themes as $key => $theme) { ?>
-							<div class="uf-thx-theme <?php
-							if (!empty($_GET['theme']) && $theme->get_stylesheet() === $_GET['theme']) echo 'selected';
-						?> <?php
-							if ($theme->get_stylesheet() === $current_theme) {
-								echo 'current';
-								if (empty($_GET['theme'])) echo ' selected';
-							}
-						?>" data-theme="<?php echo esc_attr($theme->get_stylesheet()); ?>">
-								<a href="<?php
-									echo esc_attr(add_query_arg('theme', $theme->get_stylesheet()));
-								?>" data-download_url="<?php
-									echo esc_url(add_query_arg(array(
-										'action' => 'download',
-										'theme' => $theme->get_stylesheet(),
-										'nonce' => wp_create_nonce('download-' . $theme->get_stylesheet()),
-									), $redirection));
-								?>" >
-									<?php $screenshot = $theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot; ?>
-									<img src="<?php echo esc_url($screenshot); ?>" />
-									<div class="uf-thx-caption">
-										<span><?php echo esc_html($theme->get('Name')); ?></span>
-									</div>
-								</a>
-							</div>
-						<?php } ?>
-						</div>
-						<div class="buttons">
-							<span class="theme-name">Theme</span>
-							<div class="btn-wrap">
+				<div class="uf-thx-themes_container clearfix">
+				<?php foreach ($themes as $key => $theme) { ?>
+					<div class="uf-thx-theme <?php
+					// if (!empty($_GET['theme']) && $theme->get_stylesheet() === $_GET['theme']) echo 'selected';
+				?> <?php
+					if ($theme->get_stylesheet() === $current_theme) {
+						echo 'current';
+						// if (empty($_GET['theme'])) echo ' selected';
+					}
+				?>" data-theme="<?php echo esc_attr($theme->get_stylesheet()); ?>">
+						<a href="<?php
+							echo esc_attr(add_query_arg('theme', $theme->get_stylesheet()));
+						?>" data-download_url="<?php
+							echo esc_url(add_query_arg(array(
+								'action' => 'download',
+								'theme' => $theme->get_stylesheet(),
+								'nonce' => wp_create_nonce('download-' . $theme->get_stylesheet()),
+							), $redirection));
+						?>" >
+							<?php $screenshot = $theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot; ?>
+							<img src="<?php echo esc_url($screenshot); ?>" />
+							<div class="uf-thx-caption">
+								<span><?php echo esc_html($theme->get('Name')); ?></span>
+								<button type="button" class="edit theme">
+									<?php esc_html_e('Edit In Builder', UpfrontThemeExporter::DOMAIN); ?>
+								</button>
 								<button type="button" class="download" alt="" >
 									<span class="btn-label-hidden">
 									<?php esc_html_e('Download theme', UpfrontThemeExporter::DOMAIN); ?>
 									</span>
 								</button>
-								<button type="button" class="edit info">
-									<span class="btn-label-hidden">
-									<?php esc_html_e('Edit theme details', UpfrontThemeExporter::DOMAIN); ?>
-									</span>
-								</button>
-								<button type="button" class="edit theme">
-									<?php esc_html_e('Edit With Builder', UpfrontThemeExporter::DOMAIN); ?>
-								</button>
 							</div>
-						</div>
-					<?php } else { ?>
-						<label class="inline"><span class="description">
-							<?php esc_html_e('No existing themes, please create a new one.', UpfrontThemeExporter::DOMAIN); ?>
-						</span></label>
+							<button type="button" class="edit info"><?php esc_html_e('Edit theme info', UpfrontThemeExporter::DOMAIN); ?></button>
+						</a>
+					</div>
+				<?php } ?>
+				</div>
+			<?php } else { ?>
+				<label class="inline"><span class="description">
+					<?php esc_html_e('No existing themes, please create a new one.', UpfrontThemeExporter::DOMAIN); ?>
+				</span></label>
 
-					<?php } ?>
-				</div><!-- /.postbox -->
-			</div><!-- /.postbox-container -->
-		</div><!-- /.upfront-col-left -->
-
-		<!-- Right Side UI Column -->
-		<div class="upfront-col-right">
-			<div class="postbox-container">
-				<div class="postbox newtheme" id="new-theme">
-
-					<?php if (empty($_GET['theme'])) { ?>
-						<h2 class="title"><?php esc_html_e('Get Started', UpfrontThemeExporter::DOMAIN); ?></h2>
-
-						<?php Thx_Template::plugin()->load('theme_form'); ?>
-						<div class="buttons">
-							<button type="button" class="create theme">
-								<?php esc_html_e('Start building', UpfrontThemeExporter::DOMAIN); ?>
-							</button>
-						</div>
-					<?php } else { ?>
-						<?php $theme = wp_get_theme($_GET['theme']); ?>
-						<h2 class="title"><?php echo esc_html(sprintf(__('Edit &quot;%s&quot;', UpfrontThemeExporter::DOMAIN), $theme->get('Name'))); ?></h2>
-
-						<?php
-							Thx_Template::plugin()->load('theme_form', array(
-								'name' => $theme->get('Name'),
-								'slug' => $theme->get_stylesheet(),
-								'author' => $theme->get('Author'),
-								'author_uri' => $theme->get('AuthorURI'),
-								'description' => $theme->get('Description'),
-								'version' => $theme->get('Version'),
-								'theme_uri' => $theme->get('ThemeURI'),
-								'licence' => $theme->get('License'),
-								'licence_uri' => $theme->get('License URI'),
-								'tags' => $theme->get('Tags'),
-								'text_domain' => $theme->get('TextDomain'),
-								'screenshot' => ($theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot),
-							));
-						?>
-						<div class="buttons">
-							<button type="button" class="edit info">
-								<?php esc_html_e('Save Changes', UpfrontThemeExporter::DOMAIN); ?>
-							</button>
-						</div>
-					<?php } ?>
-
-				</div><!-- /.postbox -->
-			</div><!-- /.postbox-container -->
-		</div><!-- /.upfront-col-right -->
-
+			<?php } ?>
+		</div><!-- /.postbox -->
+	</div><!-- /.postbox-container -->
+	<div class="postbox-modal-container">
+		<div class="postbox edit-theme" id="edit-theme">
+			<div id="postbox-modal-close">&times;</div>
+			<div class="form_content"><!-- will be replaced with edit form --></div>
+		</div><!-- /.postbox -->
 	</div>
 </div>
