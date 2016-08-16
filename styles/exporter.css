@@ -80,7 +80,8 @@
   float: right;
   margin: 0 10px 0 0; }
 
-#sidebar-ui .sidebar-commands-control .command-create-responsive-layouts {
+#sidebar-ui .sidebar-commands-control .command-create-responsive-layouts,
+#sidebar-ui .sidebar-commands-control .command-themes {
   font-size: 13px;
   max-width: 122px;
   line-height: 26px;
@@ -91,14 +92,19 @@
   border-radius: 2px;
   margin: 0 0 0 10px; }
 
-#sidebar-ui .sidebar-commands-control .command-export {
+#sidebar-ui .sidebar-commands-control .command-themes {
   clear: both;
+  float: left;
+  margin-top: 22px; }
+
+#sidebar-ui .sidebar-commands-control .command-export {
   display: block;
+  float: right;
   background: #1fcd8f;
   box-shadow: 0 1px 0 rgba(37, 58, 77, 0.5);
   color: #f1f8ff;
-  font-size: 18px;
-  margin: 15px 0 0 10px;
+  font-size: 16px;
+  margin: 15px 10px 0 0;
   padding: 0 10px 0 10px;
   line-height: 40px;
   height: 40px;
@@ -114,6 +120,15 @@
   font-size: 15px;
   height: 40px;
   max-width: 110px; }
+
+#sidebar-ui .sidebar-commands-responsive-control .command-save {
+  clear: both;
+  top: 0;
+  float: right;
+  margin-right: 10px; }
+
+#sidebar-ui .sidebar-commands-responsive-control .exit-responsive {
+  float: left; }
 
 .upfront-inline-modal {
   /* Layouts browse modal */ }

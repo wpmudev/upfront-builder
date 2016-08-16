@@ -51,6 +51,9 @@ class Thx_L10n {
 			'start_from_existing' => __('Start from existing layout', UpfrontThemeExporter::DOMAIN),
 			'create_new_layout' => __('Create New Layout', UpfrontThemeExporter::DOMAIN),
 			'edit_saved_layout' => __('Edit Saved Layout', UpfrontThemeExporter::DOMAIN),
+			'export_str' => __('Save Theme', UpfrontThemeExporter::DOMAIN),
+			'create_responsive_layouts' => __('Responsive', UpfrontThemeExporter::DOMAIN),
+			'edit_grid' => __('Edit Grid', UpfrontThemeExporter::DOMAIN),
 
 			// modal.js
 			'manage_layouts' => __('Manage Layouts', UpfrontThemeExporter::DOMAIN),
@@ -65,6 +68,8 @@ class Thx_L10n {
 			'media' => __('Media', UpfrontThemeExporter::DOMAIN),
 			'theme_images' => __('Media', UpfrontThemeExporter::DOMAIN),
 			'theme_sprites' => __('UI / Sprites', UpfrontThemeExporter::DOMAIN),
+			'my_themes' => __('My Themes', UpfrontThemeExporter::DOMAIN),
+			'themes' => __('Themes', UpfrontThemeExporter::DOMAIN)
 		);
 	}
 }

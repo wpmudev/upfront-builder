@@ -2,8 +2,12 @@
 
 define([
 	'scripts/upfront/upfront-views-editor/commands/command-logo',
-	'scripts/upfront/upfront-views-editor/commands/command-exit'
-], function (Command_Logo, Command_Exit) {
+	'scripts/upfront/upfront-views-editor/commands/command-exit',
+	'scripts/upfront/upfront-views-editor/commands/command-menu',
+	'scripts/upfront/upfront-views-editor/commands/menu/command-close',
+	'scripts/upfront/upfront-views-editor/commands/menu/command-wpadmin',
+	'scripts/upfront/upfront-views-editor/commands/menu/command-help'
+], function (Command_Logo, Command_Exit, Command_Menu, Command_Close, Command_WPAdmin, Command_Help) {
 
 
 var l10n = Upfront.Settings && Upfront.Settings.l10n ?
@@ -107,6 +111,27 @@ var Exit = Command_Exit.extend({
 	}
 });
 
+var Command_MyThemes = Upfront.Views.Editor.Command.extend({
+	render: function () {
+		this.$el.html(l10n.my_themes);
+	},
+	on_click: function () {
+		window.location.href = Upfront.themeExporter.admin_url;
+	}
+});
+
+var Menu = Command_Menu.extend({
+	initialize: function () {
+		Command_Menu.prototype.initialize.call(this);
+		this.menu.commands = _([
+			new Command_Close({"model": this.model}),
+			new Command_MyThemes({"model": this.model}),
+			new Command_WPAdmin({"model": this.model}),
+			new Command_Help({"model": this.model})
+		]);
+	}
+});
+
 
 function init_normal_exporter () {
 	Upfront.Application.sidebar.sidebar_commands.primary = new SidebarCommands_PrimaryLayout({model: Upfront.Application.sidebar.model});
@@ -114,7 +139,8 @@ function init_normal_exporter () {
 
 	Upfront.Application.sidebar.sidebar_commands.header.commands = _([
 		new Logo({model: Upfront.Application.sidebar.model}),
-		new Exit({model: Upfront.Application.sidebar.model})
+		//new Exit({model: Upfront.Application.sidebar.model})
+		new Menu({model: Upfront.Application.sidebar.model})
 	]);
 
 	Upfront.Application.sidebar.render();

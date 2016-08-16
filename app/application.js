@@ -9,8 +9,8 @@
 		// JUST A BIG BLOCK OF STUFF MOVED FROM UPFRONT TO EXPORTER
 		if (Upfront && Upfront.plugins) {
 			var l10n = Upfront.Settings && Upfront.Settings.l10n ?
-				Upfront.Settings.l10n.global.views :
-				Upfront.mainData.l10n.global.views
+				Upfront.Settings.l10n.exporter :
+				Upfront.mainData.l10n.exporter
 			;
 
 			var Command_ExportLayout = Upfront.Views.Editor.Command.extend({
@@ -25,6 +25,16 @@
 							ed.stop();
 					});
 					Upfront.Events.trigger("command:layout:export_theme");
+				}
+			});
+
+			var Command_Themes = Upfront.Views.Editor.Command.extend({
+				className: "command-themes upfront-icon upfront-icon-themes",
+				render: function (){
+					this.$el.text(l10n.themes);
+				},
+				on_click: function () {
+					window.location.href = Upfront.themeExporter.admin_url;
 				}
 			});
 
@@ -77,6 +87,7 @@
 				],
 				callbacks: {
 					'insert-save-buttons': function(parameters) {
+						parameters.commands.push(new Command_Themes({"model": parameters.model}));
 						parameters.commands.push(new Command_ExportLayout({"model": parameters.model}));
 					},
 					'insert-responsive-buttons': function(parameters) {
@@ -104,7 +115,7 @@
 					},
 					// Get long loading notice message.
 					'long-loading-notice': function() {
-						return Upfront.Settings.l10n.exporter.long_loading_notice;
+						return l10n.long_loading_notice;
 					},
 					'cancel-post-layout': function() {
 						Upfront.Events.trigger("post:layout:post:style:cancel");
