@@ -24,7 +24,14 @@
 						if(ed)
 							ed.stop();
 					});
-					Upfront.Events.trigger("command:layout:export_theme");
+					
+					// check if theme being edited is the current active one
+					if ( Upfront.themeExporter.currentTheme === window._active_theme ) {
+						Upfront.Events.trigger("command:layout:export_theme");
+					} else {
+						// ask user if to activate the theme being edited first before exporting 
+						Dialogs.activate_edited_theme();
+					}
 				}
 			});
 
