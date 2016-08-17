@@ -23,9 +23,9 @@
 }
 .uf-thx-theme {
 	width:30%;
+	max-width: 400px;
 	display:inline-block;
-	margin:0 15px 15px 0;
-	margin-right:4%;
+	margin:0 30px 30px 0;
 	line-height: 0;
 }
 .uf-thx-theme:nth-child(3n) {
@@ -43,6 +43,7 @@
 	padding-bottom: 66%;
 	overflow: hidden;
 	text-align: center;
+	cursor: default;
 }
 .uf-thx-theme a:focus {
 	box-shadow: none;
@@ -63,24 +64,28 @@
 	padding:10px;
 	background:rgba(0,0,0,.5);
 	color:rgba(255,255,255,.95);
-	font-size:18px;
-	font-family: 'Roboto Condensed';
-	font-weight:100;
-	line-height: 1;
+	font: bold 16px/2 'Roboto Condensed', Helvetica Neueu, Helvetica, Arial, sans-serif;
+	height: 50px;
+	text-transform: uppercase;
+	-webkit-font-smoothing: antialiased;
+	z-index: 1;
 }
 
 .uf-thx-caption span {
 	float: left;
-	line-height: 1.5;
 }
 .postbox.themes .uf-thx-caption button.download,
 .postbox.themes .uf-thx-caption button {
 	float: right;
 	background-color: transparent;
 	display: none;
+	opacity: .8;
+}
+.postbox.themes .uf-thx-caption button:hover {
+	opacity: 1;
 }
 .postbox.themes .uf-thx-caption button.edit.theme {
-	border: 1px solid #fff;
+	border: 2px solid #fff;
 }
 .postbox.themes .uf-thx-caption button.edit.theme:hover {
 	background-color: transparent;
@@ -89,12 +94,16 @@
 	background: rgb(136,136,136);
     width: auto;
     position: relative;
-    margin-top: 25%;
+    margin-top: 28%;
 	display: none;
-	font-family: 'Roboto';
+	box-shadow: 0 0 0 200px rgba(0,0,0,.3);
+	font: normal 16px/1.37 'Roboto Condensed', Helvetica Neueu, Helvetica, Arial, sans-serif;
+	padding: 10px 25px;
+	letter-spacing: 0;
 }
 .postbox.themes button.edit.info:hover {
 	background: rgb(136,136,136);
+	cursor: pointer;
 }
 .uf-thx-caption:after {
 	content: ' ';
@@ -220,7 +229,6 @@
 }
 .uf-thx-theme {
 	position: relative;
-	opacity: 0.85;
 }
 .uf-thx-theme.selected {
 	box-shadow:0 0 0 3px #00cf8d;
@@ -266,6 +274,7 @@
 .uf-thx-theme_meta label input[type="text"],
  .uf-thx-theme_meta label textarea {
 	width: 100%;
+	border-radius:3px;
 }
 .uf-thx-theme_meta label span,
 .uf-thx-theme_screenshot span {
@@ -292,10 +301,9 @@
 .postbox.newtheme .uf-thx-theme_meta label span,
 .postbox.newtheme .uf-thx-theme_screenshot span {
 	margin-bottom: 10px;
-    font-style: normal;
-    font-size: 22px;
-    font-family: 'Roboto Condensed';
+    font: normal 24px/1.5 'Roboto Condensed', Helvetica Neueu, Helvetica, Arial, sans-serif;
     color: #636363;
+    -webkit-font-smoothing: antialiased;
 }
 .postbox.newtheme .uf-thx-theme_info {
 	padding-bottom: 15px;
