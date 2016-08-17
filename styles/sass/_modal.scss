@@ -251,6 +251,13 @@
 			padding: 0;
 			cursor: initial;
 		}
+		
+		&:after {
+			content: '';
+			display: table;
+			clear: both;
+			padding-bottom: 15px;
+		}
 	}
 	
 	li.sidebar-panel-elements {
