@@ -290,6 +290,11 @@
       margin: 0;
       padding: 0;
       cursor: initial; }
+    #sidebar-ui.show-sidebar-commands-control ul.sidebar-commands-control:after {
+      content: '';
+      display: table;
+      clear: both;
+      padding-bottom: 15px; }
   #sidebar-ui.show-sidebar-commands-control li.sidebar-panel-elements .sidebar-panel-content {
     height: auto; }
 
