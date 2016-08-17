@@ -61,6 +61,11 @@ class Thx_L10n {
 			'edit_layout' => __('Edit Layout', UpfrontThemeExporter::DOMAIN),
 			'edit_existing_layout' => __('Edit Existing Layout', UpfrontThemeExporter::DOMAIN),
 			'loading' => __('Loading...', UpfrontThemeExporter::DOMAIN),
+			'activate_theme' => __('Activate Theme', UpfrontThemeExporter::DOMAIN),
+			'activate_message' => __('Do you want to activate', UpfrontThemeExporter::DOMAIN),
+			'theme' => __('theme', UpfrontThemeExporter::DOMAIN),
+			'yes' => __('Yes', UpfrontThemeExporter::DOMAIN),
+			'no' => __('No', UpfrontThemeExporter::DOMAIN),
 
 			// sidebar.js
 			'current_layout' => __('Current Layout: <b>%s</b>', UpfrontThemeExporter::DOMAIN),

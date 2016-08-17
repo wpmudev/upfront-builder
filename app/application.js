@@ -30,7 +30,7 @@
 						Upfront.Events.trigger("command:layout:export_theme");
 					} else {
 						// ask user if to activate the theme being edited first before exporting 
-						Dialogs.activate_edited_theme();
+						Dialogs.activate_edited_theme(l10n);
 					}
 				}
 			});

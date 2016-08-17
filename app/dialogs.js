@@ -4,7 +4,7 @@
 		'text!' + Upfront.themeExporter.root + 'templates/theme/tpl/getting_started.html',
 		'text!' + Upfront.themeExporter.root + 'templates/theme/tpl/activate_theme.html'
 	], function (Exporter, getting_started_tpl, activate_theme_tpl) {
-
+			
 		return {
 			/**
 			 * Shows a "well done" type dialog on first save
@@ -553,7 +553,7 @@
 					});
 				}
 			},
-			activate_edited_theme: function() {
+			activate_edited_theme: function(l10n) {
 				// skip this whole process if was already done for this session
 				if (1 === parseInt((window._upfront_builder_theme_activated || '0'), 10)) {
 					Upfront.Events.trigger("command:layout:export_theme");
@@ -562,7 +562,8 @@
 				
 				var me = {},
 					activate_tpl = _.template($(activate_theme_tpl).find('#upfront-builder-activate-theme-tpl').html(),{
-						current_theme: Upfront.themeExporter.currentTheme
+						current_theme: Upfront.themeExporter.currentTheme,
+						l10n: l10n,
 					})
 				;
 				// spawning popup
