@@ -521,6 +521,7 @@
 					});
 
 					me.$popup.content.on('click', 'button.finish.step-three', function() {
+						$(this).parents('#upfront-popup').removeClass('step-three-popup');
 						if (Upfront.Application.is_builder() && 0 === parseInt((window._upfront_builder_getting_started || '0'), 10)) {
 							Upfront.Util.post({
 								action: 'upfront_thx-skip-getting-started',
@@ -590,10 +591,10 @@
 					}).done(function () {
 						// Record the local global state change as well
 						window._upfront_builder_theme_activated = 1;
-						Upfront.Popup.close();
-						// proceed to exporting
-						Upfront.Events.trigger("command:layout:export_theme");
 					});
+					Upfront.Popup.close();
+					// proceed to exporting
+					Upfront.Events.trigger("command:layout:export_theme");
 				});
 				me.$popup.content.on('click', 'button.no', function() {
 					Upfront.Popup.close();
