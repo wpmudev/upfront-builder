@@ -153,6 +153,14 @@
   margin: initial;
   z-index: 10001005;
   left: 250px; }
+  #upfront-popup.getting-started-popup.builder-activate-theme-popup {
+    left: 0;
+    margin: 100px auto;
+    text-align: center; }
+    #upfront-popup.getting-started-popup.builder-activate-theme-popup .controls button:last-child {
+      margin-left: 10px; }
+  #upfront-popup.getting-started-popup.builder-activate-theme-popup:before {
+    content: none; }
   #upfront-popup.getting-started-popup:before {
     border-bottom: 8px solid transparent;
     border-top: 8px solid transparent;

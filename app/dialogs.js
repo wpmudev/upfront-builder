@@ -1,8 +1,9 @@
 ;(function ($) {
 	define([
 		Upfront.themeExporter.root + 'app/exporter.js',
-		'text!' + Upfront.themeExporter.root + 'templates/theme/tpl/getting_started.html'
-	], function (Exporter, getting_started_tpl) {
+		'text!' + Upfront.themeExporter.root + 'templates/theme/tpl/getting_started.html',
+		'text!' + Upfront.themeExporter.root + 'templates/theme/tpl/activate_theme.html'
+	], function (Exporter, getting_started_tpl, activate_theme_tpl) {
 
 		return {
 			/**
@@ -550,6 +551,57 @@
 						me.getting_started_exp();
 					});
 				}
+			},
+			activate_edited_theme: function() {
+				// skip this whole process if was already done for this session
+				if (1 === parseInt((window._upfront_builder_theme_activated || '0'), 10)) {
+					Upfront.Events.trigger("command:layout:export_theme");
+					return false;
+				}
+				
+				var me = {},
+					activate_tpl = _.template($(activate_theme_tpl).find('#upfront-builder-activate-theme-tpl').html(),{
+						current_theme: Upfront.themeExporter.currentTheme
+					})
+				;
+				// spawning popup
+				var popup = Upfront.Popup.open(
+					function (data, $top, $bottom) {
+						var $me = $(this);
+						$me.empty()
+							.append(activate_tpl)
+							.addClass('getting_started_content builder-activate-theme');
+
+						me.$popup = {
+							"top": $top,
+							"content": $me,
+							"bottom": $bottom
+						};
+					},
+					{
+						width: 520
+					},
+					'getting-started-popup builder-activate-theme-popup'
+				);
+				
+				me.$popup.content.on('click', 'button.yes', function() {
+					Upfront.Util.post({
+						action: 'upfront_thx-activate-selected-theme'
+					}).done(function () {
+						// Record the local global state change as well
+						window._upfront_builder_theme_activated = 1;
+						Upfront.Popup.close();
+						// proceed to exporting
+						Upfront.Events.trigger("command:layout:export_theme");
+					});
+				});
+				me.$popup.content.on('click', 'button.no', function() {
+					Upfront.Popup.close();
+					Upfront.Events.trigger("command:layout:export_theme");
+				});
+				
+				// do not allow clicking from outside
+				Upfront.Popup.$background.off("click");
 			}
 		};
 	});

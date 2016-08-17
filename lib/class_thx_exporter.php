@@ -113,6 +113,7 @@ class Thx_Exporter {
 		add_action($ajaxPrefix . 'export-element-styles', array($this, 'json_export_element_styles'));
 		add_action($ajaxPrefix . 'delete-element-styles', array($this, 'json_delete_element_styles'));
 		add_action($ajaxPrefix . 'skip-getting-started', array($this, 'json_skip_getting_started'));
+		add_action($ajaxPrefix . 'activate-selected-theme', array($this, 'json_activate_selected_theme'));
 
 		//add_filter('upfront_theme_layout_cascade', array($this, 'get_theme_layout_cascade'), 10, 2); // Used for ThisPost - this will be going out
 		//add_filter('upfront_theme_postpart_templates_cascade', array($this, 'get_theme_postpart_templates_cascade'), 10, 2);
@@ -797,6 +798,26 @@ error_log(debug_backtrace());
 
 
 		update_user_option(get_current_user_id(), $key, 1, true); // Only update this if we don't have the option
+		wp_send_json(array());
+	}
+	
+	/**
+	 * AJAX handler for activating theme that is currently being edited on Builder
+	 */
+	public function json_activate_selected_theme () {
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) die;
+
+		$data = !empty($_POST) ? stripslashes_deep($_POST) : array();
+		if (empty($data)) die;
+
+		$stylesheet = !empty($data['stylesheet']) ? trim($data['stylesheet']) : false;
+		if (empty($stylesheet)) die;
+
+		$theme = wp_get_theme($stylesheet);
+		if (!$theme->exists()) die;
+		
+		switch_theme($stylesheet);
+		
 		wp_send_json(array());
 	}
 
@@ -2019,6 +2040,11 @@ error_log(debug_backtrace());
 	}
 	
 	public function get_edit_theme_form () {
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) die;
+
+		$data = !empty($_POST) ? stripslashes_deep($_POST) : array();
+		if (empty($data)) die;
+
 		if ( isset($_POST['selected']) && !empty($_POST['selected']) ) {
 			$selected = $_POST['selected'];
 			$fallback_screenshot = plugins_url(THX_BASENAME . '/imgs/testImage.jpg');

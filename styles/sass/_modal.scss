@@ -60,16 +60,30 @@
 	z-index: 10001005;
 	left: 250px;
 	
+	&.builder-activate-theme-popup {
+		left: 0;
+		margin: 100px auto;
+		text-align: center;
+		
+		.controls button:last-child {
+			margin-left: 10px;
+		}
+	}
+	
+	&.builder-activate-theme-popup:before {
+		content: none;
+	}
+	
 	&:before {
 		border-bottom: 8px solid transparent;
-    border-top: 8px solid transparent;
-    border-right: 8px solid #fff;
-    content: '';
-    height: 0;
-    margin-left: -8px;
+		border-top: 8px solid transparent;
+		border-right: 8px solid #fff;
+		content: '';
+		height: 0;
+		margin-left: -8px;
 		margin-top: 95px;
-    position: absolute;
-    width: 0;
+		position: absolute;
+		width: 0;
 	}
 	
 	#upfront-popup-close {
