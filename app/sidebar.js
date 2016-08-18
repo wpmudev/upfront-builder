@@ -111,6 +111,17 @@ var Exit = Command_Exit.extend({
 	}
 });
 
+var Command_BuilderClose = Command_Close.extend({
+	on_click: function (e) {
+		var current_url = window.location.href;
+
+		if (e && e.preventDefault) e.preventDefault();
+		if (e && e.stopPropagation) e.stopPropagation();
+
+		window.location.href = Upfront.Settings.site_url + '?_uf_no_referer=1';
+	}
+});
+
 var Command_MyThemes = Upfront.Views.Editor.Command.extend({
 	render: function () {
 		this.$el.html(l10n.my_themes);
@@ -124,7 +135,7 @@ var Menu = Command_Menu.extend({
 	initialize: function () {
 		Command_Menu.prototype.initialize.call(this);
 		this.menu.commands = _([
-			new Command_Close({"model": this.model}),
+			new Command_BuilderClose({"model": this.model}),
 			new Command_MyThemes({"model": this.model}),
 			new Command_WPAdmin({"model": this.model}),
 			new Command_Help({"model": this.model})

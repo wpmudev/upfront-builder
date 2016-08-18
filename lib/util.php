@@ -62,6 +62,7 @@ function upfront_exporter_is_exporter_uri() {
 }
 
 function upfront_exporter_is_exporter_referer() {
+	if ( !empty($_GET['_uf_no_referer']) && 1 === (int)$_GET['_uf_no_referer'] ) return false;
 	$referer = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 	$is_builder_referer = strpos($referer, UpfrontThemeExporter::get_root_slug()) !== false
 		&& strpos($referer, UpfrontThemeExporter::get_root_slug() . '/post') === false
