@@ -2062,7 +2062,7 @@ error_log(debug_backtrace());
 				'licence_uri' => $theme->get('License URI'),
 				'tags' => $theme->get('Tags'),
 				'text_domain' => $theme->get('TextDomain'),
-				'screenshot' => ($theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot),
+				'screenshot' => ($theme->get_screenshot() ? $theme->get_screenshot() : ''),
 			));
 			die;
 		} else {

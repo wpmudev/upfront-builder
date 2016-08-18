@@ -205,7 +205,9 @@
 	ul.sidebar-commands-primary {
 		z-index: 11;
 		position: relative;
-		box-shadow: 0 0 10px 99999px rgba(26,45,64,.9);
+		-moz-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
+		-webkit-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
+		box-shadow: 0 0 10px 4999px rgba(26,45,64,.9);
 		
 		li.no-click-overlay {
 			cursor: initial;
@@ -224,8 +226,10 @@
 	
 	li.sidebar-panel-settings {
 		z-index: 11;
-		position: relative;;
-		box-shadow: 0 0 10px 99999px rgba(26,45,64,.9);
+		position: relative;
+		-moz-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
+		-webkit-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
+		box-shadow: 0 0 10px 4999px rgba(26,45,64,.9);
 		
 		.sidebar-panel-content {
 			height: auto;
@@ -243,7 +247,9 @@
 	ul.sidebar-commands-control {
 		z-index: 11;
 		position: relative;
-		box-shadow: 0 0 10px 99999px rgba(26,45,64,.9);
+		-moz-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
+		-webkit-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
+		box-shadow: 0 0 10px 4999px rgba(26,45,64,.9);
 		
 		li.no-click-overlay {
 			height: 400px;

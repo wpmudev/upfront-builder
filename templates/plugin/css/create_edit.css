@@ -127,6 +127,7 @@
 	display: none;
 	font-family: 'Roboto';
 	color: #848484;
+	z-index: 1;
 }
 .postbox-modal-container .postbox h2.title {
 	font-family: 'Roboto Condensed';
@@ -136,7 +137,9 @@
 .postbox-modal-container .postbox.edit-theme {
 	width: 700px;
     margin: 135px auto;
-    box-shadow: 0 0 10px 99999px rgba(26, 45, 64, 0.9);
+	-moz-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
+	-webkit-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
+	box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
 }
 .postbox-modal-container .postbox.edit-theme #postbox-modal-close {
 	position: absolute;

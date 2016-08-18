@@ -1,3 +1,7 @@
+/* hiding FE page to avoid confusion */
+.upfront-output-layout {
+  display: none; }
+
 .upfront-export-postpart {
   position: absolute;
   bottom: 10px;
@@ -270,7 +274,9 @@
   #sidebar-ui.show-primary-sidebar ul.sidebar-commands-primary {
     z-index: 11;
     position: relative;
-    box-shadow: 0 0 10px 99999px rgba(26, 45, 64, 0.9); }
+    -moz-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, 0.9);
+    -webkit-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, 0.9);
+    box-shadow: 0 0 10px 4999px rgba(26, 45, 64, 0.9); }
     #sidebar-ui.show-primary-sidebar ul.sidebar-commands-primary li.no-click-overlay {
       cursor: initial; }
   #sidebar-ui.show-primary-sidebar li.sidebar-panel-elements .sidebar-panel-content {
@@ -281,7 +287,9 @@
   #sidebar-ui.show-sidebar-panel-settings li.sidebar-panel-settings {
     z-index: 11;
     position: relative;
-    box-shadow: 0 0 10px 99999px rgba(26, 45, 64, 0.9); }
+    -moz-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, 0.9);
+    -webkit-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, 0.9);
+    box-shadow: 0 0 10px 4999px rgba(26, 45, 64, 0.9); }
     #sidebar-ui.show-sidebar-panel-settings li.sidebar-panel-settings .sidebar-panel-content {
       height: auto; }
     #sidebar-ui.show-sidebar-panel-settings li.sidebar-panel-settings .no-click-overlay {
@@ -292,7 +300,9 @@
   #sidebar-ui.show-sidebar-commands-control ul.sidebar-commands-control {
     z-index: 11;
     position: relative;
-    box-shadow: 0 0 10px 99999px rgba(26, 45, 64, 0.9); }
+    -moz-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, 0.9);
+    -webkit-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, 0.9);
+    box-shadow: 0 0 10px 4999px rgba(26, 45, 64, 0.9); }
     #sidebar-ui.show-sidebar-commands-control ul.sidebar-commands-control li.no-click-overlay {
       height: 400px;
       margin: 0;
