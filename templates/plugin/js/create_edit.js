@@ -29,9 +29,11 @@ function edit_theme (theme) {
 	window.location.assign(url);
 }
 
-function get_data () {
+function get_data (new_theme = true) {
 	var data = {},
-		$ins = $("#new-theme input, #new-theme textarea, #new-theme select")
+		$ins = ( new_theme )
+			? $("#new-theme input, #new-theme textarea, #new-theme select")
+			: $("#edit-theme input, #edit-theme textarea, #edit-theme select")
 	;
 	$ins.each(function () {
 		var $me = $(this),
@@ -58,7 +60,7 @@ function init_new () {
 			e.preventDefault();
 			e.stopPropagation();
 
-			var data = get_data(),
+			var data = get_data(true),
 				base_url = (window._thx || {}).editor_base || window.location.pathname,
 				slug
 			;
@@ -85,11 +87,83 @@ function init_new () {
 
 			return false;
 		})
+	;
+}
+
+function init_existing () {
+	$("#existing-theme")
+		.on("click", ".uf-thx-theme a", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			return false;
+		})
+		.on("click", "button.edit.info", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			var $edit_form = $('#edit-theme'),
+				$edit_form_content = $edit_form.find('.form_content'),
+				$edit_form_container = $edit_form.closest('.postbox-modal-container'),
+				selected_theme = $(e.target).closest('.uf-thx-theme').attr('data-theme')
+			;
+			
+			$.post(_thx.admin_ajax, {
+				action: 'upfront_thx-get-edit-theme-form',
+				mode: "theme",
+				selected: selected_theme,
+			}).success(function(response) {
+				$edit_form_content.html(response);
+				$edit_form_container.show();
+			}).error(function(){
+				show_error();
+			});
+
+			return false;
+		})
+		.on("click", "button.edit.theme", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			var current = $(e.target).closest('.uf-thx-theme').attr('data-theme');
+			if (!current) return false;
+
+			edit_theme(current);
+
+			return false;
+		})
+		.on("click", "button.download", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			var current = $(e.target).closest('a').attr('data-download_url');
+			if (!current) return false;
+
+			window.location = current;
+
+			return false;
+		})
+	;
+	$(".postbox-modal-container")
+		.on("click", "#postbox-modal-close", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			var $edit_form = $('#edit-theme'),
+				$edit_form_content = $edit_form.find('.form_content'),
+				$edit_form_container = $edit_form.closest('.postbox-modal-container')
+			;
+			
+			$edit_form_content.html('');
+			$edit_form_container.hide();
+
+			return false;
+		})
 		.on("click", "button.edit.info", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 
-			var data = get_data();
+			var data = get_data(false);
 			if (!data['thx-theme-slug']) return false;
 
 			data.add_global_regions = true;
@@ -108,22 +182,12 @@ function init_new () {
 
 			return false;
 		})
-		.on("click", "button.edit.theme", function (e) {
+		.on("click", ".uf-thx-theme_screenshot button.change-image", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 
-			var current = $.trim($(this).attr('data-theme'));
-			if (!current) return false;
-
-			edit_theme(current);
-
-			return false;
-		})
-		.on("click", ".uf-thx-theme_screenshot", function (e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			var $me = $(this),
+			var frame,
+				$me = $(this).closest('.uf-thx-theme_screenshot'),
 				$img = $me.find("img"),
 				$use = $me.find('#theme-screenshot')
 			;
@@ -157,58 +221,6 @@ function init_new () {
 			});
 
 			frame.open();
-
-			return false;
-		})
-	;
-}
-
-function init_existing () {
-	$("#existing-theme")
-		.on("click", ".uf-thx-theme a", function (e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			var $me = $(this).closest(".uf-thx-theme"),
-				$name = $me.find('.uf-thx-caption > span').text();
-			if (!$me.length) return false;
-
-			$(".uf-thx-themes_container .uf-thx-theme").removeClass("selected");
-			$me.addClass("selected");
-			$("#existing-theme .theme-name").html($name);
-
-			return false;
-		})
-		.on("click", "button.edit.info", function (e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			var current = $(".uf-thx-theme.selected a").attr('href');
-			if (!current) return false;
-
-			window.location = current;
-
-			return false;
-		})
-		.on("click", "button.edit.theme", function (e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			var current = $.trim($(".uf-thx-theme.selected").attr('data-theme'));
-			if (!current) return false;
-
-			edit_theme(current);
-
-			return false;
-		})
-		.on("click", "button.download", function (e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			var current = $(".uf-thx-theme.selected a").attr('data-download_url');
-			if (!current) return false;
-
-			window.location = current;
 
 			return false;
 		})

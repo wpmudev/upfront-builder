@@ -17,12 +17,15 @@
 	font-size: .5em;
 }
 
-
+.upfront_admin.upfront-builder .postbox-container {
+	float: none;
+	width: auto;
+}
 .uf-thx-theme {
 	width:30%;
+	max-width: 400px;
 	display:inline-block;
-	margin:0 15px 15px 0;
-	margin-right:4%;
+	margin:0 30px 30px 0;
 	line-height: 0;
 }
 .uf-thx-theme:nth-child(3n) {
@@ -39,6 +42,18 @@
 	display:block;
 	padding-bottom: 66%;
 	overflow: hidden;
+	text-align: center;
+	cursor: default;
+}
+.uf-thx-theme a:focus {
+	box-shadow: none;
+}
+.uf-thx-theme a:hover button.edit.info {
+	display: inline-block;
+}
+.postbox.themes .uf-thx-theme a:hover .uf-thx-caption button.download,
+.postbox.themes .uf-thx-theme a:hover .uf-thx-caption button {
+	display: block;
 }
 
 .uf-thx-caption {
@@ -46,13 +61,54 @@
 	width:100%;
 	bottom:0;
 	display:block;
-	padding:10px 15px;
+	padding:10px;
 	background:rgba(0,0,0,.5);
 	color:rgba(255,255,255,.95);
-	font-size:18px;
-	font-family: 'Roboto Condensed';
-	font-weight:100;
-	line-height: 1;
+	font: bold 16px/2 'Roboto Condensed', Helvetica Neueu, Helvetica, Arial, sans-serif;
+	height: 50px;
+	text-transform: uppercase;
+	-webkit-font-smoothing: antialiased;
+	z-index: 1;
+}
+
+.uf-thx-caption span {
+	float: left;
+}
+.postbox.themes .uf-thx-caption button.download,
+.postbox.themes .uf-thx-caption button {
+	float: right;
+	background-color: transparent;
+	display: none;
+	opacity: .8;
+}
+.postbox.themes .uf-thx-caption button:hover {
+	opacity: 1;
+}
+.postbox.themes .uf-thx-caption button.edit.theme {
+	border: 2px solid #fff;
+}
+.postbox.themes .uf-thx-caption button.edit.theme:hover {
+	background-color: transparent;
+}
+.postbox.themes button.edit.info {
+	background: rgb(136,136,136);
+    width: auto;
+    position: relative;
+    margin-top: 28%;
+	display: none;
+	box-shadow: 0 0 0 200px rgba(0,0,0,.3);
+	font: normal 16px/1.37 'Roboto Condensed', Helvetica Neueu, Helvetica, Arial, sans-serif;
+	padding: 10px 25px;
+	letter-spacing: 0;
+}
+.postbox.themes button.edit.info:hover {
+	background: rgb(136,136,136);
+	cursor: pointer;
+}
+.uf-thx-caption:after {
+	content: ' ';
+	display: table;
+	clear: both;
 }
 
 .uf-thx-themes_container,
@@ -61,6 +117,70 @@
 }
 
 /* Form Styling */
+
+.postbox-modal-container {
+	position: fixed;
+    top: 0;
+	bottom: 0;
+    left: 150px;
+    right: 0;
+	display: none;
+	font-family: 'Roboto';
+	color: #848484;
+}
+.postbox-modal-container .postbox h2.title {
+	font-family: 'Roboto Condensed';
+    font-weight: 600;
+    font-size: 18px;
+}
+.postbox-modal-container .postbox.edit-theme {
+	width: 700px;
+    margin: 135px auto;
+    box-shadow: 0 0 10px 99999px rgba(26, 45, 64, 0.9);
+}
+.postbox-modal-container .postbox.edit-theme #postbox-modal-close {
+	position: absolute;
+    right: 40px;
+    top: 20px;
+    font-size: 23px;
+    cursor: pointer;
+    color: #bababa;
+    font-family: 'Roboto';
+    font-weight: 600;
+}
+.postbox-modal-container .postbox.edit-theme .uf-thx-theme_info {
+	overflow-y: scroll;
+    height: 390px;
+	padding-right: 10px;
+}
+.postbox-modal-container .postbox.edit-theme .buttons {
+	text-align: right;
+    padding: 15px 40px;
+    border-top: 1px solid #eee;
+}
+.postbox-modal-container .postbox.edit-theme .buttons button {
+	background-color: #00cf8d;
+    box-shadow: 0 3px 0 0 #00b37a;
+}
+.postbox-modal-container .postbox.edit-theme button.change-image {
+	background-color: #888888;
+	box-shadow: 0 3px 0 0 #757575;
+}
+.postbox-modal-container .uf-thx-theme_screenshot {
+	width: 35%;
+}
+.postbox-modal-container .uf-thx-theme_meta {
+	width: 60%;
+	padding-left: 10px;
+}
+.postbox-modal-container .uf-thx-theme_meta label input[type="text"],
+.postbox-modal-container .uf-thx-theme_meta label textarea {
+	color: #4d4d4d;
+}
+
+.postbox-modal-container .uf-thx-theme_meta label textarea {
+	margin-bottom: 10px;
+}
 
 
 .uf-thx-theme_meta,
@@ -73,6 +193,9 @@
 	width:40%;
 	margin-right:15px;
 }
+.uf-thx-theme_screenshot label {
+	cursor: initial;
+}
 .uf-thx-theme_screenshot .description {
 	line-height: 1;
 }
@@ -80,7 +203,8 @@
 	width:100%;
 	height:auto;
 	background:#c0c0c0;
-	margin-top: 5px;
+	margin-top: 10px;
+	margin-bottom: 10px;
     text-align: center;
     padding: 80px 0;
     border-radius: 3px;
@@ -105,7 +229,6 @@
 }
 .uf-thx-theme {
 	position: relative;
-	opacity: 0.85;
 }
 .uf-thx-theme.selected {
 	box-shadow:0 0 0 3px #00cf8d;
@@ -115,10 +238,10 @@
 	content:'Active';
 	position: absolute;
 	font-size:14px;
-	background-color: #4A90E2;
+	background-color: #00cf8d;
 	color:#fff;
-	top:-3px;
-	left:-3px;
+	top:2px;
+	left:2px;
 	display: block;
 	height: 1px;
 	padding: 10px;
@@ -151,6 +274,7 @@
 .uf-thx-theme_meta label input[type="text"],
  .uf-thx-theme_meta label textarea {
 	width: 100%;
+	border-radius:3px;
 }
 .uf-thx-theme_meta label span,
 .uf-thx-theme_screenshot span {
@@ -162,8 +286,27 @@
 	padding:0 30px 30px 30px;
 	text-align: center;
 }
-.postbox .edit.theme {
+/*.postbox .edit.theme {
 	margin-right:30px;
+}*/
+.postbox.newtheme .uf-thx-theme_meta {
+	width: 100%;
+}
+.postbox.newtheme .buttons {
+	padding:0 30px 30px 30px;
+}
+.postbox.newtheme .buttons .create.theme {
+	margin: 0;
+}
+.postbox.newtheme .uf-thx-theme_meta label span,
+.postbox.newtheme .uf-thx-theme_screenshot span {
+	margin-bottom: 10px;
+    font: normal 24px/1.5 'Roboto Condensed', Helvetica Neueu, Helvetica, Arial, sans-serif;
+    color: #636363;
+    -webkit-font-smoothing: antialiased;
+}
+.postbox.newtheme .uf-thx-theme_info {
+	padding-bottom: 15px;
 }
 
 .postbox.themes .buttons {
