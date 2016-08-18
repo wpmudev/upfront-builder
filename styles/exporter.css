@@ -1,3 +1,7 @@
+/* hiding FE page to avoid confusion */
+.upfront-output-layout {
+  display: none; }
+
 .upfront-export-postpart {
   position: absolute;
   bottom: 10px;
