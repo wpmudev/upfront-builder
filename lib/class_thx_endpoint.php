@@ -39,8 +39,8 @@ abstract class Thx_VirtualSubpage extends Upfront_VirtualSubpage {
 		$show_exp = (int)get_user_option(Thx_Exposed::BOOTSTRAP_EXP_SLUG);
 		$active_theme = get_option('stylesheet');
 		echo '<script type="text/javascript">
-			var _upfront_builder_getting_started = ' . $show_exp . ',
-				_active_theme = "' . $active_theme . '"
+			var _upfront_theme_exporter_getting_started = ' . $show_exp . ',
+				_upfront_theme_exporter_active_theme = "' . $active_theme . '"
 			;
 		</script>';
 	}

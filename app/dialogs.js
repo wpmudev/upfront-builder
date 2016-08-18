@@ -415,7 +415,7 @@
 			},
 			getting_started_exp: function() {
 				// Could be subsequent layout edit after "skip tour" has been clicked
-				//if (1 === parseInt((window._upfront_builder_getting_started || '0'), 10)) return false;
+				//if (1 === parseInt((window._upfront_theme_exporter_getting_started || '0'), 10)) return false;
 
 				// No? carry on as usual
 				var me = {},
@@ -522,7 +522,7 @@
 
 					me.$popup.content.on('click', 'button.finish.step-three', function() {
 						$(this).parents('#upfront-popup').removeClass('step-three-popup');
-						if (Upfront.Application.is_builder() && 0 === parseInt((window._upfront_builder_getting_started || '0'), 10)) {
+						if (Upfront.Application.is_builder() && 0 === parseInt((window._upfront_theme_exporter_getting_started || '0'), 10)) {
 							Upfront.Util.post({
 								action: 'upfront_thx-skip-getting-started',
 								data: {
@@ -530,7 +530,7 @@
 								}
 							}).done(function () {
 								// Record the local global state change as well
-								window._upfront_builder_getting_started = 1;
+								window._upfront_theme_exporter_getting_started = 1;
 							});
 						}
 						me.close_popup();
