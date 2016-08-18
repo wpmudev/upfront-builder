@@ -15,7 +15,12 @@
 	<div class="uf-thx-theme_screenshot">
 		<label>
 			<span class="description"><?php esc_html_e('Theme listing image:', UpfrontThemeExporter::DOMAIN); ?></span>
-			<img class="nostyle" src="<?php if (!empty($screenshot)) echo esc_url($screenshot); ?>" alt="Add Image" />
+		<?php if (!empty($screenshot)) { ?>
+			<img class="nostyle" src="<?php echo esc_url($screenshot); ?>" alt="Add Image" />
+		<?php } else { ?>
+			<div class="no-image"></div>
+		<?php }?>
+			
 			<input type="hidden" id="theme-screenshot" value="" />
 		</label>
 		<button type="button" class="change-image"><?php esc_html_e('Change Image', UpfrontThemeExporter::DOMAIN); ?></button>

@@ -74,8 +74,10 @@
 								'nonce' => wp_create_nonce('download-' . $theme->get_stylesheet()),
 							), $redirection));
 						?>" >
-							<?php $screenshot = $theme->get_screenshot() ? $theme->get_screenshot() : $fallback_screenshot; ?>
-							<img src="<?php echo esc_url($screenshot); ?>" />
+							<?php $screenshot = $theme->get_screenshot() ? $theme->get_screenshot() : ''; ?>
+							<?php if ( !empty($screenshot) ) { ?>
+								<img src="<?php echo esc_url($screenshot); ?>" />
+							<?php }?>
 							<div class="uf-thx-caption">
 								<span><?php echo esc_html($theme->get('Name')); ?></span>
 								<button type="button" class="edit theme">
