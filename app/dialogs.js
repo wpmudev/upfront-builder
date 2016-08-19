@@ -598,6 +598,8 @@
 					Upfront.Events.trigger("command:layout:export_theme");
 				});
 				me.$popup.content.on('click', 'button.no', function() {
+					// Record the local global state change as well
+					window._upfront_builder_theme_activated = 1;
 					Upfront.Popup.close();
 					Upfront.Events.trigger("command:layout:export_theme");
 				});
