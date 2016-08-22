@@ -177,8 +177,35 @@
     left: 0;
     margin: 100px auto;
     text-align: center; }
-    #upfront-popup.getting-started-popup.builder-activate-theme-popup .controls button:last-child {
-      margin-left: 10px; }
+    #upfront-popup.getting-started-popup.builder-activate-theme-popup .getting_started_content {
+      border: 1px solid #fff;
+      background: #e5f3ff;
+      -moz-box-shadow: 0 0 20px rgba(39, 58, 76, 0.8);
+      -webkit-box-shadow: 0 0 20px rgba(39, 58, 76, 0.8);
+      box-shadow: 0 0 20px rgba(39, 58, 76, 0.8);
+      border-radius: 0; }
+      #upfront-popup.getting-started-popup.builder-activate-theme-popup .getting_started_content .description {
+        color: #1c2d3d;
+        font-size: 16px;
+        padding-bottom: 10px; }
+        #upfront-popup.getting-started-popup.builder-activate-theme-popup .getting_started_content .description h3 {
+          color: #1c2d3d; }
+      #upfront-popup.getting-started-popup.builder-activate-theme-popup .getting_started_content .controls {
+        position: relative;
+        padding-bottom: 40px; }
+        #upfront-popup.getting-started-popup.builder-activate-theme-popup .getting_started_content .controls button {
+          font-size: 14px;
+          padding: 0 20px;
+          line-height: 40px;
+          height: 40px;
+          text-align: center;
+          color: #7190af;
+          border: 1px solid #b2cbe2;
+          border-radius: 3px;
+          background: #f9fcff;
+          font-family: Verdana,sans serif; }
+        #upfront-popup.getting-started-popup.builder-activate-theme-popup .getting_started_content .controls button:last-child {
+          margin-left: 20px; }
   #upfront-popup.getting-started-popup.builder-activate-theme-popup:before {
     content: none; }
   #upfront-popup.getting-started-popup:before {

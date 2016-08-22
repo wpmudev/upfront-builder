@@ -65,9 +65,48 @@
 		margin: 100px auto;
 		text-align: center;
 		
-		.controls button:last-child {
-			margin-left: 10px;
+		.getting_started_content {
+			border: 1px solid #fff;
+			background: #e5f3ff;
+			-moz-box-shadow: 0 0 20px rgba(39,58,76,.8);
+			-webkit-box-shadow: 0 0 20px rgba(39,58,76,.8);
+			box-shadow: 0 0 20px rgba(39,58,76,.8);
+			border-radius: 0;
+			
+			.description {
+				color: #1c2d3d;
+				font-size: 16px;
+				padding-bottom: 10px;
+				
+				h3 {
+					color: #1c2d3d;
+				}
+			}
+			
+			.controls {
+				position: relative;
+				padding-bottom: 40px;
+				
+				button {
+					font-size: 14px;
+					padding: 0 20px;
+					line-height: 40px;
+					height: 40px;
+					text-align: center;
+					color: #7190af;
+					border: 1px solid #b2cbe2;
+					border-radius: 3px;
+					background: #f9fcff;
+					font-family: Verdana,sans serif;
+				}
+				
+				button:last-child {
+					margin-left: 20px;
+				}
+			}
 		}
+		
+		
 	}
 	
 	&.builder-activate-theme-popup:before {
