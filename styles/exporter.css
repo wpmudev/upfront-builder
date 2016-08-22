@@ -89,7 +89,7 @@
   font-size: 13px;
   max-width: 122px;
   line-height: 26px;
-  padding: 0px 6px;
+  padding: 0px 10px 0 5px;
   height: auto;
   max-height: 26px;
   border: 1px solid #6c8dac;
@@ -99,7 +99,8 @@
 #sidebar-ui .sidebar-commands-control .command-themes {
   clear: both;
   float: left;
-  margin-top: 22px; }
+  margin-top: 22px;
+  padding: 0px 10px 0 0; }
 
 #sidebar-ui .sidebar-commands-control .command-export {
   display: block;
