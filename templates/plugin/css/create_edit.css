@@ -44,6 +44,7 @@
 	overflow: hidden;
 	text-align: center;
 	cursor: default;
+	background: #f1f1f1;
 }
 .uf-thx-theme a:focus {
 	box-shadow: none;
@@ -140,16 +141,15 @@
 	-moz-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
 	-webkit-box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
 	box-shadow: 0 0 10px 4999px rgba(26, 45, 64, .9);
+	border-bottom: 0;
 }
 .postbox-modal-container .postbox.edit-theme #postbox-modal-close {
 	position: absolute;
-    right: 40px;
+    right: 25px;
     top: 20px;
     font-size: 23px;
     cursor: pointer;
     color: #bababa;
-    font-family: 'Roboto';
-    font-weight: 600;
 }
 .postbox-modal-container .postbox.edit-theme .uf-thx-theme_info {
 	overflow-y: scroll;
@@ -163,11 +163,14 @@
 }
 .postbox-modal-container .postbox.edit-theme .buttons button {
 	background-color: #00cf8d;
-    box-shadow: 0 3px 0 0 #00b37a;
 }
+.postbox-modal-container .postbox.edit-theme button.change-image,
+.postbox-modal-container .postbox.edit-theme button.edit {
+	font: normal 12px/1.5 'Roboto Condensed', Helvetica Neueu, Helvetica, Arial, sans-serif;
+}
+
 .postbox-modal-container .postbox.edit-theme button.change-image {
 	background-color: #888888;
-	box-shadow: 0 3px 0 0 #757575;
 }
 .postbox-modal-container .uf-thx-theme_screenshot {
 	width: 35%;
@@ -180,9 +183,13 @@
 .postbox-modal-container .uf-thx-theme_meta label textarea {
 	color: #4d4d4d;
 }
+.postbox-modal-container .uf-thx-theme_meta label input[readonly]:hover {
+	cursor: not-allowed;
+}
 
 .postbox-modal-container .uf-thx-theme_meta label textarea {
 	margin-bottom: 10px;
+	min-height: 80px;
 }
 
 
