@@ -367,3 +367,25 @@
 	font:400 18px/1.2 'Roboto Condensed', Helvetica Neueu, Helvetica, Arial, sans-serif;
 	color:#777;
 }
+
+.postbox.newtheme {
+	display: flex;
+	flex-flow: row wrap;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.postbox.newtheme h2.title {
+	flex:100%;
+	width: 100%;
+}
+
+.postbox.newtheme .newtheme-form {
+	flex:auto;
+}
+.postbox.newtheme .character {
+	width: 400px;
+	height:260px;
+	background-position: -130px 15px;
+    background-size: 123%;
+}
+

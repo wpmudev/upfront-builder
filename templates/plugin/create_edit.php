@@ -37,16 +37,19 @@
 		<!-- Build New Theme -->
 		<div class="postbox newtheme" id="new-theme">
 			<h2 class="title"><?php esc_html_e('Build New Theme', UpfrontThemeExporter::DOMAIN); ?></h2>
-			<?php
-				Thx_Template::plugin()->load('theme_form', array(
-					'new' => true,
-					'name' => '',
-				));
-			?>
-			<div class="buttons">
-				<button type="button" class="create theme">
-					<?php esc_html_e('Start building', UpfrontThemeExporter::DOMAIN); ?>
-				</button>
+			<div class="character"></div>
+			<div class="newtheme-form" >
+				<?php
+					Thx_Template::plugin()->load('theme_form', array(
+						'new' => true,
+						'name' => '',
+					));
+				?>
+				<div class="buttons">
+					<button type="button" class="create theme">
+						<?php esc_html_e('Start building', UpfrontThemeExporter::DOMAIN); ?>
+					</button>
+				</div>
 			</div>
 		</div>
 		
