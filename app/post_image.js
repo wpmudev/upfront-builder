@@ -867,13 +867,13 @@ var PostImageVariant = Backbone.View.extend({
         padding_left = padding_left ? parseInt(padding_left) : 0;
         padding_right = padding_right ? parseInt(padding_right) : 0;
         max_col = max_col - padding_left - padding_right;
-        //col_size = Math.floor($parent.width()/max_col);
-        col_size = ge.col_size;
+        col_size = $content.outerWidth()/parent_col;
+        //col_size = ge.col_size;
 
-        this.$wrap.css({
-            marginLeft: ( padding_left * col_size * -1 ) - content_padding_left,
-            marginRight: ( padding_right * col_size * -1 ) - content_padding_right
-        });
+        this.$wrap.attr('style',
+            'margin-left: '+ ( ( padding_left * col_size * -1 ) - content_padding_left ) + 'px !important;' +
+            'margin-right: ' + ( ( padding_right * col_size * -1 ) - content_padding_right ) + 'px !important;'
+        ); // Set style attr instead of using jQuery.css since we need !important
 
         if ( group.col > max_col + Math.abs(group.margin_left) + Math.abs(group.margin_right) ) {
             group.col = max_col + Math.abs(group.margin_left) + Math.abs(group.margin_right);
@@ -903,7 +903,7 @@ var PostImageVariant = Backbone.View.extend({
             },
             minHeight: 20,
             minWidth: col_size,
-            containment: "document",
+            //containment: "document",
             ghost: true,
             //alsoResize: '.ueditor-insert-variant-image',
             start : function(event, ui){
@@ -948,7 +948,7 @@ var PostImageVariant = Backbone.View.extend({
                 $(ui.helper).find('.ui-resizable-ghost').css('opacity', 1);
 
                 // A little hack to normalize originalPosition, to allow resizing when floated right
-                var pos_left = offset.left - $parent.offset().left + (padding_left*col_size);
+                var pos_left = offset.left - $content.offset().left;
                 pos_left = pos_left > 0 ? pos_left : 0;
                 data.originalPosition.left = pos_left;
                 data._updateCache({
@@ -971,14 +971,20 @@ var PostImageVariant = Backbone.View.extend({
                     rsz_max_col = max_col,
                     floatval = self.model.get('group').float
                 ;
-                if ( axis == 'nw' || axis == 'w' )
+                if ( axis == 'nw' || axis == 'w' ) {
                     rsz_max_col = Math.round((ui.originalPosition.left+ui.originalSize.width+content_padding_left)/col_size);
-                else
+                }
+                else {
                     rsz_max_col = Math.round(((max_col*col_size)-ui.originalPosition.left-content_padding_left)/col_size) + padding_left + padding_right;
+                }
                 rsz_col = ( current_col > rsz_max_col ? rsz_max_col : current_col );
                 rsz_col = ( rsz_col < min_col ? min_col : rsz_col );
                 rsz_row = Upfront.Util.grid.height_to_row(ui.size.height);
-                rsz_left = Math.round((ui.position.left+content_padding_left)/col_size) - padding_left;
+                rsz_left = Math.round((ui.position.left)/col_size) - padding_left;
+
+                if ( ( axis == 'nw' || axis == 'w' ) && rsz_left + rsz_col > rsz_max_col ) { // If rounding made the total mismatched
+                    rsz_left -= ( rsz_left + rsz_col ) - rsz_max_col;
+                }
 
                 if ( rsz_left <= 0 && rsz_left + rsz_col < max_col ) { //float left
                     rsz_float = "left"
@@ -1040,8 +1046,9 @@ var PostImageVariant = Backbone.View.extend({
                 $resize.remove();
 
                 var margin_left = ( rsz_float == 'left' && rsz_margin_left <= 0 ? ( padding_left - Math.abs(rsz_margin_left) ) * col_size : 0 );
-                if ( rsz_float == 'none' )
+                if ( rsz_float == 'none' ) {
                     margin_left = ( padding_left - Math.abs(rsz_margin_left) + rsz_left ) * col_size;
+                }
 
                 $this.css({
                     float: rsz_float,
