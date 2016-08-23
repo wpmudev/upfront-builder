@@ -386,3 +386,9 @@
     background-size: 123%;
 }
 
+/* Media Queries */
+@media (min-width: 992px) and (max-width: 1920px) {
+	.uf-thx-theme:nth-child(3n) {
+		margin-right: 0;
+	}
+}
