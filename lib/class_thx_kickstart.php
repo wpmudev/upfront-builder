@@ -69,6 +69,6 @@ class Thx_Kickstart {
 	 */
 	private function _has_upfront () {
 		$core = wp_get_theme('upfront');
-		return 'upfront' === $core->get_template();
+		return $core->exists() && 'upfront' === $core->get_template();
 	}
 }
