@@ -9,14 +9,28 @@
  */
 class Thx_Kickstart {
 
+	/**
+	 * Constructor - never for the outside world.
+	 */
 	private function __construct () {}
 
+	/**
+	 * No public clones
+	 */
+	private function __clone () {}
+
+	/**
+	 * Public serving method
+	 */
 	public static function serve () {
 		$me = new self;
 		$me->_add_hooks();
 		return $me;
 	}
 
+	/**
+	 * Initialize and hook up to WP
+	 */
 	private function _add_hooks () {
 		add_action('admin_notices', array($this, 'show_kickstart_notices'));
 		add_action('wp_ajax_upfront-kickstart-start_building', array($this, 'json_start_building'));

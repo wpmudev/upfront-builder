@@ -1,19 +1,35 @@
 <?php
 
+/**
+ * Exporter admin class
+ */
 class Thx_Admin {
 
 	const ERROR_DEFAULT = 1;
 	const ERROR_PARAM = 2;
 	const ERROR_PERMISSION = 3;
 
+	/**
+	 * Constructor - never for the outside world
+	 */
 	private function __construct () {}
+
+	/**
+	 * No public clones
+	 */
 	private function __clone () {}
 
+	/**
+	 * Public serving method
+	 */
 	public static function serve () {
 		$me = new self;
 		$me->_add_hooks();
 	}
 
+	/**
+	 * Initialize and hook up to WP
+	 */
 	private function _add_hooks () {
 		if (!is_admin()) return false;
 		if (defined('DOING_AJAX') && DOING_AJAX) return false;
@@ -108,7 +124,7 @@ class Thx_Admin {
 			'admin_ajax' => admin_url('admin-ajax.php'),
 			'l10n' => array(
 				'oops' => __('Oops, something went wrong with processing your request.', UpfrontThemeExporter::DOMAIN),
-			)
+			),
 		));
 
 		wp_enqueue_media();
@@ -196,7 +212,7 @@ class Thx_Admin {
 	private function _error_redirect ($error=false) {
 		$redirection = remove_query_arg(array(
 			'nonce',
-			'action'
+			'action',
 		));
 		$error = !empty($error) && is_numeric($error) ? (int)$error : self::ERROR_DEFAULT;
 		wp_safe_redirect(add_query_arg('error', $error, $redirection));
@@ -233,6 +249,11 @@ class Thx_Admin {
 		'</p></div>';
 	}
 
+	/**
+	 * Dispatch permalink setup notice
+	 *
+	 * @return string|false Notice
+	 */
 	private function _permalink_setup_check_notice () {
 		if (get_option('permalink_structure')) return false;
 		$msg = sprintf(

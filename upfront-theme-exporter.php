@@ -33,6 +33,9 @@ require_once dirname(__FILE__) . '/lib/class_thx_l10n.php';
 
 define('THX_BASENAME', basename(dirname(__FILE__)));
 
+/**
+ * Main plugin class
+ */
 class UpfrontThemeExporter {
 
 	const DOMAIN = 'upfront_thx';
@@ -133,6 +136,9 @@ class UpfrontThemeExporter {
 		}
 	}
 
+	/**
+	 * Loads translations text domain for the plugin
+	 */
 	private function _load_textdomain () {
 		load_plugin_textdomain(self::DOMAIN, false, dirname(plugin_basename(__FILE__)) . '/languages');
 	}
@@ -151,8 +157,8 @@ class UpfrontThemeExporter {
 	 *
 	 * Deprecated since v0.9
 	 *
-	 * @param object $toolbar
-	 * @param array $item
+	 * @param object $toolbar Toolbar object
+	 * @param array $item Upfront item
 	 */
 	public function add_toolbar_item ($toolbar, $item) {
 		return false; // Deprecated since v0.9
@@ -172,7 +178,7 @@ class UpfrontThemeExporter {
 			'id' => $root_item_id,
 			'title' => '<span style="top:2px" class="ab-icon dashicons-hammer"></span><span class="ab-label">' . $main_title . '</span>',
 			'href' => admin_url('admin.php?page=upfront-builder'),
-			'meta' => array( 'class' => 'upfront-create_theme' )
+			'meta' => array( 'class' => 'upfront-create_theme' ),
 		));
 
 		if ((bool)$child) {
