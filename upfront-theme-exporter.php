@@ -8,7 +8,7 @@ Author: WPMU DEV
 Text Domain: upfront_thx
 Author URI: http://premium.wpmudev.com
 License: GPLv2 or later
-WDP ID:
+WDP ID: 1107287
 */
 
 /*
