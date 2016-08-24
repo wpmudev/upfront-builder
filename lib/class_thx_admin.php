@@ -45,6 +45,7 @@ class Thx_Admin {
 	 * Exposes the builder menu item in Upfront core menu
 	 */
 	public function add_menu_item () {
+		if (!class_exists('Upfront_Permissions')) return false; // Upfront not available
 		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) return false;
 
 		$parent = class_exists('Upfront_Admin') && !empty(Upfront_Admin::$menu_slugs['main'])
