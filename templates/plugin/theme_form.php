@@ -2,7 +2,7 @@
 <div class="uf-thx-theme_info clearfix">
 	<div class="uf-thx-theme_meta">
 		<label for="theme-name">
-			<span class="description"><?php esc_html_e('What do you want to call for your new theme?', UpfrontThemeExporter::DOMAIN); ?></span>
+			<span class="description"><?php esc_html_e('What do you want to call your new theme?', UpfrontThemeExporter::DOMAIN); ?></span>
 			<input type="text" id="theme-name" />
 			<input type="hidden" id="export_with_images" value="true" />
 			<input type="hidden" id="activate_theme" value="false" />
@@ -55,11 +55,11 @@
 			<input type="text" id="theme-uri" value="<?php if (!empty($theme_uri)) echo esc_attr($theme_uri); ?>" />
 		</label>
 		<label for="theme-licence">
-			<span class="description"><?php esc_html_e('Theme licence:', UpfrontThemeExporter::DOMAIN); ?></span>
+			<span class="description"><?php esc_html_e('Theme license:', UpfrontThemeExporter::DOMAIN); ?></span>
 			<input type="text" id="theme-licence" value="<?php if (!empty($licence)) echo esc_attr($licence); ?>" />
 		</label>
 		<label for="theme-licence-uri">
-			<span class="description"><?php esc_html_e('Licence URL:', UpfrontThemeExporter::DOMAIN); ?></span>
+			<span class="description"><?php esc_html_e('License URL:', UpfrontThemeExporter::DOMAIN); ?></span>
 			<input type="text" id="theme-licence-uri" value="<?php if (!empty($licence_uri)) echo esc_attr($licence_uri); ?>" />
 		</label>
 		<label for="theme-tags">

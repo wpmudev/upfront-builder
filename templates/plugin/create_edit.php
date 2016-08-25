@@ -28,7 +28,7 @@
 		<span class="upfront_logo"></span>
 	</h1>
 	<p class="info">
-		<?php esc_html_e('Create a unique, responsive Upfront theme that you can export, share, sell or tweak to your hearts content.', UpfrontThemeExporter::DOMAIN); ?>
+		<?php esc_html_e('Create a unique, responsive Upfront theme that you can export, share, sell or tweak to your heart’s content.', UpfrontThemeExporter::DOMAIN); ?>
 	</p>
 
 	<?php load_template(dirname(__FILE__) . '/admin_errors.php'); ?>
