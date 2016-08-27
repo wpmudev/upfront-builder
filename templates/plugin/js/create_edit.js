@@ -50,7 +50,7 @@ function init_new () {
 		$screenshot = $(".uf-thx-theme_screenshot").find('img'),
 		$selected = $("#existing-theme").find('.uf-thx-theme.selected'),
 		$name = $selected.find('.uf-thx-caption > span').text();
-		
+
 	$("#existing-theme .theme-name").html($name);
 
 	if ($screenshot.attr("src")) { $screenshot.addClass('nostyle'); }
@@ -92,7 +92,7 @@ function init_new () {
 
 function init_existing () {
 	$("#existing-theme")
-		.on("click", ".uf-thx-theme a", function (e) {
+		.find(".uf-thx-theme a").click(function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 
@@ -101,13 +101,13 @@ function init_existing () {
 		.on("click", "button.edit.info", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
-			
+
 			var $edit_form = $('#edit-theme'),
 				$edit_form_content = $edit_form.find('.form_content'),
 				$edit_form_container = $edit_form.closest('.postbox-modal-container'),
 				selected_theme = $(e.target).closest('.uf-thx-theme').attr('data-theme')
 			;
-			
+
 			$.post(_thx.admin_ajax, {
 				action: 'upfront_thx-get-edit-theme-form',
 				mode: "theme",
@@ -148,12 +148,12 @@ function init_existing () {
 		.on("click", "#postbox-modal-close", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
-			
+
 			var $edit_form = $('#edit-theme'),
 				$edit_form_content = $edit_form.find('.form_content'),
 				$edit_form_container = $edit_form.closest('.postbox-modal-container')
 			;
-			
+
 			$edit_form_content.html('');
 			$edit_form_container.hide();
 
