@@ -259,14 +259,14 @@
 
 /* WP.org naming conflicts info */
 .uf-thx-theme.wporg-conflict {
-	border: 5px solid #f2c779;
+	border: 5px solid #ffb900;
 }
 .uf-thx-theme.wporg-conflict:before {
 	content:'Conflict';
 	position: absolute;
 	font-size:14px;
-	background-color: #FEEFB3;
-	color:#9F6000;
+	background-color: #fff8e5;
+	color:rgb(68, 68, 68);
 	top:2px;
 	right:2px;
 	display: block;
