@@ -29,7 +29,8 @@ function edit_theme (theme) {
 	window.location.assign(url);
 }
 
-function get_data (new_theme = true) {
+function get_data (new_theme) {
+	new_theme = undefined === new_theme ? true : new_theme; // Do *not* use ES6 syntax for defaults
 	var data = {},
 		$ins = ( new_theme )
 			? $("#new-theme input, #new-theme textarea, #new-theme select")
