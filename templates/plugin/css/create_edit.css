@@ -257,6 +257,31 @@
 
 }
 
+/* WP.org naming conflicts info */
+.uf-thx-theme.wporg-conflict {
+	border: 5px solid #f2c779;
+}
+.uf-thx-theme.wporg-conflict:before {
+	content:'Conflict';
+	position: absolute;
+	font-size:14px;
+	background-color: #FEEFB3;
+	color:#9F6000;
+	top:2px;
+	right:2px;
+	display: block;
+	height: 1px;
+	padding: 10px;
+	text-transform: uppercase;
+    font-family: 'Roboto Condensed';
+    -webkit-font-smoothing: antialiased;
+	z-index: 1;
+}
+.uf-thx-theme.wporg-conflict .uf-thx-conflict_info {
+	font-size: 0.8em;
+}
+
+
 .uf-thx-theme_meta span,
 .uf-thx-theme_meta input {
 	margin-bottom:15px;
@@ -418,7 +443,7 @@
 	.uf-thx-theme:nth-child(3n) {
 		margin-right: 0;
 	}
-	
+
 	.uf-thx-theme a:hover .uf-thx-caption span {
 		width: 40%;
 	}
@@ -452,5 +477,5 @@
 	.uf-thx-theme:nth-child(5n) {
 		margin-right: 0;
 	}
-	
+
 }

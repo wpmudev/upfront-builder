@@ -3,8 +3,23 @@
 	$fallback_screenshot = plugins_url(THX_BASENAME . '/imgs/testImage.jpg');
 	$current_theme = get_option('stylesheet');
 
+	/**
+	 * Get themes update info
+	 *
+	 * @var array Array of WP_Theme objects
+	 */
+	$updates = get_theme_updates();
+	if (!is_array($updates)) $updates = array();
+
 	foreach(wp_get_themes() as $stylesheet=>$theme) {
 		if ($theme->get('Template') !== 'upfront') continue;
+
+		if (!empty($updates[$stylesheet])) {
+			$theme->uf_update = !empty($updates[$stylesheet]->update)
+				? $updates[$stylesheet]->update
+				: false
+			;
+		}
 		$themes[$stylesheet] = $theme;
 	}
 
@@ -52,7 +67,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Existing Themes -->
 		<div class="postbox themes" id="existing-theme">
 			<?php if (!empty($themes)) { ?>
@@ -63,10 +78,12 @@
 					<div class="uf-thx-theme <?php
 					// if (!empty($_GET['theme']) && $theme->get_stylesheet() === $_GET['theme']) echo 'selected';
 				?> <?php
-					if ($theme->get_stylesheet() === $current_theme) {
-						echo 'current';
-						// if (empty($_GET['theme'])) echo ' selected';
-					}
+					$extra_classes = array();
+
+					if ($theme->get_stylesheet() === $current_theme) $extra_classes[] = 'current';
+					if (!empty($theme->uf_update)) $extra_classes[] = 'wporg-conflict';
+
+					echo join(' ', $extra_classes);
 				?>" data-theme="<?php echo esc_attr($theme->get_stylesheet()); ?>">
 						<a href="<?php
 							echo esc_attr(add_query_arg('theme', $theme->get_stylesheet()));
@@ -92,7 +109,17 @@
 									</span>
 								</button>
 							</div>
-							<button type="button" class="edit info"><?php esc_html_e('Edit theme info', UpfrontThemeExporter::DOMAIN); ?></button>
+							<button type="button" class="edit info">
+							<?php if (!empty($theme->uf_update['url'])) { ?>
+								<div class="uf-thx-conflict_info">
+									<?php echo esc_html(sprintf(
+									__('This theme name conflicts with %s', UpfrontThemeExporter::DOMAIN),
+									esc_url($theme->uf_update['url'])
+								)); ?>
+								</div>
+							<?php } ?>
+								<?php esc_html_e('Edit theme info', UpfrontThemeExporter::DOMAIN); ?>
+							</button>
 						</a>
 					</div>
 				<?php } ?>
