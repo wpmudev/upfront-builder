@@ -110,14 +110,6 @@
 								</button>
 							</div>
 							<button type="button" class="edit info">
-							<?php if (!empty($theme->uf_update['url'])) { ?>
-								<div class="uf-thx-conflict_info">
-									<?php echo esc_html(sprintf(
-									__('This theme name conflicts with %s', UpfrontThemeExporter::DOMAIN),
-									esc_url($theme->uf_update['url'])
-								)); ?>
-								</div>
-							<?php } ?>
 								<?php esc_html_e('Edit theme info', UpfrontThemeExporter::DOMAIN); ?>
 							</button>
 						</a>
