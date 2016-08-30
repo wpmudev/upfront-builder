@@ -204,6 +204,29 @@ function init_existing () {
 
 			return false;
 		})
+		.on("click", "button.conflict.fix", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			var data = get_data(false);
+			if (!data['thx-theme-slug']) return false;
+
+			data.add_global_regions = true;
+
+			hide_errors();
+
+			$.post(_thx.admin_ajax, {
+				action: 'upfront_thx-clone-theme',
+				mode: "theme",
+				form: _.map(data, function(value, key){ return key + '=' + escape(value); }).join('&')
+			}).success(function(response) {
+				window.location.reload();
+			}).error(function(){
+				show_error();
+			});
+
+			return false;
+		})
 		.on("click", ".uf-thx-theme_screenshot button.change-image", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
