@@ -144,6 +144,9 @@ class Thx_Admin {
 			'admin_ajax' => admin_url('admin-ajax.php'),
 			'l10n' => array(
 				'oops' => __('Oops, something went wrong with processing your request.', UpfrontThemeExporter::DOMAIN),
+				'start_building' => __('Start Building', UpfrontThemeExporter::DOMAIN),
+				'checking' => __('Checking...', UpfrontThemeExporter::DOMAIN),
+				'creating' => __('Creating...', UpfrontThemeExporter::DOMAIN),
 			),
 		));
 

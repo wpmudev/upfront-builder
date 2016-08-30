@@ -99,7 +99,7 @@ class Thx_Exporter {
 		add_filter('upfront-entity_resolver-entity_ids', array($this, 'augment_layout_load_from_get_query'), 10, 2);
 
 		$ajaxPrefix = 'wp_ajax_upfront_thx-';
-
+		add_action($ajaxPrefix . 'check-theme', array($this, 'json_check_theme'));
 		add_action($ajaxPrefix . 'create-theme', array($this, 'json_create_theme'));
 		add_action($ajaxPrefix . 'get-edit-theme-form', array($this, 'get_edit_theme_form'));
 		add_action($ajaxPrefix . 'update-theme', array($this, 'json_update_theme'));
@@ -800,7 +800,7 @@ error_log(debug_backtrace());
 		update_user_option(get_current_user_id(), $key, 1, true); // Only update this if we don't have the option
 		wp_send_json(array());
 	}
-	
+
 	/**
 	 * AJAX handler for activating theme that is currently being edited on Builder
 	 */
@@ -815,9 +815,9 @@ error_log(debug_backtrace());
 
 		$theme = wp_get_theme($stylesheet);
 		if (!$theme->exists()) die;
-		
+
 		switch_theme($stylesheet);
-		
+
 		wp_send_json(array());
 	}
 
@@ -1928,6 +1928,60 @@ error_log(debug_backtrace());
 		die;
 	}
 
+	/**
+	 * Checks theme name for conflicts
+	 */
+	public function json_check_theme () {
+		$result = array(
+			'error' => 1,
+			'msg' => __('Your chosen theme slug is invalid, please try another.', UpfrontThemeExporter::DOMAIN),
+		);
+
+		$data = wp_unslash($_POST);
+		$name = !empty($data['name']) ? $data['name'] : false;
+
+		// Is it valid slug?
+		$slug = $this->_validate_theme_slug($name);
+		if (empty($slug)) return wp_send_json($result);
+
+		$slug = strtolower(Thx_Sanitize::extended_alnum($slug, '-'));
+		if (empty($slug)) return wp_send_json($result);
+
+		// Check existence
+		$this->_fs->set_theme($slug);
+		$theme_path = $this->_fs->get_root_path();
+		if (file_exists($theme_path)) {
+			$result['error'] = 2;
+			$result['msg'] = __('Theme with that directory name already exists.', UpfrontThemeExporter::DOMAIN);
+			return wp_send_json($result);
+		}
+
+		// Check WP.org themes conflict
+		$resp = themes_api('theme_information', array('slug' => $slug));
+
+		// Why hello there, what a lovely function signature you have!
+		if (!empty($resp) && !is_wp_error($resp)) {
+			$theme = is_object($resp)
+				? $resp
+				: (!empty($resp[0]) ? $resp[0] : false)
+			;
+			if (!empty($theme)) {
+				$result['error'] = 3; // So we got a result, and it's a conflict
+				$result['msg'] = sprintf(
+					__('Detected conflict with %s theme in wordpress.org public repository: %s', UpfrontThemeExporter::DOMAIN),
+					esc_html($theme->name), esc_url($theme->homepage)
+				);
+				return wp_send_json($result);
+			}
+		}
+
+		// We got this far? We're all good!
+		return wp_send_json(array(
+			'error' => 0,
+			'msg' => __('All good', UpfrontThemeExporter::DOMAIN),
+		));
+	}
+
 	public function json_create_theme () {
 		$form = array();
 		parse_str($_POST['form'], $form);
@@ -2038,7 +2092,7 @@ error_log(debug_backtrace());
 			)
 		));
 	}
-	
+
 	public function get_edit_theme_form () {
 		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) die;
 

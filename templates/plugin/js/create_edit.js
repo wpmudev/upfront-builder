@@ -61,7 +61,8 @@ function init_new () {
 			e.preventDefault();
 			e.stopPropagation();
 
-			var data = get_data(true),
+			var $me = $(this),
+				data = get_data(true),
 				base_url = (window._thx || {}).editor_base || window.location.pathname,
 				slug
 			;
@@ -71,19 +72,39 @@ function init_new () {
 			data.add_global_regions = true;
 
 			hide_errors();
+			$me.text(((_thx || {}).l10n || {}).checking || 'Checking');
 
 			$.post(_thx.admin_ajax, {
-				action: 'upfront_thx-create-theme',
-				mode: "theme",
-				form: _.map(data, function(value, key){ return key + '=' + escape(value); }).join('&')
+				action: 'upfront_thx-check-theme',
+				name: data['thx-theme-name'] || '',
+				mode: "theme"
 			}).success(function(response) {
-				if (!slug && response && "theme" in response) {
-					slug = (response.theme || {directory: false}).directory;
-				}
-				if (slug) window.location = base_url.replace(/\/theme/, '/' + slug);
-				else window.location.reload();
+				var error = parseInt((response || {}).error, 10),
+					msg = (response || {}).msg || ''
+				;
+				if (error > 0) return show_error(msg);
+
+				$me.text(((_thx || {}).l10n || {}).creating || 'Creating');
+
+				$.post(_thx.admin_ajax, {
+					action: 'upfront_thx-create-theme',
+					mode: "theme",
+					form: _.map(data, function(value, key){ return key + '=' + escape(value); }).join('&')
+				}).success(function(response) {
+					if (!slug && response && "theme" in response) {
+						slug = (response.theme || {directory: false}).directory;
+					}
+					if (slug) window.location = base_url.replace(/\/theme/, '/' + slug);
+					else window.location.reload();
+				}).error(function(){
+					show_error();
+					$me.text(((_thx || {}).l10n || {}).start_building || 'Start Building');
+				});
+
 			}).error(function(){
 				show_error();
+			}).always(function () {
+				$me.text(((_thx || {}).l10n || {}).start_building || 'Start Building');
 			});
 
 			return false;
