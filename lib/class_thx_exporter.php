@@ -2188,6 +2188,11 @@ error_log(debug_backtrace());
 		// Write functions.php to add stylesheet for theme
 		$this->_create_functions_file($new_theme_slug);
 
+		// If the old theme was the active one, activate the new one instead
+		if (get_option('stylesheet') === $old_theme_slug) {
+			switch_theme($new_theme_slug);
+		}
+
 		// We got this far? We're all good!
 		return wp_send_json(array(
 			'error' => 0,

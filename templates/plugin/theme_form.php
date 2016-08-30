@@ -47,7 +47,7 @@
 				<p>
 					<?php esc_html_e("This may cause issues with automatic updates down the line.", UpfrontThemeExporter::DOMAIN); ?>
 					<button type="button" class="button conflict fix">
-						<?php esc_html_e("Fix this", UpfrontThemeExporter::DOMAIN); ?>
+						<?php esc_html_e("Clone theme and fix this", UpfrontThemeExporter::DOMAIN); ?>
 					</button>
 				</p>
 			</div>
