@@ -104,6 +104,7 @@ class Thx_Exporter {
 
 		$ajaxPrefix = 'wp_ajax_upfront_thx-';
 		add_action($ajaxPrefix . 'check-theme', array($this, 'json_check_theme'));
+		add_action($ajaxPrefix . 'clone-theme', array($this, 'json_clone_theme'));
 		add_action($ajaxPrefix . 'create-theme', array($this, 'json_create_theme'));
 		add_action($ajaxPrefix . 'get-edit-theme-form', array($this, 'get_edit_theme_form'));
 		add_action($ajaxPrefix . 'update-theme', array($this, 'json_update_theme'));
@@ -1784,6 +1785,8 @@ error_log(debug_backtrace());
 	 * Creates the theme's `functions.php` file from a template.
 	 *
 	 * @param string $slug Theme slug to be used as child theme's class name
+	 *
+	 * @return bool
 	 */
 	private function _create_functions_file ($slug) {
 		$data = array(
@@ -1795,7 +1798,7 @@ error_log(debug_backtrace());
 
 		$contents = $this->_template('functions', $data);
 
-		$this->_fs->write(array(
+		return $this->_fs->write(array(
 			'functions.php'
 		), $contents);
 	}
@@ -2094,6 +2097,101 @@ error_log(debug_backtrace());
 				'directory' => $theme_slug,
 				'name' => $form['thx-theme-name']
 			)
+		));
+	}
+
+	/**
+	 * Clones an already created theme and changes slugs
+	 *
+	 * As a consequence, re-creates the style.css and functions.php
+	 * Used for WP.org updates naming conflict resolution.
+	 */
+	public function json_clone_theme () {
+		$form = array();
+		parse_str($_POST['form'], $form);
+
+		$form = $this->_get_theme_form_defaults($form);
+		$old_theme_slug = $this->_validate_theme_slug($form['thx-theme-slug']);
+
+		$new_theme_slug_pfx = $this->_validate_theme_slug(sprintf('upfront-%s-theme', $old_theme_slug));
+		$new_theme_slug = $new_theme_slug_pfx;
+		$index = 1;
+
+		$old_fs = Thx_Fs::get($old_theme_slug);
+		$old_theme_path = $old_fs->get_root_path();
+		if (!file_exists($old_theme_path)) {
+			return $this->_json->error_msg(__('We were not able to find the original theme.', UpfrontThemeExporter::DOMAIN), 'missing_required');
+		}
+
+		$new_fs = Thx_Fs::get($new_theme_slug);
+
+		// Make sure we're good to go, add sequential numeric index until we are
+		$new_theme_path = $new_fs->get_root_path();
+		while (file_exists($new_theme_path)) {
+			$new_theme_slug = sprintf($new_theme_slug_pfx . '-%d', $index);
+			$new_fs->set_theme($new_theme_slug);
+			$new_theme_path = $new_fs->get_root_path();
+			$index++;
+			if ($index > 10) break;
+		}
+		if (file_exists($new_theme_path)) {
+			return $this->_json->error_msg(__('We were not able to resolve the new, conflict-free theme slug.', UpfrontThemeExporter::DOMAIN), 'missing_required');
+		}
+
+		// Fake the form slug
+		$form['thx-theme-slug'] = $new_theme_slug;
+
+		// Okay, so now, let's copy *everything* from the old theme to the new destination
+
+		$list = $old_fs->ls();
+		if (empty($list)) {
+			return $this->_json->error_msg(__('The original theme appears empty.', UpfrontThemeExporter::DOMAIN), 'missing_required');
+		}
+
+		$old_theme_root_rx = preg_quote($old_theme_path, '/');
+
+		$new_fs->mkdir($new_theme_path); // Create the new theme path
+
+		// 1. Iterate over the list once and create directories
+		foreach ($list as $item) {
+			$old_path = $item;
+
+			if (is_dir($old_path)) {
+				// Directory: create directory
+				$directory_relpath = preg_replace("/{$old_theme_root_rx}/", '', $old_path);
+				if ($directory_relpath === $old_path) continue;
+				$new_fs->mkdir_p(explode('/', $directory_relpath));
+			}
+		}
+
+		// 2. Iterate over the list for the 2nd time and copy over files
+		foreach ($list as $item) {
+			$old_path = $item;
+
+			if (!is_dir($old_path)) {
+				// File: copy over the file
+				$file_abspath = preg_replace("/{$old_theme_root_rx}/", $new_theme_path, $old_path);
+				if ($file_abspath === $old_path) continue;
+				copy($old_path, $file_abspath);
+			}
+		}
+
+		// Now that we copied over everything, trump over
+		// functions.php and style.css with new data
+
+		// Start by temporarily trumping over FS object
+		$this->_fs = $new_fs;
+
+		// Write style.css with theme variables
+		$this->_create_style_file($new_theme_slug, $form);
+
+		// Write functions.php to add stylesheet for theme
+		$this->_create_functions_file($new_theme_slug);
+
+		// We got this far? We're all good!
+		return wp_send_json(array(
+			'error' => 0,
+			'slug' => $new_theme_slug,
 		));
 	}
 
