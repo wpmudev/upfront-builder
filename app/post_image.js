@@ -4,6 +4,12 @@ define([
 	'text!' + Upfront.themeExporter.root + 'templates/theme/tpl/image_variants.html',
 ], function(_, $, variant_tpl){
 
+
+var l10n = Upfront.Settings && Upfront.Settings.l10n ?
+		/* ? */ Upfront.Settings.l10n.exporter :
+		/* : */ Upfront.mainData.l10n.exporter
+	;
+
 var PostImageVariants =  Backbone.View.extend({
 	initialize: function( options ) {
 		this.contentView = options.contentView;
@@ -12,9 +18,35 @@ var PostImageVariants =  Backbone.View.extend({
 	add_new_variant : function(e){
 		e.preventDefault();
 		e.stopPropagation();
-		var model = new Upfront.Models.ImageVariant();
+		var model = new Upfront.Models.ImageVariant(),
+			label_id = model.get('label').toLowerCase().trim().replace(/\s/g, "-"),
+			label_set = false,
+			label_count = 0,
+			label_found = false,
+			variant
+		;
+
 		model.set("vid", Upfront.Util.get_unique_id("variant"));
-		var variant = new PostImageVariant({ model : model});
+		while ( !label_set ) {
+			label_found = false;
+			Upfront.Content.ImageVariants.each(function (each) {
+				var each_label_id = each.get('label').toLowerCase().trim().replace(/\s/g, "-");
+				if ( label_id === each_label_id ) label_found = true;
+			});
+			if ( label_found ) {
+				label_count++;
+				label_id = model.get('label').toLowerCase().trim().replace(/\s/g, "-") + '-' + label_count;
+			}
+			else {
+				if ( label_count > 0 ) {
+					model.set('label', model.get('label') + ' ' + label_count);
+				}
+				label_set = true;
+				break;
+			}
+		}
+
+		variant = new PostImageVariant({ model : model});
 		variant.parent_view = this;
 		variant.render();
 		variant.$el.hide();
@@ -62,6 +94,10 @@ var PostImageVariants =  Backbone.View.extend({
 	}
 });
 var PostImageVariant = Backbone.View.extend({
+	cssSelectors: {
+		'.uinsert-image-wrapper': {label: l10n.variant_image_label, info: l10n.variant_image_info},
+		'.wp-caption-text, .wp-caption-text p': {label: l10n.variant_caption_label, info: l10n.variant_caption_info}
+	},
 	tpl : _.template($(variant_tpl).find('#upfront-post-image-variant-tpl').html()),
 	se_handle : '<span class="upfront-icon-control upfront-icon-control-resize-se upfront-resize-handle-se ui-resizable-handle ui-resizable-se nosortable"></span>',
 	nw_handle : '<span class="upfront-icon-control upfront-icon-control-resize-nw upfront-resize-handle-nw ui-resizable-handle ui-resizable-nw nosortable"></span>',
@@ -70,14 +106,13 @@ var PostImageVariant = Backbone.View.extend({
 	s_handle : '<span class="upfront-resize-handle-s ui-resizable-handle ui-resizable-s nosortable"></span>',
 	initialize: function( options ){
 		this.opts = options;
-		Upfront.Events.on("post:layout:style:stop", function(){
-
-		});
+		this.listenTo(Upfront.Events, 'builder:image_variant:edit:start', this.on_other_edit);
 	},
 	events : {
 		"click .upfront_edit_image_insert" : "start_editing",
 		"click .finish_editing_image_insert" : "finish_editing",
-		"click .upfront-image-variant-delete_trigger" : "remove_variant"
+		"click .upfront-image-variant-delete_trigger" : "remove_variant",
+		"click .image-variant-edit-css": "edit_css"
 	},
 	render : function() {
 		this.$el.html( this.tpl( this.render_model_data() ) );
@@ -91,7 +126,9 @@ var PostImageVariant = Backbone.View.extend({
 			this.$image.insertAfter(this.$caption);
 		}
 		this.make_resizable();
+		this.$wrap_edit = this.$(".image-variant-edit-wrap");
 		this.$label = this.$(".image-variant-label");
+		this.$edit_css = this.$(".image-variant-edit-css");
 		// Prevent input mouseover/mouseout hack on global-event-handlers.js
 		this.$label.on('mouseover mouseout', 'input', function(e){
 			e.stopPropagation();
@@ -130,6 +167,7 @@ var PostImageVariant = Backbone.View.extend({
 		apply_classes('group');
 		apply_classes('image', 0);
 		apply_classes('caption', 1);
+		model_data.label_id = this.get_label_id();
 		return model_data;
 	},
 	remove_variant : function(e){
@@ -142,8 +180,8 @@ var PostImageVariant = Backbone.View.extend({
 		e.preventDefault();
 		e.stopPropagation();
 
-		// Show title input
-		this.$label.show();
+		// Show editing stuff
+		this.$wrap_edit.show();
 
 		// Hide edit button
 		this.$(".upfront_edit_image_insert").css({
@@ -168,14 +206,16 @@ var PostImageVariant = Backbone.View.extend({
 
 		this.make_items_draggable();
 		this.make_items_resizable();
-		this.$self.append("<div class='finish_editing_image_insert'>Finish editing image insert</div>")
+		this.$self.append("<div class='finish_editing_image_insert'>Finish editing image insert</div>");
+
+		Upfront.Events.trigger('builder:image_variant:edit:start', this);
 	},
 	finish_editing : function( e ){
 		e.preventDefault();
 		e.stopPropagation();
 
-		//Hide title
-		this.$label.hide();
+		// Hide editing stuff
+		this.$wrap_edit.hide();
 
 		this.model.set( "label", this.$label.find('>input').val() );
 
@@ -207,6 +247,23 @@ var PostImageVariant = Backbone.View.extend({
 
 		$(e.target).remove();
 
+		Upfront.Events.trigger('builder:image_variant:edit:stop', this);
+
+	},
+	on_other_edit: function (view) {
+		if ( view == this ) return;
+		this.$(".finish_editing_image_insert").trigger("click");
+	},
+	edit_css: function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		Upfront.Application.cssEditor.init({
+			model: this.model,
+			type: 'ImageVariant',
+			element_id: this.model.get('vid'),
+			stylename: this.model.get('vid')
+		});
 	},
 	make_items_draggable : function(){
 		var self = this,
@@ -1096,6 +1153,11 @@ var PostImageVariant = Backbone.View.extend({
 			Upfront.Util.grid.update_class(this.$caption, ge.grid.class, caption_col);
 			caption_model.col = caption_col;
 		}
+	},
+
+	get_label_id: function () {
+		var model = this.model.toJSON();
+		return model.label && model.label.trim() !== "" ? "ueditor-image-style-" +  model.label.toLowerCase().trim().replace(/\s/g, "-") : model.vid;
 	}
 });
 

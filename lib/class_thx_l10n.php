@@ -74,7 +74,21 @@ class Thx_L10n {
 			'theme_images' => __('Media', UpfrontThemeExporter::DOMAIN),
 			'theme_sprites' => __('UI / Sprites', UpfrontThemeExporter::DOMAIN),
 			'my_themes' => __('My Themes', UpfrontThemeExporter::DOMAIN),
-			'themes' => __('Themes', UpfrontThemeExporter::DOMAIN)
+			'themes' => __('Themes', UpfrontThemeExporter::DOMAIN),
+
+			// post_image.js
+			'image_variant' => __('Image Variant', UpfrontThemeExporter::DOMAIN),
+			'edit_content_style' => __('Edit Content Layout', UpfrontThemeExporter::DOMAIN),
+			'edit_image_insert' => __('Edit Image Insert', UpfrontThemeExporter::DOMAIN),
+			'variant_name' => __('Name This Insert:', UpfrontThemeExporter::DOMAIN),
+			'variant_css' => __('Edit CSS', UpfrontThemeExporter::DOMAIN),
+			'variant_wrap_label' => __('Wrapper', UpfrontThemeExporter::DOMAIN),
+			'variant_wrap_info' => __('Wrapper', UpfrontThemeExporter::DOMAIN),
+			'variant_image_label' => __('Image', UpfrontThemeExporter::DOMAIN),
+			'variant_image_info' => __('Image', UpfrontThemeExporter::DOMAIN),
+			'variant_caption_label' => __('Caption', UpfrontThemeExporter::DOMAIN),
+			'variant_caption_info' => __('Caption', UpfrontThemeExporter::DOMAIN)
+
 		);
 	}
 }

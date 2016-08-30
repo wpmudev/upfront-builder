@@ -2,18 +2,21 @@
     <script type="text/template" id="upfront-post-image-variant-tpl">
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias aliquid asperiores dolor dolorum eaque enim esse, est harum ipsum iusto molestiae natus nostrum porro, quia quidem suscipit veniam voluptatem.        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias aliquid asperiores dolor dolorum eaque enim esse, est harum ipsum iusto molestiae natus nostrum porro, quia quidem suscipit veniam voluptatem.</p>
         <div class="ueditor-insert ueditor-insert-variant upfront-inserted_image-wrapper">
-	        <div class="ueditor-insert-variant-group ueditor-insert-float-{{group.float}} {{group.width_cls}}" style="float:{{group.float}}">
-				<label class="image-variant-label">
-					<span>Name This Insert:</span>
-	            	<input type="text" value="{{label}}"/>
-				</label>
+	        <div data-variant="{{vid}}" class="ueditor-insert-variant-group {{label_id}} ueditor-insert-float-{{group.float}} {{group.width_cls}}" style="float:{{group.float}}">
+				<div class="image-variant-edit-wrap">
+					<label class="image-variant-label">
+						<span>{{Upfront.Settings.l10n.exporter.variant_name}}</span>
+						<input type="text" value="{{label}}"/>
+					</label>
+					<div class="image-variant-edit-css"><span>{{Upfront.Settings.l10n.exporter.variant_css}}</span></div>
+				</div>
 	            <div class="ueditor-insert-variant-wrap">
-	                <div class="upfront-wrapper ueditor-insert-variant-image {{image.width_cls}} {{image.clear_cls}} {{image.order_cls}} {{image.full_cls}}" style="height: {{image.height}}px;">
+	                <div class="upfront-wrapper ueditor-insert-variant-image uinsert-image-wrapper {{image.width_cls}} {{image.clear_cls}} {{image.order_cls}} {{image.full_cls}}" style="height: {{image.height}}px;">
 	                    <div class="ueditor-insert-variant-image-inside"></div>
 	                </div>
-	                <span class="upfront-wrapper ueditor-insert-variant-caption {{caption.width_cls}} {{caption.clear_cls}} {{caption.order_cls}} {{caption.full_cls}}" style="height: {{caption.height}}px;">Type your caption here ...</span>
+	                <span class="upfront-wrapper ueditor-insert-variant-caption wp-caption-text {{caption.width_cls}} {{caption.clear_cls}} {{caption.order_cls}} {{caption.full_cls}}" style="height: {{caption.height}}px;">Type your caption here ...</span>
 	            </div>
-	            <div class="upfront_edit_image_insert">Edit Image Insert</div>
+	            <div class="upfront_edit_image_insert">{{Upfront.Settings.l10n.exporter.edit_image_insert}}</div>
 	        </div>
 	    </div>
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque deleniti deserunt eaque eligendi est excepturi, id magni molestias nesciunt odio perspiciatis porro possimus provident reprehenderit sapiente sit vel vitae voluptas.        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque deleniti deserunt eaque eligendi est excepturi, id magni molestias nesciunt odio perspiciatis porro possimus provident reprehenderit sapiente sit vel vitae voluptas.</p>

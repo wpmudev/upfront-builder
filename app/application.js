@@ -3,8 +3,9 @@
 	require([
 		Upfront.themeExporter.root + 'app/dialogs.js',
 		Upfront.themeExporter.root + 'app/exporter.js',
-		Upfront.themeExporter.root + 'app/default_data.js'
-	], function (Dialogs, Exporter, DefaultData) {
+		Upfront.themeExporter.root + 'app/default_data.js',
+		Upfront.themeExporter.root + 'app/post_image.js'
+	], function (Dialogs, Exporter, DefaultData, postImage) {
 
 		// JUST A BIG BLOCK OF STUFF MOVED FROM UPFRONT TO EXPORTER
 		if (Upfront && Upfront.plugins) {
@@ -127,12 +128,22 @@
 					'cancel-post-layout': function() {
 						Upfront.Events.trigger("post:layout:post:style:cancel");
 					},
+					'insert-css-editor-types': function (parameters) {
+						parameters.types['ImageVariant'] = {label: l10n.image_variant, id: 'image_variant'};
+					},
+					'insert-css-editor-selectors': function (parameters) {
+						parameters.cssEditor.createSelector(Upfront.Models.ImageVariant, postImage.PostImageVariant, 'ImageVariant');
+					},
+					'get-css-editor-selector': function (parameters) {
+						var model = parameters.object.model.toJSON();
+						return '[data-variant="' + model.vid + '"]';
+					},
 					'css-editor-save-style': function(parameters) {
 						parameters.data.stylename = parameters.stylename;
 						if (parameters.isGlobalStylesheet) {
 							var props = Upfront.Application.current_subapplication.layout.get('properties'),
 								layout_styles = props && props.findWhere ? props.findWhere({name: 'layout_style'}) : false
-								;
+							;
 							if (layout_styles && layout_styles.set) {
 								layout_styles.set({'value': parameters.styles});
 							} else {
