@@ -82,6 +82,10 @@ class Thx_Exporter {
 	 * Fires when the rest of the Upfront is already initialized.
 	 */
 	private function _add_hooks () {
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) {
+			return false;
+		}
+
 		// Fix up Hummingbird conflicts with minification setup
 		add_filter('wphb_send_resource_to_footer', array($this, 'wphb_nerf'), 999);
 
