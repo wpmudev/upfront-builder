@@ -2120,7 +2120,7 @@ error_log(debug_backtrace());
 		$old_fs = Thx_Fs::get($old_theme_slug);
 		$old_theme_path = $old_fs->get_root_path();
 		if (!file_exists($old_theme_path)) {
-			return $this->_json->error_msg(__('We were not able to find the original theme.', UpfrontThemeExporter::DOMAIN), 'missing_required');
+			return $this->_json->error_msg(__('We were not able to find the original theme.', UpfrontThemeExporter::DOMAIN));
 		}
 
 		$new_fs = Thx_Fs::get($new_theme_slug);
@@ -2135,7 +2135,7 @@ error_log(debug_backtrace());
 			if ($index > 10) break;
 		}
 		if (file_exists($new_theme_path)) {
-			return $this->_json->error_msg(__('We were not able to resolve the new, conflict-free theme slug.', UpfrontThemeExporter::DOMAIN), 'missing_required');
+			return $this->_json->error_msg(__('We were not able to resolve the new, conflict-free theme slug.', UpfrontThemeExporter::DOMAIN));
 		}
 
 		// Fake the form slug
@@ -2145,7 +2145,7 @@ error_log(debug_backtrace());
 
 		$list = $old_fs->ls();
 		if (empty($list)) {
-			return $this->_json->error_msg(__('The original theme appears empty.', UpfrontThemeExporter::DOMAIN), 'missing_required');
+			return $this->_json->error_msg(__('The original theme appears empty.', UpfrontThemeExporter::DOMAIN));
 		}
 
 		$old_theme_root_rx = preg_quote($old_theme_path, '/');
@@ -2160,6 +2160,10 @@ error_log(debug_backtrace());
 				// Directory: create directory
 				$directory_relpath = preg_replace("/{$old_theme_root_rx}/", '', $old_path);
 				if ($directory_relpath === $old_path) continue;
+
+				$parts = array_filter(explode('/', $directory_relpath));
+				if (empty($parts)) continue;
+
 				$new_fs->mkdir_p(explode('/', $directory_relpath));
 			}
 		}
@@ -2171,7 +2175,10 @@ error_log(debug_backtrace());
 			if (!is_dir($old_path)) {
 				// File: copy over the file
 				$file_abspath = preg_replace("/{$old_theme_root_rx}/", $new_theme_path, $old_path);
+
 				if ($file_abspath === $old_path) continue;
+				if (!$new_fs->within_theme(dirname($file_abspath))) continue; // Something went wrong
+
 				copy($old_path, $file_abspath);
 			}
 		}
