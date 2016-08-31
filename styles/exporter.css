@@ -451,6 +451,8 @@
   padding-right: 0; }
 
 .upfront-disable-surroundings {
+  -webkit-box-shadow: 0 0 0 5000px rgba(0, 0, 10, 0.5);
+  -moz-box-shadow: 0 0 0 5000px rgba(0, 0, 10, 0.5);
   box-shadow: 0 0 0 5000px rgba(0, 0, 10, 0.5);
   position: relative;
   z-index: 2; }
@@ -467,10 +469,14 @@
 
 #upfront-image-variants .ueditor-insert-variant-group:hover {
   background-color: rgba(255, 255, 255, 0.3);
+  -webkit-box-shadow: inset 0px 0px 3px 0px rgba(60, 82, 103, 0.15);
+  -moz-box-shadow: inset 0px 0px 3px 0px rgba(60, 82, 103, 0.15);
   box-shadow: inset 0px 0px 3px 0px rgba(60, 82, 103, 0.15); }
 
 #upfront-image-variants .ueditor-insert-variant-group.editing {
   background: #FBFBFB;
+  -webkit-box-shadow: 0px 0px 0px 5px #FBFBFB;
+  -moz-box-shadow: 0px 0px 0px 5px #FBFBFB;
   box-shadow: 0px 0px 0px 5px #FBFBFB; }
 
 .upfront-image-variant-delete_trigger {
@@ -539,6 +545,8 @@
   right: 5px;
   background: #fff;
   border-radius: 3px;
+  -webkit-box-shadow: 0px 0px 3px 0px rgba(36, 57, 77, 0.2);
+  -moz-box-shadow: 0px 0px 3px 0px rgba(36, 57, 77, 0.2);
   box-shadow: 0px 0px 3px 0px rgba(36, 57, 77, 0.2);
   z-index: -1; }
 
@@ -553,10 +561,14 @@
   height: 4px;
   background: #fff;
   border-radius: 3px;
+  -webkit-box-shadow: 0px 0px 3px 0px rgba(36, 57, 77, 0.2);
+  -moz-box-shadow: 0px 0px 3px 0px rgba(36, 57, 77, 0.2);
   box-shadow: 0px 0px 3px 0px rgba(36, 57, 77, 0.2); }
 
 .ueditor-insert-variant-wrap .upfront-wrapper:hover {
   background-color: rgba(255, 255, 255, 0.3);
+  -webkit-box-shadow: inset 0px 0px 3px 0px rgba(60, 82, 103, 0.15);
+  -moz-box-shadow: inset 0px 0px 3px 0px rgba(60, 82, 103, 0.15);
   box-shadow: inset 0px 0px 3px 0px rgba(60, 82, 103, 0.15); }
 
 .ueditor-insert-variant-image:hover > .ui-resizable-handle,
