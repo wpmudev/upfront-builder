@@ -3,19 +3,11 @@
 	.sidebar-commands-header {
 		background: rgb(31,41,51);
 	}
-
-	.command-logo:after {
-		content: 'BUILDER';
-		float: right;
-		background: rgba(221,223,224,0.8);
-		font: 600 9px Open Sans;
-		color: rgb(31,41,51);
-		position: relative;
-		right: 10px;
-		top: 8px;
-		padding: 2px 5px;
-		border-radius: 6px;
+	
+	.upfront-logo {
+		    background-position: -190px -439px;
 	}
+
 }
 
 #sidebar-ui .create-theme-sidebar .sidebar-commands-primary {

@@ -17,17 +17,8 @@
 #sidebar-ui .create-theme-sidebar .sidebar-commands-header {
   background: #1f2933; }
 
-#sidebar-ui .create-theme-sidebar .command-logo:after {
-  content: 'BUILDER';
-  float: right;
-  background: rgba(221, 223, 224, 0.8);
-  font: 600 9px Open Sans;
-  color: #1f2933;
-  position: relative;
-  right: 10px;
-  top: 8px;
-  padding: 2px 5px;
-  border-radius: 6px; }
+#sidebar-ui .create-theme-sidebar .upfront-logo {
+  background-position: -190px -439px; }
 
 #sidebar-ui .create-theme-sidebar .sidebar-commands-primary .info-panel {
   font-size: 11px;
