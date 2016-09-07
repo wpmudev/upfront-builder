@@ -50,7 +50,7 @@ class UpfrontThemeExporter {
 	 */
 	public static function dispatch () {
 		// Check if we have proper core version support
-		if (!upfront_exporter_has_upfront_version('1.5')) {
+		if (!upfront_exporter_has_upfront_version('1.4')) {
 			return self::_serve_compat();
 		}
 
