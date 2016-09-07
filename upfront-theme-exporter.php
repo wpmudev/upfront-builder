@@ -49,10 +49,28 @@ class UpfrontThemeExporter {
 	 * Boot point.
 	 */
 	public static function dispatch () {
+		// Check if we have proper core version support
+		if (!upfront_exporter_has_upfront_version('1.5')) {
+			return self::_serve_compat();
+		}
+
+		// Check if we have Upfront-related theme active
 		if (upfront_thx_is_current_theme_upfront_related()) {
 			return self::_serve_exporter();
 		}
+
+		// No? Serve kickstart
 		return self::_serve_kickstart();
+	}
+
+	/**
+	 * Serves exporter compat
+	 *
+	 * @return object
+	 */
+	private static function _serve_compat () {
+		require_once dirname(__FILE__) . '/lib/class_thx_compat.php';
+		return Thx_Compat::serve();
 	}
 
 	/**
