@@ -129,6 +129,17 @@ function upfront_exporter_clear_conversion_cache ($slug) {
 	return !!$wpdb->query($wpdb->prepare($sql, $rx));
 }
 
+
+/**
+ * Checks if we have upfront core present at all
+ *
+ * @return bool
+ */
+function upfront_exporter_has_upfront_core () {
+	$core = wp_get_theme('upfront');
+	return $core->exists() && 'upfront' === $core->get_template();
+}
+
 /**
  * Checks if we have a required upfront version
  *
