@@ -128,3 +128,35 @@ function upfront_exporter_clear_conversion_cache ($slug) {
 	$sql = "DELETE FROM {$wpdb->options} WHERE option_name REGEXP %s";
 	return !!$wpdb->query($wpdb->prepare($sql, $rx));
 }
+
+
+/**
+ * Checks if we have upfront core present at all
+ *
+ * @return bool
+ */
+function upfront_exporter_has_upfront_core () {
+	$core = wp_get_theme('upfront');
+	return $core->exists() && 'upfront' === $core->get_template();
+}
+
+/**
+ * Checks if we have a required upfront version
+ *
+ * Without version parameter, will just check presence.
+ *
+ * @param string $version Optional upfront version to check.
+ *
+ * @return bool
+ */
+function upfront_exporter_has_upfront_version ($version=false) {
+	$upfront = wp_get_theme('upfront');
+	if (!$upfront->exists()) return false; // No core whatsoever
+
+	$core_ver = $upfront->get('Version');
+
+	if (empty($core_ver)) return false; // No core version whatsoever
+	if (empty($version)) return true; // No specific version check requested
+
+	return version_compare($core_ver, $version, 'ge');
+}
