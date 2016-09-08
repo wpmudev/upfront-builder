@@ -2,8 +2,8 @@
 /*
 Plugin Name: Upfront Builder
 Plugin URI: http://premium.wpmudev.com/
-Description: Exports upfront page layouts to theme.
-Version: 1.0-BETA-4
+Description: The fastest, most visual, way to build WordPress themes. Now anyone can design, build, export, share, and sell WordPress themes.
+Version: 1.0
 Author: WPMU DEV
 Text Domain: upfront_thx
 Author URI: http://premium.wpmudev.com
