@@ -10,6 +10,12 @@ function show_error (msg) {
 		'<div class="error after-h2 upfront-error"><p>' + msg + '</p></div>'
 	);
 
+	var root_pos = ($(".upfront_admin.upfront-builder .upfront-error").offset() || {}).top || 0,
+	 	top_pos = root_pos - $("#wpadminbar").height()
+	;
+
+	$(window).scrollTop(top_pos > 0 ? top_pos : 0);
+
 	return true;
 }
 
@@ -200,6 +206,31 @@ function init_existing () {
 				window.location.reload();
 			}).error(function(){
 				show_error();
+			});
+
+			return false;
+		})
+		.on("click", "button.conflict.fix", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			var data = get_data(false);
+			if (!data['thx-theme-slug']) return false;
+
+			data.add_global_regions = true;
+
+			hide_errors();
+
+			$.post(_thx.admin_ajax, {
+				action: 'upfront_thx-clone-theme',
+				mode: "theme",
+				form: _.map(data, function(value, key){ return key + '=' + escape(value); }).join('&')
+			}).success(function (response) {
+				window.location.reload();
+			}).error(function (rsp) {
+				var error = (((rsp || {}).responseJSON || {}).error || {}).message || false;
+				show_error(error);
+				$(".postbox-modal-container #postbox-modal-close").click(); // Close popup modal
 			});
 
 			return false;
