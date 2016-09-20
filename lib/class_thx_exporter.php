@@ -621,7 +621,18 @@ error_log(debug_backtrace());
 		$this->_template = $data['template'];
 		$this->_fs->set_theme($this->_theme);
 
-		$regions = json_decode(stripslashes($data['regions']));
+		// Try extracting from compressed request first
+		$regions = false;
+		if ( class_exists("Upfront_Compression") ) {
+			$regions = Upfront_Compression::extract_from_request($data, array(
+				'data' => 'regions',
+				'original_length' => 'regions_original_length',
+				'compressed_length' => 'regions_compressed_length'
+			), false);
+		}
+		if ( false === $regions ) {
+			$regions = !empty($data['regions']) ? json_decode(stripslashes_deep($data['regions'])) : array();
+		}
 
 		$template = "<?php\n";
 
