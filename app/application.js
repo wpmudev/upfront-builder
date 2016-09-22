@@ -136,7 +136,7 @@
 					},
 					'get-css-editor-selector': function (parameters) {
 						var model = parameters.object.model.toJSON();
-						return '[data-variant="' + model.vid + '"]';
+						return "vid" in (model || {}) && (model || {}).vid ? '[data-variant="' + model.vid + '"]' : '';
 					},
 					'css-editor-save-style': function(parameters) {
 						parameters.data.stylename = parameters.stylename;
