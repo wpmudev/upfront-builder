@@ -442,7 +442,8 @@
 							Upfront.Popup.$background.addClass('transparent');
 						},
 						{
-							width: 520
+							width: 520,
+							disable_esc: true
 						},
 						'getting-started-popup'
 					);
