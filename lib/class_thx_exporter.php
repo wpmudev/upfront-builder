@@ -1765,12 +1765,23 @@ error_log(debug_backtrace());
 		$this->_theme_settings->set($presetProperty, $result);
 	}
 
-	protected function is_post_element_preset($presetProperty) {
-		if($presetProperty == "post_data_element_presets" || $presetProperty == "author_element_presets" || $presetProperty == "featured_image_element_presets" || $presetProperty == "taxonomy_element_presets" || $presetProperty == "comments_element_presets") {
-			return true;
-		}
-
-		return false;
+	/**
+	 * Check whether we're dealing with a post data element preset.
+	 *
+	 * @param string $preset_property Preset property
+	 *
+	 * @return bool
+	 */
+	protected function is_post_element_preset ($preset_property) {
+		$post_element_presets = array(
+			'post_data_element_presets',
+			'author_element_presets',
+			'featured_image_element_presets',
+			'taxonomy_element_presets',
+			'comments_element_presets',
+			'meta_element_presets',
+		);
+		return in_array($preset_property, $post_element_presets);
 	}
 
 	/**
