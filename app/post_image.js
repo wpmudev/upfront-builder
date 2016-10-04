@@ -65,9 +65,6 @@ var PostImageVariants =  Backbone.View.extend({
 	},
 	populate_style_content : function() {
 		var self = this;
-		var $page = $('#page');
-
-		$page.find('.upfront-region-edit-trigger').hide();
 
 		Upfront.Content.ImageVariants.each(function (model) {
 			var variant = new PostImageVariant({model: model});

@@ -228,6 +228,7 @@ define([
 		cancelPostContentStyle: function(){
 			var $main = $(Upfront.Settings.LayoutEditor.Selectors.main);
 			$main.removeClass('upfront-editing-content-style');
+			$main.find('.upfront-region-edit-trigger').show();
 			this.savePostDesingButton.remove();
 			$('.upfront-output-PostPart_contents, .upostdata-part.content').closest(".upfront-object-view").removeClass("upfront-disable-surroundings");
 			//$('.upfront-output-PostPart_contents .post_content').html(Upfront.data.exporter.postTestContent);
@@ -295,6 +296,7 @@ define([
 				}
 				//self.view.$('.upfront-object').addClass("upfront-editing-content-style");
 				self.view.$('.upfront-object-content').closest(".upfront-object-view").addClass("upfront-disable-surroundings");
+				$main.find('.upfront-region-edit-trigger').hide();
 				new post_image.PostImageVariants({
 					contentView : self.view
 				});
