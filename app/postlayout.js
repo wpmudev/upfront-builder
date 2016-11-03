@@ -242,6 +242,9 @@ define([
 		setDataTestContent: function (view) {
 			var type = view.model.get_property_value_by_name('part_type');
 			if ( type != 'content' || !view.object_group_view ) return;
+			//TODO abstract this to plugins
+			var layout = Upfront.Application.current_subapplication.get_layout_data().layout;
+			if (layout && layout.specificity && (layout.specificity === 'single-page-mpproducts' || layout.specificity === 'single-page-mpcart')) return;
 			var editor = view.object_group_view.editor;
 			if( editor.post.get("post_type") === "post" ){
 				this._setPostDataTestContent(view);

@@ -247,6 +247,8 @@ class Thx_Exporter {
 			);
 		}
 
+		$layouts = apply_filters('upfront-builder_available_layouts', $layouts);
+
 		// Now we have a list of layouts. Let's add some additional info, such as
 		// human-friendly labels and whether there's any changes in the DB for each of them
 		$db_layouts = Upfront_Layout::get_db_layouts();
@@ -327,7 +329,10 @@ class Thx_Exporter {
 
 	public function prepare_preview_post ($post, $data) {
 		if (empty($data['post_id']) || is_numeric($data['post_id'])) return $post;
-		if ( 'fake_post' !== $data['post_id'] && 'fake_styled_post' !== $data['post_id'] ) return $post;
+
+		$generate = apply_filters('upfront-builder_generate_preview_post', false, $data['post_id']);
+
+		if ( 'fake_post' !== $data['post_id'] && 'fake_styled_post' !== $data['post_id'] && $generate === false ) return $post;
 		return $this->_generate_preview_post($data);
 	}
 /*
@@ -2402,6 +2407,9 @@ error_log(json_encode(array("_save_post_layout", debug_backtrace())));
    * @return string
    */
 	protected function _get_preview_content ( $post_id = "fake_post", $post = false ) {
+		$content = apply_filters('upfront-builder_fake_content', '', $post_id);
+		if ($content !== '') return $content;
+
 		$tpl = Thx_Template::theme();
 		$test_content_file = $post
 			? 'tpl/postTestContent.html'
