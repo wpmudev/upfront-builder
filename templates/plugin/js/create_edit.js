@@ -133,8 +133,17 @@ function init_existing () {
 			var $edit_form = $('#edit-theme'),
 				$edit_form_content = $edit_form.find('.form_content'),
 				$edit_form_container = $edit_form.closest('.postbox-modal-container'),
-				selected_theme = $(e.target).closest('.uf-thx-theme').attr('data-theme')
+				selected_theme = $(e.target).closest('.uf-thx-theme').attr('data-theme'),
+
+				$me = $(this),
+				old_text_label = false // Will hold the old label
 			;
+
+			// Swap the old label with working indicator
+			if ($me.length && $me.is("button")) {
+				old_text_label = $me.text();
+				$me.text(((_thx || {}).l10n || {}).loading || 'Loading...');
+			}
 
 			$.post(_thx.admin_ajax, {
 				action: 'upfront_thx-get-edit-theme-form',
@@ -145,6 +154,11 @@ function init_existing () {
 				$edit_form_container.show();
 			}).error(function(){
 				show_error();
+			}).always(function () {
+				// Just clean up the swapped label
+				if ($me.length && $me.is("button") && old_text_label) {
+					$me.text(old_text_label);
+				}
 			});
 
 			return false;
@@ -251,12 +265,12 @@ function init_existing () {
 			}
 
 			frame = wp.media({
-				title: 'Select or Upload Media Of Your Chosen Persuasion',
+				title: ((_thx || {}).l10n || {}).select_media || 'Select or Upload Media Of Your Chosen Persuasion',
 				library: {
 		      	type: 'image'
 		   	},
 				button: {
-					text: 'Use this media'
+					text: ((_thx || {}).l10n || {}).use_media || 'Use this media'
 				},
 				multiple: false  // Set to true to allow multiple files to be selected
 			});
