@@ -269,6 +269,18 @@ function init_existing () {
 				if (!url || !id) return false;
 
 				$use.val(id);
+
+				// We may or may not have an <img /> el now.
+				// Let's check and see if we need to add one
+				if (!$img.length) {
+					// The case of initial shot adding - there's no <img /> el,
+					// so let's add it now and nuke the no-image placeholder
+					$img = $('<img />');
+					$me.find(".no-image").replaceWith($img);
+				}
+
+				// By now we should be all good either way
+				// Let's just do this
 				$img.attr("src", url);
 				$img.addClass('nostyle');
 			});
