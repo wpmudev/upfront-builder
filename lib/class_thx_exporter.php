@@ -1699,6 +1699,7 @@ error_log(debug_backtrace());
 			$preset['preset_style'] = str_replace("\r\n", "\n", $preset['preset_style']); // Unify newlines
 			$preset['preset_style'] = str_replace("\r", "\n", $preset['preset_style']); // Unify newlines
 			$preset['preset_style'] = $this->_make_urls_passive_relative($preset['preset_style']);
+			$preset['preset_style'] = str_replace("\\", "@s", $preset['preset_style']); // Replace \ to keep unicode characters and prevent multiple slashings
 			$preset['preset_style'] = addcslashes(str_replace("\n", "@n", $preset['preset_style']), "'\\");
 		}
 
