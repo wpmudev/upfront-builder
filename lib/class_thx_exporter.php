@@ -1848,6 +1848,12 @@ error_log(debug_backtrace());
 
 		// Populate missing info from the current theme
 		if (is_object($theme) && $theme->exists()) {
+			
+			// Okay so first up, check if the theme has the WDP ID header
+			// because we will want to hold on to that if so
+			$wdp_id = $theme->get('WDP ID');
+			if (!empty($wdp_id)) $data['thx-wdp-id'] = $wdp_id;
+
 			foreach ($data as $idx => $info) {
 				// If we have stuff here, we're all good to go for this property, so carry on (sanitize first though)
 				if (!empty($info)) {
