@@ -117,6 +117,15 @@ define(function () {
 				Upfront.Views.Editor.notify(Upfront.Settings.l10n.global.behaviors.style_export_fail);
 			});
 		},
+		_save_presets: function(deferred) {
+			var presetSave = Upfront.Application.presetSaver.save();
+
+			presetSave.done( function() {
+				deferred.resolve();
+			}).fail( function() {
+				deferred.reject();
+			});
+		},
 		_export_layout: function (custom_data) {
 			var typography,
 				properties,
@@ -195,7 +204,7 @@ define(function () {
 				if ( response && response.error )
 					deferred.reject(response.error);
 				else
-					deferred.resolve();
+					Exporter._save_presets(deferred);
 			}).error(function(){
 				deferred.reject();
 			});
