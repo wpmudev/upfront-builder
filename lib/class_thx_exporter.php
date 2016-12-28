@@ -1457,11 +1457,13 @@ error_log(debug_backtrace());
 
 		// Save file list for later
 		$original_images = preg_match('{\b' . $template . '\b}', wp_normalize_path($template_images_dir))
-			? glob($template_images_dir . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE)
+			? glob($template_images_dir . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,mp4,MP4,webm,WEBM,WebM}', GLOB_BRACE)
 			: array()
 		;
 
-		preg_match_all("#\b(https?://.+?\.(jpg|jpeg|png|gif))\b#", $content, $matches);
+		// We're also including supported video files here,
+		// because we're exporting this now, too
+		preg_match_all("#\b(https?://.+?\.(jpg|jpeg|png|gif|mp4|webm))\b#", $content, $matches);
 
 		$images_used_in_template = array();
 		$separator = '/';
