@@ -23,7 +23,9 @@ function hide_errors () { return $(".upfront_admin.upfront-builder .upfront-erro
 
 function edit_theme (theme) {
 	var search = window.location.search.toString(),
-		url = (window._thx || {}).editor_base.replace(/\/theme/, '/' + theme)
+		edbase = (window._thx || {}).editor_base,
+		slug = (window._thx || {}).action_slug,
+		url = edbase.replace(slug, slug.replace(/\/theme/, '/' + theme))
 	;
 	if (!url) return false;
 
