@@ -87,7 +87,11 @@ class Thx_L10n {
 			'variant_image_label' => __('Image', UpfrontThemeExporter::DOMAIN),
 			'variant_image_info' => __('Image', UpfrontThemeExporter::DOMAIN),
 			'variant_caption_label' => __('Caption', UpfrontThemeExporter::DOMAIN),
-			'variant_caption_info' => __('Caption', UpfrontThemeExporter::DOMAIN)
+			'variant_caption_info' => __('Caption', UpfrontThemeExporter::DOMAIN),
+
+			// mode context dialog (application.js)
+			'builder_mode_context' => __('This is builder interface, this is where you create/edit a distributable theme', UpfrontThemeExporter::DOMAIN),
+			'editor_mode_context' => __('This is editor, prolly not what you want', UpfrontThemeExporter::DOMAIN),
 
 		);
 	}
