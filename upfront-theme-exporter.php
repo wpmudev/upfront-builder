@@ -123,6 +123,22 @@ class UpfrontThemeExporter {
 			Thx_Admin::serve();
 		}
 		$this->_load_textdomain();
+
+		// Add shared Upfront/Exporter JS resources
+		add_action('upfront-core-inject_dependencies', array($this, 'add_shared_scripts'));
+	}
+
+	/**
+	 * This is where we inject shared scripts
+	 */
+	public function add_shared_scripts () {
+		$deps = Upfront_CoreDependencies_Registry::get_instance();
+		$deps->add_script(plugins_url('app/shared.js', __FILE__));
+		/*
+		foreach ($script_urls as $url) {
+			$deps->add_script($url);
+		}
+		 */
 	}
 
 	/**
