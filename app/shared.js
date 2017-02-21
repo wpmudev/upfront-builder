@@ -18,7 +18,7 @@
 						: Upfront.mainData.l10n.exporter.editor_mode_context
 					;
 					Upfront.Popup.open(function ($body) {
-						$(this).text(content);
+						$(this).html('<p>' + content + '</p>');
 					});
 				}
 			}
