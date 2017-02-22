@@ -18,7 +18,12 @@
 				 * Only happens when builder is installed, but affects
 				 * both editor and builder.
 				 */
-				'mode-context-dialog': function () {
+				'mode-context-dialog': function mode_context_dialog () {
+					if ($(".getting-started-popup").length) {
+						return Upfront.Events.on('upfront:getting_started:done', function () {
+							mode_context_dialog();
+						});
+					}
 					var l10n = (((Upfront || {}).mainData || {}).l10n || {}).exporter,
 						skip = parseInt(
 							(((Upfront || {}).data || {}).exporter_shared || {}).context_mode,
