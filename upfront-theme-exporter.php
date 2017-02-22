@@ -126,6 +126,48 @@ class UpfrontThemeExporter {
 
 		// Add shared Upfront/Exporter JS resources
 		add_action('upfront-core-inject_dependencies', array($this, 'add_shared_scripts'));
+		add_filter('upfront_data', array($this, 'add_shared_data'));
+
+		// Shared - context mode popup
+		add_action('wp_ajax_upfront_thx-mode_context-skip', array($this, 'json_context_mode_skip'));
+	}
+
+	/**
+	 * Handle data augmentation for shared resource
+	 *
+	 * @param array $data Data gathered this far
+	 *
+	 * @return array Augmented data
+	 */
+	public function add_shared_data ($data) {
+		$user_id = get_current_user_id();
+
+		$data['exporter_shared'] = array(
+			'context_mode' => (int)get_user_option('upfront-context_mode_skip', $user_id),
+		);
+
+		return $data;
+	}
+
+	/**
+	 * Stores user preference regarding context mode popup
+	 *
+	 * AJAX request handler
+	 */
+	public function json_context_mode_skip () {
+		$result = array('error' => 1);
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) return wp_send_json($result);
+
+		$user_id = get_current_user_id();
+		if (empty($user_id) || !is_numeric($user_id)) return wp_send_json($result);
+
+		$skip = (int)get_user_option('upfront-context_mode_skip', $user_id);
+		if ($skip) return wp_send_json($result);
+
+		update_user_option($user_id, 'upfront-context_mode_skip', 1, true);
+		wp_send_json(array(
+			'error' => 0,
+		));
 	}
 
 	/**
