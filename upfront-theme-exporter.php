@@ -111,10 +111,7 @@ class UpfrontThemeExporter {
 	 * No need to wait for the rest of Upfront, set our stuff up right now.
 	 */
 	private function _add_global_hooks () {
-		/*
-		// Not adding the toolbar item since the admin page move
 		add_action('upfront-admin_bar-process', array($this, 'add_toolbar_item'), 10, 2);
-		*/
 
 		add_filter('extra_theme_headers', array($this, 'process_extra_child_theme_headers'));
 
@@ -231,46 +228,44 @@ class UpfrontThemeExporter {
 	/**
 	 * Adds the builder toolbar item
 	 *
-	 * Deprecated since v0.9
-	 *
 	 * @param object $toolbar Toolbar object
 	 * @param array $item Upfront item
 	 */
 	public function add_toolbar_item ($toolbar, $item) {
-		return false; // Deprecated since v0.9
-
 		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) return false;
 		if (empty($item['meta'])) return false; // Only actual boot item has meta set
 
 		$child = upfront_thx_is_current_theme_upfront_child();
-		$create_title = __('Create New Theme', self::DOMAIN);
-		$main_title = (bool)$child
-			? __('Builder', self::DOMAIN)
-			: $create_title
-		;
-		$root_item_id = 'upfront-create-theme';
 
-		$toolbar->add_menu(array(
+		// Swap out root items
+		$root_item_id = $item['id'];
+		$new_item_root = 'upfront-editor_builder-hub';
+		$new_item = array_merge($item, array(
 			'id' => $root_item_id,
-			'title' => '<span style="top:2px" class="ab-icon dashicons-hammer"></span><span class="ab-label">' . $main_title . '</span>',
-			'href' => admin_url('admin.php?page=upfront-builder'),
-			'meta' => array( 'class' => 'upfront-create_theme' ),
+			'parent' => $new_item_root,
 		));
+		$item['id'] = $new_item_root;
+		unset($item['meta']);
+
+		$toolbar->add_node($item);
+		$toolbar->add_node($new_item);
 
 		if ((bool)$child) {
+			// Edit current
 			$toolbar->add_menu(array(
-				'parent' => $root_item_id,
+				'parent' => $new_item_root,
 				'id' => 'upfront-builder-current_theme',
 				'title' => __('Edit current theme', self::DOMAIN),
 				'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/' . $child),
 			));
-			$toolbar->add_menu(array(
-				'parent' => $root_item_id,
-				'id' => 'upfront-builder-create_theme',
-				'title' => $create_title,
-				'href' => admin_url('admin.php?page=upfront-builder'),
-			));
 		}
+		// Create new
+		$toolbar->add_menu(array(
+			'parent' => $new_item_root,
+			'id' => 'upfront-builder-create_theme',
+			'title' => __('Create New Theme', self::DOMAIN),
+			'href' => admin_url('admin.php?page=upfront-builder'),
+		));
 	}
 
 	/**
