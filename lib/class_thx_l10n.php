@@ -92,6 +92,8 @@ class Thx_L10n {
 			// mode context dialog (application.js)
 			'builder_mode_context' => __('This is builder interface, this is where you create/edit a distributable theme', UpfrontThemeExporter::DOMAIN),
 			'editor_mode_context' => __('This is editor, prolly not what you want', UpfrontThemeExporter::DOMAIN),
+			'user_agrees' => __('Okay, I got it', UpfrontThemeExporter::DOMAIN),
+			'dont_show_again' => __('Never show this again', UpfrontThemeExporter::DOMAIN),
 
 		);
 	}

@@ -19,25 +19,27 @@
 				 * both editor and builder.
 				 */
 				'mode-context-dialog': function () {
-					var skip = parseInt(
-						(((Upfront || {}).data || {}).exporter_shared || {}).context_mode,
-						10
-					);
+					var l10n = (((Upfront || {}).mainData || {}).l10n || {}).exporter,
+						skip = parseInt(
+							(((Upfront || {}).data || {}).exporter_shared || {}).context_mode,
+							10
+						)
+					;
 					if (skip > 0) return false;
 
 					var content = Upfront.Application.is_builder()
-						? Upfront.mainData.l10n.exporter.builder_mode_context
-						: Upfront.mainData.l10n.exporter.editor_mode_context
+						? l10n.builder_mode_context
+						: l10n.editor_mode_context
 					;
 					Upfront.Popup.open(function (data, $head, $foot) {
 						$(this).html('<p>' + content + '</p>');
 						$foot.append('<p>' +
 							'<button type="button">' +
-								'OK' +
+								l10n.user_agrees +
 							'</button>' +
 							'<label>' +
 								'<input type="checkbox" />' +
-								'Never show this again' +
+								l10n.dont_show_again +
 							'</label>' +
 						'</p>');
 						$foot.find('button')
