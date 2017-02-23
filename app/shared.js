@@ -37,8 +37,8 @@
 						: l10n.editor_mode_context
 					;
 					Upfront.Popup.open(function (data, $head, $foot) {
-						$(this).html('<p>' + content + '</p>');
-						$foot.append('<p>' +
+						$(this).html('<div>' + content + '</div>');
+						$foot.append('<div>' +
 							'<button type="button">' +
 								l10n.user_agrees +
 							'</button>' +
@@ -46,7 +46,7 @@
 								'<input type="checkbox" />' +
 								l10n.dont_show_again +
 							'</label>' +
-						'</p>');
+						'</div>');
 						$foot.find('button')
 							.off('click')
 							.on('click', function (e) {
@@ -61,7 +61,7 @@
 								return false;
 							})
 						;
-					});
+					}, {}, 'thx-context-mode-popup');
 				},
 
 				/**

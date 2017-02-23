@@ -171,13 +171,11 @@ class UpfrontThemeExporter {
 	 * This is where we inject shared scripts
 	 */
 	public function add_shared_scripts () {
+		if (!Upfront_Permissions::current(Upfront_Permissions::BOOT)) return false;
+
 		$deps = Upfront_CoreDependencies_Registry::get_instance();
 		$deps->add_script(plugins_url('app/shared.js', __FILE__));
-		/*
-		foreach ($script_urls as $url) {
-			$deps->add_script($url);
-		}
-		 */
+		$deps->add_style(plugins_url('styles/shared.css', __FILE__));
 	}
 
 	/**
