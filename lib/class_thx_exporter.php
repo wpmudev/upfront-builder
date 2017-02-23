@@ -197,6 +197,10 @@ class Thx_Exporter {
 
 			if (empty($layout['layout']['specificity'])) $layout['layout']['specificity'] = $raw_layout;
 
+			// Allow compatibility layer to hide exported layout when owning plugin is not active
+			$skip = apply_filters('upfront-builder_skip_exported_layouts', false, $layout['layout']);
+			if ($skip) continue;
+
 			$label = Upfront_EntityResolver::layout_to_name($layout['layout']);
 			$layout['label'] = !empty($label)
 				? $label
@@ -1703,8 +1707,8 @@ error_log(debug_backtrace());
 			$preset['preset_style'] = $this->_make_urls_passive_relative($preset['preset_style']);
 			$preset['preset_style'] = htmlentities($preset['preset_style'], ENT_NOQUOTES, "UTF-8"); // Replace \ to keep unicode characters and prevent multiple slashings
 			$preset['preset_style'] = addcslashes(str_replace("\n", "@n", $preset['preset_style']), "'\\");
-			
-			
+
+
 		}
 
 		return $preset;
@@ -1850,7 +1854,7 @@ error_log(debug_backtrace());
 
 		// Populate missing info from the current theme
 		if (is_object($theme) && $theme->exists()) {
-			
+
 			// Okay so first up, check if the theme has the WDP ID header
 			// because we will want to hold on to that if so
 			$wdp_id = $theme->get('WDP ID');
