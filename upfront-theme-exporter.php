@@ -244,24 +244,32 @@ class UpfrontThemeExporter {
 		));
 		$item['id'] = $new_item_root;
 		unset($item['meta']);
+		unset($item['href']);
 
 		$toolbar->add_node($item);
 		$toolbar->add_node($new_item);
 
+		// Now, let's make builder menu item expandable
+		$toolbar->add_node(array(
+			'id' => 'upfront-builder-hub',
+			'parent' => $new_item_root,
+			'title' => __('Builder', self::DOMAIN),
+		));
+
 		if ((bool)$child) {
 			// Edit current
 			$toolbar->add_menu(array(
-				'parent' => $new_item_root,
+				'parent' => 'upfront-builder-hub',
 				'id' => 'upfront-builder-current_theme',
-				'title' => __('Edit current theme', self::DOMAIN),
+				'title' => __('Modify current theme', self::DOMAIN),
 				'href' => home_url('/' . UpfrontThemeExporter::get_root_slug() . '/' . $child),
 			));
 		}
 		// Create new
 		$toolbar->add_menu(array(
-			'parent' => $new_item_root,
+			'parent' => 'upfront-builder-hub',
 			'id' => 'upfront-builder-create_theme',
-			'title' => __('Create New Theme', self::DOMAIN),
+			'title' => __('Create new theme', self::DOMAIN),
 			'href' => admin_url('admin.php?page=upfront-builder'),
 		));
 	}
