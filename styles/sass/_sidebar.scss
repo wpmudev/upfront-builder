@@ -3,7 +3,7 @@
 	.sidebar-commands-header {
 		background: rgb(31,41,51);
 	}
-	
+
 	.upfront-logo {
 		    background-position: -190px -439px;
 	}
@@ -144,5 +144,11 @@
 	}
 	.exit-responsive {
 		float: left;
+	}
+	.command-export {
+		clear: both;
+		width: 90px;
+		height: 36px;
+		margin-top: 10px;
 	}
 }

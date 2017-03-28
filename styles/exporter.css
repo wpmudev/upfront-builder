@@ -126,6 +126,12 @@
 #sidebar-ui .sidebar-commands-responsive-control .exit-responsive {
   float: left; }
 
+#sidebar-ui .sidebar-commands-responsive-control .command-export {
+  clear: both;
+  width: 90px;
+  height: 36px;
+  margin-top: 10px; }
+
 .upfront-inline-modal {
   /* Layouts browse modal */ }
   .upfront-inline-modal .thx-browse_layouts {
