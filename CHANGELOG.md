@@ -2,6 +2,12 @@ Change Log
 ============
 
 
+1.1.7 - 2017-03-29
+-------------------------------------------------------------------------------
+- Add: compatibility with CoursePress core support
+- Add: admin toolbar combined menu item
+- Add: context mode popup
+
 1.1.6 - 2017-01-20
 -------------------------------------------------------------------------------
 - Fix: network activation issue
