@@ -42,6 +42,24 @@ class Thx_Admin {
 		add_filter('upfront-admin-admin_notices', array($this, 'process_core_notices'));
 
 		add_action('admin_init', array($this, 'initialize_dashboard'));
+
+		add_filter('plugin_action_links_' . THX_PLUGIN_BASENAME, array($this, 'add_settings_link'));
+	}
+
+	/**
+	 * Adds settings link to plugins menu list item
+	 *
+	 * @param array $links List of plugin action links
+	 *
+	 * @return array Augmented links
+	 */
+	public function add_settings_link ($links) {
+		$links[] = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url(admin_url('admin.php?page=upfront-builder')),
+			__('Settings', UpfrontThemeExporter::DOMAIN)
+		);
+		return $links;
 	}
 
 	/**

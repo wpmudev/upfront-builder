@@ -32,6 +32,7 @@ require_once dirname(__FILE__) . '/lib/util.php';
 require_once dirname(__FILE__) . '/lib/class_thx_l10n.php';
 
 define('THX_BASENAME', basename(dirname(__FILE__)));
+define('THX_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
 /**
  * Main plugin class
