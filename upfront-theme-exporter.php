@@ -34,6 +34,8 @@ require_once dirname(__FILE__) . '/lib/class_thx_l10n.php';
 define('THX_BASENAME', basename(dirname(__FILE__)));
 define('THX_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
+register_deactivation_hook(__FILE__, array('UpfrontThemeExporter', 'deactivate'));
+
 /**
  * Main plugin class
  */
@@ -45,6 +47,20 @@ class UpfrontThemeExporter {
 	 * Just basic, context-free bootstrap here.
 	 */
 	private function __construct() {}
+
+	/**
+	 * Plugin deactivation hook listener
+	 *
+	 * Cleans up stuff after itself.
+	 * Currently cleans up kicsktart activation notice with no
+	 * core present dismissal flag.
+	 *
+	 * @since 1.1.8-BETA-1
+	 */
+	public static function deactivate () {
+		if (!class_exists('Thx_Kickstart')) require_once dirname(__FILE__) . '/lib/class_thx_kickstart.php';
+		Thx_Kickstart::clean_up();
+	}
 
 	/**
 	 * Boot point.
