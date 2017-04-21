@@ -80,6 +80,26 @@
 	}
 
 	/**
+	 * Sends perma-disabling AJAX request
+	 *
+	 * @param {Object} e Click event (optional)
+	 *
+	 * @return {Boolean} false
+	 */
+	function go_away (e) {
+		if (e && e.preventDefault) e.preventDefault();
+		if (e && e.stopPropagation) e.stopPropagation();
+
+		$.post(ajaxurl, {
+			action: 'upfront-kickstart-go_away'
+		}).done(function () {
+
+		});
+
+		return false;
+	}
+
+	/**
 	 * Initializes click listeners
 	 *
 	 * @return {Boolean}
@@ -91,6 +111,17 @@
 			"click",
 			".wp-admin .notice #upfront-kickstart-start_building",
 			start_building
+		);
+
+		$(document).on(
+			"click",
+			".wp-admin .notice #upfront-kickstart-go_away",
+			go_away
+		);
+		$(document).on(
+			"click",
+			".wp-admin .notice.uf-thx-kickstart .notice-dismiss",
+			go_away
 		);
 
 		return true;
