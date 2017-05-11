@@ -2014,7 +2014,8 @@ error_log(debug_backtrace());
 				? $resp
 				: (!empty($resp[0]) ? $resp[0] : false)
 			;
-			if (!empty($theme)) {
+			// On some servers (:cough: GoDaddy :cough:) empty object is always returned, so check for actual theme info too
+			if (!empty($theme) && !empty($theme->name) && !empty($theme->homepage)) {
 				$result['error'] = 3; // So we got a result, and it's a conflict
 				$result['msg'] = sprintf(
 					__('Detected conflict with %s theme in wordpress.org public repository: %s', UpfrontThemeExporter::DOMAIN),
