@@ -19,7 +19,7 @@
 			;
 
 			var Command_ExportLayout = Upfront.Views.Editor.Command.extend({
-				className: "command-export",
+				className: "command-export sidebar-commands-button blue",
 				render: function (){
 					if (Upfront.Application.mode.current === 'responsive') {
 						this.$el.text(altl10n.save);
@@ -45,7 +45,7 @@
 			});
 
 			var Command_Themes = Upfront.Views.Editor.Command.extend({
-				className: "command-themes upfront-icon upfront-icon-themes",
+				className: "command-themes upfront-icon upfront-icon-themes sidebar-commands-button light",
 				render: function (){
 					this.$el.text(l10n.themes);
 				},
@@ -56,7 +56,7 @@
 
 			var Command_CreateResponsiveLayouts = Upfront.Views.Editor.Command.extend({
 				enabled: true,
-				className: 'command-create-responsive-layouts upfront-icon upfront-icon-start-responsive',
+				className: 'command-create-responsive-layouts upfront-icon upfront-icon-start-responsive sidebar-commands-small-button',
 				render: function () {
 					this.$el.html("<span title='"+ l10n.create_responsive_layouts +"'>" + l10n.create_responsive_layouts + "</span>");
 				},
