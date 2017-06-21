@@ -15,7 +15,8 @@
   border-color: #3ea; }
 
 #sidebar-ui .create-theme-sidebar .sidebar-commands-header {
-  background: #1f2933; }
+  background: #1f2933;
+  height: 50px; }
 
 #sidebar-ui .create-theme-sidebar .upfront-logo {
   background-position: -190px -439px; }
@@ -28,7 +29,8 @@
   line-height: 16px;
   display: block;
   color: #6c8dac;
-  margin: 0 0 8px; }
+  margin: 0 0 8px;
+  clear: both; }
   #sidebar-ui .create-theme-sidebar .sidebar-commands-primary .info-panel b {
     font-weight: bold;
     color: #adc3d8; }

@@ -2,10 +2,11 @@
 
 	.sidebar-commands-header {
 		background: rgb(31,41,51);
+		height: 50px;
 	}
 
 	.upfront-logo {
-		    background-position: -190px -439px;
+		background-position: -190px -439px;
 	}
 
 }
@@ -22,6 +23,7 @@
 		display: block;
 		color: #6c8dac;
 		margin: 0 0 8px;
+		clear: both;
 
 		b {
 			font-weight: bold;

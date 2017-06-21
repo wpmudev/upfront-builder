@@ -67,7 +67,7 @@
 
 			var Command_EditStructure = Upfront.Views.Editor.Command.extend({
 				tagName: 'div',
-				className: "command-link command-edit-structure",
+				className: "command-link command-edit-structure sidebar-commands-small-button",
 				render: function (){
 					this.$el.html(l10n.edit_grid);
 					this.$el.prop("title", l10n.edit_grid);
