@@ -143,7 +143,7 @@
   max-width: 520px;
   margin: initial;
   z-index: 100010042;
-  left: 250px; }
+  left: 280px; }
   #upfront-popup.getting-started-popup.builder-activate-theme-popup {
     left: 0;
     margin: 100px auto;
@@ -260,7 +260,8 @@
   z-index: 10;
   background: transparent;
   margin-left: -15px;
-  cursor: initial; }
+  cursor: initial;
+  background: none !important; }
 
 #sidebar-ui .no-click-overlay.highlighted {
   background: #013d61;
@@ -321,7 +322,7 @@
 
 #upfront-popup.getting-started-popup.step-three-popup {
   top: 370px;
-  left: 260px; }
+  left: 280px; }
   #upfront-popup.getting-started-popup.step-three-popup:before {
     margin-top: 110px; }
   #upfront-popup.getting-started-popup.step-three-popup .getting_started_content .controls {

@@ -58,7 +58,7 @@
 	max-width: 520px;
 	margin: initial;
 	z-index: 100010042;
-	left: 250px;
+	left: 280px;
 
 	&.builder-activate-theme-popup {
 		left: 0;
@@ -229,6 +229,7 @@
 	background: transparent;
 	margin-left: -15px;
 	cursor: initial;
+	background: none !important;
 }
 
 #sidebar-ui .no-click-overlay.highlighted {
@@ -319,7 +320,7 @@
 
 #upfront-popup.getting-started-popup.step-three-popup {
 	top: 370px;
-	left: 260px;
+	left: 280px;
 	
 	&:before {
 		margin-top: 110px;
