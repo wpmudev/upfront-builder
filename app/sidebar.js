@@ -42,7 +42,7 @@ var Command_InfoPanel = Upfront.Views.Editor.Command.extend({
 });
 
 var Command_LayoutModal = Upfront.Views.Editor.Command.extend({
-	className: "command-browse-layout",
+	className: "command-browse-layout sidebar-commands-button light",
 	render: function () {
 		this.$el.html(l10n.layouts);
         this.$el.prop("title", l10n.layouts);

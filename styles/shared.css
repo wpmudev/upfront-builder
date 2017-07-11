@@ -1,0 +1,33 @@
+.thx-context-mode-popup {
+	max-width: 600px;
+}
+.thx-context-mode-popup #upfront-popup-content {
+	padding: 15px 30px;
+	background: #e5f3fe;
+}
+.thx-context-mode-popup #upfront-popup-bottom {
+	background: #e5f3fe;
+	height: 54px;
+}
+.thx-context-mode-popup #upfront-popup-bottom div {
+	clear: both;
+	width: 80%;
+	margin: 0 auto;
+}
+.thx-context-mode-popup #upfront-popup-bottom button {
+	float: left;
+	max-width: 40%;
+}
+.thx-context-mode-popup #upfront-popup-bottom button {
+	background: #1fcd8f;
+	color: #fff;
+	border: 0px solid #fff;
+}
+.thx-context-mode-popup #upfront-popup-bottom label {
+	float: left;
+	margin-left: 1em;
+	line-height: 44px;
+}
+.thx-context-mode-popup #upfront-popup-bottom label input {
+	margin-right: .4em;
+}

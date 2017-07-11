@@ -117,12 +117,22 @@ define(function () {
 				Upfront.Views.Editor.notify(Upfront.Settings.l10n.global.behaviors.style_export_fail);
 			});
 		},
+		_save_presets: function(deferred) {
+			var presetSave = Upfront.Application.presetSaver.save();
+
+			presetSave.done( function() {
+				deferred.resolve();
+			}).fail( function() {
+				deferred.reject();
+			});
+		},
 		_export_layout: function (custom_data) {
 			var typography,
 				properties,
 				layout_style,
 				deferred = new $.Deferred(),
-				data = {}
+				data = {},
+				data_regions, data_regions_compressed
 			;
 
 			// The request should only ever be sent in builder mode
@@ -147,9 +157,24 @@ define(function () {
 				return _.contains(['typography', 'layout_style', 'global_regions'], property.name);
 			});
 
+			data_regions = Upfront.Application.current_subapplication.get_layout_data().regions;
+			if ( Upfront.mainData.save_compression ) {
+				data_regions_compressed = Upfront.Util.compress(data_regions);
+				data_regions = data_regions_compressed.result;
+			}
+			else {
+				data_regions = JSON.stringify(data_regions);
+			}
+
+
 			data = {
 				typography: (typography ? JSON.stringify(typography.value) : ''),
-				regions: JSON.stringify(Upfront.Application.current_subapplication.get_layout_data().regions),
+
+				compression: Upfront.mainData.save_compression ? 1 : 0,
+				regions: data_regions,
+				regions_original_length: data_regions_compressed ? data_regions_compressed.original_length : 0,
+				regions_compressed_length: data_regions_compressed ? data_regions_compressed.compressed_length : 0,
+
 				template: _upfront_post_data.layout.specificity || _upfront_post_data.layout.item || _upfront_post_data.layout.type, // Respect proper cascade ordering
 				layout_properties: JSON.stringify(properties),
 				theme: Upfront.themeExporter.currentTheme,
@@ -179,7 +204,7 @@ define(function () {
 				if ( response && response.error )
 					deferred.reject(response.error);
 				else
-					deferred.resolve();
+					Exporter._save_presets(deferred);
 			}).error(function(){
 				deferred.reject();
 			});

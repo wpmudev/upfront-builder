@@ -5,6 +5,14 @@
 		Upfront.themeExporter.root + 'app/application.js'
 	];
 	require(dependencies, function(StylesHelper, PostLayoutHelper){
+		// Replace _.template only when we actually boot Upfront, otherwise some other scripts using it might break
+		var _tpl = _.template;
+		_.template = function (tpl, data) {
+			if (typeof undefined === typeof data) return _tpl(tpl);
+			var tmp = _tpl(tpl);
+			return tmp(data);
+		};
+
 		StylesHelper.init();
 		PostLayoutHelper.init();
 

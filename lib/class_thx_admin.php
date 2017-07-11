@@ -42,6 +42,24 @@ class Thx_Admin {
 		add_filter('upfront-admin-admin_notices', array($this, 'process_core_notices'));
 
 		add_action('admin_init', array($this, 'initialize_dashboard'));
+
+		add_filter('plugin_action_links_' . THX_PLUGIN_BASENAME, array($this, 'add_settings_link'));
+	}
+
+	/**
+	 * Adds settings link to plugins menu list item
+	 *
+	 * @param array $links List of plugin action links
+	 *
+	 * @return array Augmented links
+	 */
+	public function add_settings_link ($links) {
+		$links[] = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url(admin_url('admin.php?page=upfront-builder')),
+			__('Settings', UpfrontThemeExporter::DOMAIN)
+		);
+		return $links;
 	}
 
 	/**
@@ -140,13 +158,19 @@ class Thx_Admin {
 
 		wp_enqueue_script('create_edit', $tpl->url('js/create_edit.js'), array('jquery'));
 		wp_localize_script('create_edit', '_thx', array(
-			'editor_base' => esc_url(Upfront_Thx_Builder_VirtualPage::get_url(Upfront_Thx_Builder_VirtualPage::get_initial_url())),
+			'editor_base' => esc_url(Upfront_Thx_Builder_VirtualPage::get_url(
+				Upfront_Thx_Builder_VirtualPage::get_initial_url()
+			)),
+			'action_slug' => Upfront_Thx_Builder_VirtualPage::get_initial_url(),
 			'admin_ajax' => admin_url('admin-ajax.php'),
 			'l10n' => array(
 				'oops' => __('Oops, something went wrong with processing your request.', UpfrontThemeExporter::DOMAIN),
 				'start_building' => __('Start Building', UpfrontThemeExporter::DOMAIN),
 				'checking' => __('Checking...', UpfrontThemeExporter::DOMAIN),
 				'creating' => __('Creating...', UpfrontThemeExporter::DOMAIN),
+				'select_media' => __('Select or Upload Media Of Your Chosen Persuasion', UpfrontThemeExporter::DOMAIN),
+				'use_media' => __('Use this media', UpfrontThemeExporter::DOMAIN),
+				'loading' => __('Loading data...', UpfrontThemeExporter::DOMAIN),
 			),
 		));
 

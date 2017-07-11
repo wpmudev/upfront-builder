@@ -107,12 +107,47 @@ function upfront_thx_is_current_theme_upfront_child () {
  * @return bool
  */
 function upfront_thx_is_current_theme_upfront_related () {
+	// Check if wp_get_current_user method exist
+	wp_get_current_user_exist();
+
 	$current = wp_get_theme(get_option('stylesheet'));
 	if ('upfront' === $current->get_template()) return true;
 
 	return (bool)upfront_thx_is_current_theme_upfront_child();
 }
 
+/**
+ * Checks if wp_get_current_user exist
+ *
+ * @return bool Status
+ */
+function wp_get_current_user_exist() {
+	$status = false;
+
+	if (is_multisite()) {
+		// Check if we're network-active
+		$active = get_site_option('active_sitewide_plugins');
+		$active = is_array($active) ? $active : array();
+		if (!empty($active)) {
+			$exporter = preg_grep('/' . preg_quote(THX_BASENAME) . '/', array_keys($active));
+			if (!empty($exporter)) return $status;
+		}
+	}
+
+	// Check if function exist
+	if ( ! function_exists( 'wp_get_current_user' ) ) {
+
+		$pluggable = ABSPATH . "wp-includes/pluggable.php";
+
+		// Check if file exist
+		if ( file_exists( $pluggable ) ) {
+			require_once( $pluggable );
+			$status = true;
+		}
+	}
+
+	return $status;
+}
 
 /**
  * Clears autoconversion cache

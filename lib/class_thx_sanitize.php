@@ -104,7 +104,12 @@ abstract class Thx_Sanitize {
 		$functions = get_defined_functions();
 		if (!empty($functions['user']) && in_array($what, $functions['user'])) return false;
 		if (!empty($functions['internal']) && in_array($what, $functions['internal'])) return false;
-		if (in_array($what, get_declared_classes())) return false;
+		
+		$known_classes = get_declared_classes();
+		if (is_array($known_classes) && !empty($known_classes)) {
+			$known_classes = array_map('strtolower', $known_classes);
+		} else $known_classes = array();
+		if (in_array(strtolower($what), $known_classes)) return false;
 		return true;
 	}
 

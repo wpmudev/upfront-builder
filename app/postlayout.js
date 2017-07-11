@@ -228,6 +228,7 @@ define([
 		cancelPostContentStyle: function(){
 			var $main = $(Upfront.Settings.LayoutEditor.Selectors.main);
 			$main.removeClass('upfront-editing-content-style');
+			$main.find('.upfront-region-edit-trigger').show();
 			this.savePostDesingButton.remove();
 			$('.upfront-output-PostPart_contents, .upostdata-part.content').closest(".upfront-object-view").removeClass("upfront-disable-surroundings");
 			//$('.upfront-output-PostPart_contents .post_content').html(Upfront.data.exporter.postTestContent);
@@ -241,6 +242,9 @@ define([
 		setDataTestContent: function (view) {
 			var type = view.model.get_property_value_by_name('part_type');
 			if ( type != 'content' || !view.object_group_view ) return;
+			//TODO abstract this to plugins
+			var layout = Upfront.Application.current_subapplication.get_layout_data().layout;
+			if (layout && layout.specificity && (layout.specificity === 'single-page-mpproducts' || layout.specificity === 'single-page-mpcart')) return;
 			var editor = view.object_group_view.editor;
 			if( editor.post.get("post_type") === "post" ){
 				this._setPostDataTestContent(view);
@@ -295,6 +299,7 @@ define([
 				}
 				//self.view.$('.upfront-object').addClass("upfront-editing-content-style");
 				self.view.$('.upfront-object-content').closest(".upfront-object-view").addClass("upfront-disable-surroundings");
+				$main.find('.upfront-region-edit-trigger').hide();
 				new post_image.PostImageVariants({
 					contentView : self.view
 				});

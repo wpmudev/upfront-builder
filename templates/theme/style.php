@@ -10,5 +10,5 @@ License: %thx-theme-licence%
 License URI: %thx-theme-licence-uri%
 Tags: %thx-theme-tags%
 Text Domain: %thx-theme-text-domain%
+WDP ID: %thx-wdp-id%
 */
-@import url(../%thx-theme-template%/style.css);

@@ -197,6 +197,10 @@ class Thx_Exporter {
 
 			if (empty($layout['layout']['specificity'])) $layout['layout']['specificity'] = $raw_layout;
 
+			// Allow compatibility layer to hide exported layout when owning plugin is not active
+			$skip = apply_filters('upfront-builder_skip_exported_layouts', false, $layout['layout']);
+			if ($skip) continue;
+
 			$label = Upfront_EntityResolver::layout_to_name($layout['layout']);
 			$layout['label'] = !empty($label)
 				? $label
@@ -246,6 +250,8 @@ class Thx_Exporter {
 				)
 			);
 		}
+
+		$layouts = apply_filters('upfront-builder_available_layouts', $layouts);
 
 		// Now we have a list of layouts. Let's add some additional info, such as
 		// human-friendly labels and whether there's any changes in the DB for each of them
@@ -327,7 +333,10 @@ class Thx_Exporter {
 
 	public function prepare_preview_post ($post, $data) {
 		if (empty($data['post_id']) || is_numeric($data['post_id'])) return $post;
-		if ( 'fake_post' !== $data['post_id'] && 'fake_styled_post' !== $data['post_id'] ) return $post;
+
+		$generate = apply_filters('upfront-builder_generate_preview_post', false, $data['post_id']);
+
+		if ( 'fake_post' !== $data['post_id'] && 'fake_styled_post' !== $data['post_id'] && $generate === false ) return $post;
 		return $this->_generate_preview_post($data);
 	}
 /*
@@ -621,7 +630,18 @@ error_log(debug_backtrace());
 		$this->_template = $data['template'];
 		$this->_fs->set_theme($this->_theme);
 
-		$regions = json_decode(stripslashes($data['regions']));
+		// Try extracting from compressed request first
+		$regions = false;
+		if ( class_exists("Upfront_Compression") ) {
+			$regions = Upfront_Compression::extract_from_request($data, array(
+				'data' => 'regions',
+				'original_length' => 'regions_original_length',
+				'compressed_length' => 'regions_compressed_length'
+			), false);
+		}
+		if ( false === $regions ) {
+			$regions = !empty($data['regions']) ? json_decode(stripslashes_deep($data['regions'])) : array();
+		}
 
 		$template = "<?php\n";
 
@@ -1441,11 +1461,13 @@ error_log(debug_backtrace());
 
 		// Save file list for later
 		$original_images = preg_match('{\b' . $template . '\b}', wp_normalize_path($template_images_dir))
-			? glob($template_images_dir . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE)
+			? glob($template_images_dir . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,mp4,MP4,webm,WEBM,WebM}', GLOB_BRACE)
 			: array()
 		;
 
-		preg_match_all("#\b(https?://.+?\.(jpg|jpeg|png|gif))\b#", $content, $matches);
+		// We're also including supported video files here,
+		// because we're exporting this now, too
+		preg_match_all("#\b(https?://.+?\.(jpg|jpeg|png|gif|mp4|webm))\b#", $content, $matches);
 
 		$images_used_in_template = array();
 		$separator = '/';
@@ -1683,7 +1705,10 @@ error_log(debug_backtrace());
 			$preset['preset_style'] = str_replace("\r\n", "\n", $preset['preset_style']); // Unify newlines
 			$preset['preset_style'] = str_replace("\r", "\n", $preset['preset_style']); // Unify newlines
 			$preset['preset_style'] = $this->_make_urls_passive_relative($preset['preset_style']);
+			$preset['preset_style'] = htmlentities($preset['preset_style'], ENT_NOQUOTES, "UTF-8"); // Replace \ to keep unicode characters and prevent multiple slashings
 			$preset['preset_style'] = addcslashes(str_replace("\n", "@n", $preset['preset_style']), "'\\");
+
+
 		}
 
 		return $preset;
@@ -1754,12 +1779,23 @@ error_log(debug_backtrace());
 		$this->_theme_settings->set($presetProperty, $result);
 	}
 
-	protected function is_post_element_preset($presetProperty) {
-		if($presetProperty == "post_data_element_presets" || $presetProperty == "author_element_presets" || $presetProperty == "featured_image_element_presets" || $presetProperty == "taxonomy_element_presets" || $presetProperty == "comments_element_presets") {
-			return true;
-		}
-
-		return false;
+	/**
+	 * Check whether we're dealing with a post data element preset.
+	 *
+	 * @param string $preset_property Preset property
+	 *
+	 * @return bool
+	 */
+	protected function is_post_element_preset ($preset_property) {
+		$post_element_presets = array(
+			'post_data_element_presets',
+			'author_element_presets',
+			'featured_image_element_presets',
+			'taxonomy_element_presets',
+			'comments_element_presets',
+			'meta_element_presets',
+		);
+		return in_array($preset_property, $post_element_presets);
 	}
 
 	/**
@@ -1818,6 +1854,12 @@ error_log(debug_backtrace());
 
 		// Populate missing info from the current theme
 		if (is_object($theme) && $theme->exists()) {
+
+			// Okay so first up, check if the theme has the WDP ID header
+			// because we will want to hold on to that if so
+			$wdp_id = $theme->get('WDP ID');
+			if (!empty($wdp_id)) $data['thx-wdp-id'] = $wdp_id;
+
 			foreach ($data as $idx => $info) {
 				// If we have stuff here, we're all good to go for this property, so carry on (sanitize first though)
 				if (!empty($info)) {
@@ -1972,7 +2014,8 @@ error_log(debug_backtrace());
 				? $resp
 				: (!empty($resp[0]) ? $resp[0] : false)
 			;
-			if (!empty($theme)) {
+			// On some servers (:cough: GoDaddy :cough:) empty object is always returned, so check for actual theme info too
+			if (!empty($theme) && !empty($theme->name) && !empty($theme->homepage)) {
 				$result['error'] = 3; // So we got a result, and it's a conflict
 				$result['msg'] = sprintf(
 					__('Detected conflict with %s theme in wordpress.org public repository: %s', UpfrontThemeExporter::DOMAIN),
@@ -2380,6 +2423,9 @@ error_log(json_encode(array("_save_post_layout", debug_backtrace())));
    * @return string
    */
 	protected function _get_preview_content ( $post_id = "fake_post", $post = false ) {
+		$content = apply_filters('upfront-builder_fake_content', '', $post_id);
+		if ($content !== '') return $content;
+
 		$tpl = Thx_Template::theme();
 		$test_content_file = $post
 			? 'tpl/postTestContent.html'

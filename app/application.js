@@ -13,11 +13,19 @@
 				Upfront.Settings.l10n.exporter :
 				Upfront.mainData.l10n.exporter
 			;
+			var altl10n = Upfront.Settings && Upfront.Settings.l10n
+				? Upfront.Settings.l10n.global.views
+				: Upfront.mainData.l10n.global.views
+			;
 
 			var Command_ExportLayout = Upfront.Views.Editor.Command.extend({
-				className: "command-export",
+				className: "command-export sidebar-commands-button blue",
 				render: function (){
-					this.$el.text(l10n.export_str);
+					if (Upfront.Application.mode.current === 'responsive') {
+						this.$el.text(altl10n.save);
+					} else {
+						this.$el.text(l10n.export_str);
+					}
 				},
 				on_click: function () {
 					$('div.redactor_editor').each(function() {
@@ -25,19 +33,19 @@
 						if(ed)
 							ed.stop();
 					});
-					
+
 					// check if theme being edited is the current active one
 					if ( Upfront.themeExporter.currentTheme === window._upfront_theme_exporter_active_theme ) {
 						Upfront.Events.trigger("command:layout:export_theme");
 					} else {
-						// ask user if to activate the theme being edited first before exporting 
+						// ask user if to activate the theme being edited first before exporting
 						Dialogs.activate_edited_theme(l10n);
 					}
 				}
 			});
 
 			var Command_Themes = Upfront.Views.Editor.Command.extend({
-				className: "command-themes upfront-icon upfront-icon-themes",
+				className: "command-themes upfront-icon upfront-icon-themes sidebar-commands-button light",
 				render: function (){
 					this.$el.text(l10n.themes);
 				},
@@ -48,7 +56,7 @@
 
 			var Command_CreateResponsiveLayouts = Upfront.Views.Editor.Command.extend({
 				enabled: true,
-				className: 'command-create-responsive-layouts upfront-icon upfront-icon-start-responsive',
+				className: 'command-create-responsive-layouts upfront-icon upfront-icon-start-responsive sidebar-commands-small-button',
 				render: function () {
 					this.$el.html("<span title='"+ l10n.create_responsive_layouts +"'>" + l10n.create_responsive_layouts + "</span>");
 				},
@@ -59,7 +67,7 @@
 
 			var Command_EditStructure = Upfront.Views.Editor.Command.extend({
 				tagName: 'div',
-				className: "command-link command-edit-structure",
+				className: "command-link command-edit-structure sidebar-commands-small-button",
 				render: function (){
 					this.$el.html(l10n.edit_grid);
 					this.$el.prop("title", l10n.edit_grid);
@@ -96,6 +104,9 @@
 				callbacks: {
 					'insert-save-buttons': function(parameters) {
 						parameters.commands.push(new Command_Themes({"model": parameters.model}));
+						parameters.commands.push(new Command_ExportLayout({"model": parameters.model}));
+					},
+					'insert-responsive-save-buttons': function(parameters) {
 						parameters.commands.push(new Command_ExportLayout({"model": parameters.model}));
 					},
 					'insert-responsive-buttons': function(parameters) {
@@ -470,11 +481,13 @@
 				//this.listenToOnce(Upfront.Events, 'command:layout:save_done', Dialogs.first_save_dialog); // Deprecated, we're not doing this anymore
 				this.listenTo(Upfront.Events, "command:layout:create", Dialogs.create_layout_dialog); // DEPRECATED
 				this.listenTo(Upfront.Events, "command:layout:browse", Dialogs.browse_layout_dialog); // DEPRECATED
-				this.listenTo(Upfront.Events, "command:layout:export_theme", Dialogs.export_dialog);
 			},
 
 			stop: function () {
-				return this.stopListening(Upfront.Events);
+				var result = this.stopListening(Upfront.Events);
+				// Listen this still since this has to happen in responsive too
+				this.listenTo(Upfront.Events, "command:layout:export_theme", Dialogs.export_dialog);
+				return result;
 			},
 
 			set_up_default_styles: function () {

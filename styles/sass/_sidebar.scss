@@ -2,12 +2,17 @@
 
 	.sidebar-commands-header {
 		background: rgb(31,41,51);
-	}
-	
-	.upfront-logo {
-		    background-position: -190px -439px;
+		height: 50px;
 	}
 
+	.upfront-logo {
+		background-position: -190px -439px;
+	}
+
+}
+
+#sidebar-ui .sidebar-commands-theme {
+	padding-left: 10px;
 }
 
 #sidebar-ui .create-theme-sidebar .sidebar-commands-primary {
@@ -18,6 +23,7 @@
 		display: block;
 		color: #6c8dac;
 		margin: 0 0 8px;
+		clear: both;
 
 		b {
 			font-weight: bold;
@@ -35,12 +41,10 @@
 		text-align: center;
 		opacity:.8;
 		background: #54708C;
-		box-shadow: 0px 1px 0px 0px #2F3E4D,
-		inset 0px 2px 0px 0px rgba(255,255,255,0.10);
+		margin-top: 0px !important;
 
 		&:hover {
 			opacity:1;
-			color: #cbe5ff;
 		}
 	}
 
@@ -50,7 +54,7 @@
 		line-height: 18px;
 
 		a {
-			color: #adc3d8;
+			color: rgba(33, 33, 33, 1);
 			display: block;
 			margin: 0 0 0 20px;
 			opacity: 0.7;
@@ -87,39 +91,6 @@
 		float: right;
 		margin: 0 10px 0 0;
 	}
-	.command-create-responsive-layouts,
-	.command-themes {
-		font-size: 13px;
-		max-width: 122px;
-		line-height: 26px;
-		padding: 0px 10px 0 5px;
-		height: auto;
-		max-height: 26px;
-		border: 1px solid #6c8dac;
-		border-radius: 2px;
-		margin: 0 0 0 10px;
-	}
-	.command-themes {
-		clear: both;
-		float: left;
-		margin-top: 22px;
-		padding: 0px 10px 0 0;
-	}
-	.command-export {
-		display: block;
-		float: right;
-		background: #1fcd8f;
-		box-shadow: 0 1px 0 rgba(37,58,77,.5);
-		color: #f1f8ff;
-		font-size: 16px;
-		margin: 15px 10px 0 0;
-		padding: 0 10px 0 10px;
-		line-height: 40px;
-		height: 40px;
-		width: 130px;
-		text-align:center;
-	}
-
 }
 
 #sidebar-ui .sidebar-commands-responsive {
@@ -135,6 +106,11 @@
 	}
 }
 
+.command-export {
+	float: right;
+	margin-right: 15px;
+}
+
 #sidebar-ui .sidebar-commands-responsive-control {
 	.command-save {
 		clear: both;
@@ -144,5 +120,9 @@
 	}
 	.exit-responsive {
 		float: left;
+	}
+	.command-export {
+		margin-top: 25px !important;
+		min-width: 90px;
 	}
 }

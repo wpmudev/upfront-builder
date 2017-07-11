@@ -23,7 +23,9 @@ function hide_errors () { return $(".upfront_admin.upfront-builder .upfront-erro
 
 function edit_theme (theme) {
 	var search = window.location.search.toString(),
-		url = (window._thx || {}).editor_base.replace(/\/theme/, '/' + theme)
+		edbase = (window._thx || {}).editor_base,
+		slug = (window._thx || {}).action_slug,
+		url = edbase.replace(slug, slug.replace(/\/theme/, '/' + theme))
 	;
 	if (!url) return false;
 
@@ -133,8 +135,17 @@ function init_existing () {
 			var $edit_form = $('#edit-theme'),
 				$edit_form_content = $edit_form.find('.form_content'),
 				$edit_form_container = $edit_form.closest('.postbox-modal-container'),
-				selected_theme = $(e.target).closest('.uf-thx-theme').attr('data-theme')
+				selected_theme = $(e.target).closest('.uf-thx-theme').attr('data-theme'),
+
+				$me = $(this),
+				old_text_label = false // Will hold the old label
 			;
+
+			// Swap the old label with working indicator
+			if ($me.length && $me.is("button")) {
+				old_text_label = $me.text();
+				$me.text(((_thx || {}).l10n || {}).loading || 'Loading...');
+			}
 
 			$.post(_thx.admin_ajax, {
 				action: 'upfront_thx-get-edit-theme-form',
@@ -145,6 +156,11 @@ function init_existing () {
 				$edit_form_container.show();
 			}).error(function(){
 				show_error();
+			}).always(function () {
+				// Just clean up the swapped label
+				if ($me.length && $me.is("button") && old_text_label) {
+					$me.text(old_text_label);
+				}
 			});
 
 			return false;
@@ -251,12 +267,12 @@ function init_existing () {
 			}
 
 			frame = wp.media({
-				title: 'Select or Upload Media Of Your Chosen Persuasion',
+				title: ((_thx || {}).l10n || {}).select_media || 'Select or Upload Media Of Your Chosen Persuasion',
 				library: {
 		      	type: 'image'
 		   	},
 				button: {
-					text: 'Use this media'
+					text: ((_thx || {}).l10n || {}).use_media || 'Use this media'
 				},
 				multiple: false  // Set to true to allow multiple files to be selected
 			});
@@ -269,6 +285,18 @@ function init_existing () {
 				if (!url || !id) return false;
 
 				$use.val(id);
+
+				// We may or may not have an <img /> el now.
+				// Let's check and see if we need to add one
+				if (!$img.length) {
+					// The case of initial shot adding - there's no <img /> el,
+					// so let's add it now and nuke the no-image placeholder
+					$img = $('<img />');
+					$me.find(".no-image").replaceWith($img);
+				}
+
+				// By now we should be all good either way
+				// Let's just do this
 				$img.attr("src", url);
 				$img.addClass('nostyle');
 			});
