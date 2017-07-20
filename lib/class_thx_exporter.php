@@ -1469,7 +1469,7 @@ error_log(debug_backtrace());
 		// because we're exporting this now, too
 		// But we only want to get urls of this site
 		$site_no_schema_url = str_replace('http://', '', get_site_url(null, '', 'http'));
-		preg_match_all("#\b(https?://' . $site_no_schema_url . '.+?\.(jpg|jpeg|png|gif|mp4|webm))\b#", $content, $matches);
+		preg_match_all("#\b(https?://$site_no_schema_url.+?\.(jpg|jpeg|png|gif|mp4|webm))\b#", $content, $matches);
 
 		$images_used_in_template = array();
 		$separator = '/';
