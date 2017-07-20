@@ -1,6 +1,6 @@
 (function ($, undefined) {
 
-define([
+upfrontrjs.define([
 	Upfront.themeExporter.root + 'app/exporter.js'
 ], function (Exporter) {
 

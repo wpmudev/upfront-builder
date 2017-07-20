@@ -12,7 +12,7 @@ jQuery(document).on("upfront-load", function () {
 		currentTheme: '<?php echo wp_get_theme()->get_stylesheet() ?>',
 		current_layout_label: <?php echo json_encode($layout); ?>
 	};
-	require(['<?php echo esc_url($root_url) ?>app/main.js'], function () {
+	upfrontrjs.require(['<?php echo esc_url($root_url) ?>app/main.js'], function () {
 		Upfront.Util.log("Booting exporter");
 	});
 });

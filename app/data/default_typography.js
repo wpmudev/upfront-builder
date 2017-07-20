@@ -1,6 +1,6 @@
 (function ($, undefined) {
 
-	define(function() {
+	upfrontrjs.define(function() {
 
 		return {
 			default_typography: {

@@ -1,5 +1,5 @@
 ;(function ($) {
-define(function () {
+upfrontrjs.define(function () {
 
 	var Exporter = {
 		is_exporter_start_page: function() {

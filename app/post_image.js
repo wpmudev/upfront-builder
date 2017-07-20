@@ -1,4 +1,4 @@
-define([
+upfrontrjs.define([
 	'underscore',
 	'jquery',
 	'text!' + Upfront.themeExporter.root + 'templates/theme/tpl/image_variants.html',
