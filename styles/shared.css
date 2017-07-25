@@ -25,9 +25,10 @@
 }
 .thx-context-mode-popup #upfront-popup-bottom label {
 	float: left;
-	margin-left: 1em;
+	margin-left: 2em;
 	line-height: 44px;
 }
 .thx-context-mode-popup #upfront-popup-bottom label input {
 	margin-right: .4em;
+	margin-top: 15px;
 }
