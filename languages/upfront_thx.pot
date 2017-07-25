@@ -2,10 +2,10 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Upfront Builder 1.1.8\n"
+"Project-Id-Version: Upfront Builder 1.1.9\n"
 "Report-Msgid-Bugs-To: "
 "http://wordpress.org/support/plugin/upfront-theme-exporter\n"
-"POT-Creation-Date: 2017-07-11 19:39:04+00:00\n"
+"POT-Creation-Date: 2017-07-25 09:12:50+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -101,56 +101,56 @@ msgstr ""
 msgid "Can't do that before theme is created."
 msgstr ""
 
-#: lib/class_thx_exporter.php:1957 lib/class_thx_exporter.php:1986
-#: lib/class_thx_exporter.php:2048
+#: lib/class_thx_exporter.php:1959 lib/class_thx_exporter.php:1988
+#: lib/class_thx_exporter.php:2050
 msgid "Your chosen theme slug is invalid, please try another."
 msgstr ""
 
-#: lib/class_thx_exporter.php:1963
+#: lib/class_thx_exporter.php:1965
 msgid "Theme with that directory name does not exist."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2004 lib/class_thx_exporter.php:2055
+#: lib/class_thx_exporter.php:2006 lib/class_thx_exporter.php:2057
 msgid "Theme with that directory name already exists."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2021
+#: lib/class_thx_exporter.php:2023
 msgid "Detected conflict with %s theme in wordpress.org public repository: %s"
 msgstr ""
 
-#: lib/class_thx_exporter.php:2031
+#: lib/class_thx_exporter.php:2033
 msgid "All good"
 msgstr ""
 
-#: lib/class_thx_exporter.php:2043
+#: lib/class_thx_exporter.php:2045
 msgid "Please check required fields."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2166
+#: lib/class_thx_exporter.php:2168
 msgid "We were not able to find the original theme."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2181
+#: lib/class_thx_exporter.php:2183
 msgid "We were not able to resolve the new, conflict-free theme slug."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2191
+#: lib/class_thx_exporter.php:2193
 msgid "The original theme appears empty."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2280
+#: lib/class_thx_exporter.php:2282
 msgid "Missing required theme selection."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2441
+#: lib/class_thx_exporter.php:2443
 msgid "some test content"
 msgstr ""
 
-#: lib/class_thx_exporter.php:2451
+#: lib/class_thx_exporter.php:2453
 msgid "some styled test content"
 msgstr ""
 
-#: lib/class_thx_exporter.php:2464
+#: lib/class_thx_exporter.php:2466
 msgid "Sample Post"
 msgstr ""
 
@@ -337,6 +337,106 @@ msgstr ""
 
 #: lib/class_thx_l10n.php:96
 msgid "Never show this again"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:210
+msgid "install"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:217
+msgid ""
+"Important updates are available for <strong>%s</strong>. Install the free "
+"WPMU DEV Dashboard plugin now for updates and support!"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:219
+msgid ""
+"<strong>%s</strong> is almost ready - install the free WPMU DEV Dashboard "
+"plugin for updates and support!"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:223
+msgid ""
+"Important updates are available for your WPMU DEV plugins/themes. Install "
+"the free WPMU DEV Dashboard plugin now for updates and support!"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:225
+msgid ""
+"Almost ready - install the free WPMU DEV Dashboard plugin for updates and "
+"support!"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:231
+msgid "Install Plugin"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:234
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:275
+msgid "Saving..."
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:235
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:276
+msgid "Dismiss"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:251
+msgid "activate"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:258
+msgid ""
+"Important updates are available for <strong>%s</strong>. Activate the WPMU "
+"DEV Dashboard to update now!"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:260
+msgid "Just one more step to enable updates and support for <strong>%s</strong>!"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:264
+msgid ""
+"Important updates are available for your WPMU DEV plugins/themes. Activate "
+"the WPMU DEV Dashboard to update now!"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:266
+msgid ""
+"Just one more step - activate the WPMU DEV Dashboard plugin and you're all "
+"done!"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:272
+msgid "Activate WPMU DEV Dashboard"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:939
+msgid "We did not find any data for this plugin or theme..."
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:1118
+msgid "%s changelog"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:1148
+msgid "Current"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:1154
+msgid "New"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:1171
+msgid "Version %s"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:1189
+msgid "Show all changes"
+msgstr ""
+
+#: lib/external/dashboard-notice/wpmudev-dash-notification.php:1190
+msgid "Hide details"
 msgstr ""
 
 #: templates/plugin/admin_errors.php:13

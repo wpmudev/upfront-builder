@@ -1,6 +1,6 @@
 (function ($, undefined) {
 
-define([
+upfrontrjs.define([
 	'scripts/upfront/upfront-views-editor/commands/command-logo',
 	'scripts/upfront/upfront-views-editor/commands/command-exit',
 	'scripts/upfront/upfront-views-editor/commands/command-menu',

@@ -1,6 +1,11 @@
 Change Log
 ============
 
+1.1.9 - 2017-07-25
+-------------------------------------------------------------------------------
+- Fix: External links entered in Code element get removed on Layout export
+- Fix: Incorrect redirection when theme is created if url contains "theme" string
+
 1.1.8 - 2017-07-12
 -------------------------------------------------------------------------------
 - Add: New design for sidebar, element & region settings (requires Upfront core 1.9).
