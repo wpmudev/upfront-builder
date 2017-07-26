@@ -4,7 +4,7 @@
 		Upfront.themeExporter.root + 'app/postlayout.js',
 		Upfront.themeExporter.root + 'app/application.js'
 	];
-	require(dependencies, function(StylesHelper, PostLayoutHelper){
+	upfrontrjs.require(dependencies, function(StylesHelper, PostLayoutHelper){
 		// Replace _.template only when we actually boot Upfront, otherwise some other scripts using it might break
 		var _tpl = _.template;
 		_.template = function (tpl, data) {
@@ -20,7 +20,7 @@
 			Upfront.data.global_regions = false; // Reset global regions info on layout load, so fresh batch is forced
 		});
 
-		require([
+		upfrontrjs.require([
 			Upfront.themeExporter.root  + 'app/sidebar.js',
 			Upfront.themeExporter.root  + 'app/modal.js',
 		], function (sidebar, modal) {

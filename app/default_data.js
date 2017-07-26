@@ -1,6 +1,6 @@
 (function ($, undefined) {
 
-	define([
+	upfrontrjs.define([
 		Upfront.themeExporter.root + 'app/data/default_typography.js',
 		'text!' + Upfront.themeExporter.root + 'app/data/default_style.css'
 	], function(typography, style) {

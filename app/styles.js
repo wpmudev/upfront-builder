@@ -1,4 +1,4 @@
-define([
+upfrontrjs.define([
   'underscore', 'jquery'
 ], function(_, $) {
 

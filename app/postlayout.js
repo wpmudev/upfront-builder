@@ -1,4 +1,4 @@
-define([
+upfrontrjs.define([
 	'underscore',
 	'jquery',
 	Upfront.themeExporter.root + 'app/post_image.js',

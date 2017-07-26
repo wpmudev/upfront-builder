@@ -1,10 +1,10 @@
 ;(function ($) {
-	define([
+	upfrontrjs.define([
 		Upfront.themeExporter.root + 'app/exporter.js',
 		'text!' + Upfront.themeExporter.root + 'templates/theme/tpl/getting_started.html',
 		'text!' + Upfront.themeExporter.root + 'templates/theme/tpl/activate_theme.html'
 	], function (Exporter, getting_started_tpl, activate_theme_tpl) {
-			
+
 		return {
 			/**
 			 * Shows a "well done" type dialog on first save
@@ -560,7 +560,7 @@
 					Upfront.Events.trigger("command:layout:export_theme");
 					return false;
 				}
-				
+
 				var me = {},
 					activate_tpl = _.template($(activate_theme_tpl).find('#upfront-builder-activate-theme-tpl').html(),{
 						current_theme: Upfront.themeExporter.currentTheme,
@@ -586,7 +586,7 @@
 					},
 					'getting-started-popup builder-activate-theme-popup'
 				);
-				
+
 				me.$popup.content.on('click', 'button.yes', function() {
 					Upfront.Util.post({
 						action: 'upfront_thx-activate-selected-theme'
@@ -604,7 +604,7 @@
 					Upfront.Popup.close();
 					Upfront.Events.trigger("command:layout:export_theme");
 				});
-				
+
 				// do not allow clicking from outside
 				Upfront.Popup.$background.off("click");
 			}

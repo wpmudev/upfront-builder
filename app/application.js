@@ -1,6 +1,6 @@
 ;(function ($) {
 
-	require([
+	upfrontrjs.require([
 		Upfront.themeExporter.root + 'app/dialogs.js',
 		Upfront.themeExporter.root + 'app/exporter.js',
 		Upfront.themeExporter.root + 'app/default_data.js',

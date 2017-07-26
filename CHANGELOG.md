@@ -1,6 +1,17 @@
 Change Log
 ============
 
+1.1.9 - 2017-07-25
+-------------------------------------------------------------------------------
+- Fix: External links entered in Code element get removed on Layout export
+- Fix: Incorrect redirection when theme is created if url contains "theme" string
+
+1.1.8 - 2017-07-12
+-------------------------------------------------------------------------------
+- Add: New design for sidebar, element & region settings (requires Upfront core 1.9).
+- Add: Different popup for Builder & Editor.
+- Fix: Upfront theme conflict.
+- Fix: Part 3 of Builder Tour breaks bottom section of interface.
 
 1.1.7 - 2017-03-29
 -------------------------------------------------------------------------------

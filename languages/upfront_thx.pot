@@ -2,10 +2,10 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Upfront Builder 1.1.7\n"
+"Project-Id-Version: Upfront Builder 1.1.9\n"
 "Report-Msgid-Bugs-To: "
 "http://wordpress.org/support/plugin/upfront-theme-exporter\n"
-"POT-Creation-Date: 2017-03-29 04:25:54+00:00\n"
+"POT-Creation-Date: 2017-07-25 09:12:50+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,35 +14,39 @@ msgstr ""
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "X-Generator: grunt-wp-i18n 0.4.9\n"
 
-#: lib/class_thx_admin.php:149
+#: lib/class_thx_admin.php:60
+msgid "Settings"
+msgstr ""
+
+#: lib/class_thx_admin.php:167
 msgid "Oops, something went wrong with processing your request."
 msgstr ""
 
-#: lib/class_thx_admin.php:150 templates/plugin/kickstart_ready.php:8
+#: lib/class_thx_admin.php:168 templates/plugin/kickstart_ready.php:8
 msgid "Start Building"
 msgstr ""
 
-#: lib/class_thx_admin.php:151
+#: lib/class_thx_admin.php:169
 msgid "Checking..."
 msgstr ""
 
-#: lib/class_thx_admin.php:152
+#: lib/class_thx_admin.php:170
 msgid "Creating..."
 msgstr ""
 
-#: lib/class_thx_admin.php:153
+#: lib/class_thx_admin.php:171
 msgid "Select or Upload Media Of Your Chosen Persuasion"
 msgstr ""
 
-#: lib/class_thx_admin.php:154
+#: lib/class_thx_admin.php:172
 msgid "Use this media"
 msgstr ""
 
-#: lib/class_thx_admin.php:155
+#: lib/class_thx_admin.php:173
 msgid "Loading data..."
 msgstr ""
 
-#: lib/class_thx_admin.php:289
+#: lib/class_thx_admin.php:307
 msgid ""
 "Upfront Exporter requires Pretty Permalinks to work. Please enable them <a "
 "href=\"%s\">here</a>"
@@ -97,76 +101,84 @@ msgstr ""
 msgid "Can't do that before theme is created."
 msgstr ""
 
-#: lib/class_thx_exporter.php:1957 lib/class_thx_exporter.php:1986
-#: lib/class_thx_exporter.php:2047
+#: lib/class_thx_exporter.php:1959 lib/class_thx_exporter.php:1988
+#: lib/class_thx_exporter.php:2050
 msgid "Your chosen theme slug is invalid, please try another."
 msgstr ""
 
-#: lib/class_thx_exporter.php:1963
+#: lib/class_thx_exporter.php:1965
 msgid "Theme with that directory name does not exist."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2004 lib/class_thx_exporter.php:2054
+#: lib/class_thx_exporter.php:2006 lib/class_thx_exporter.php:2057
 msgid "Theme with that directory name already exists."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2020
+#: lib/class_thx_exporter.php:2023
 msgid "Detected conflict with %s theme in wordpress.org public repository: %s"
 msgstr ""
 
-#: lib/class_thx_exporter.php:2030
+#: lib/class_thx_exporter.php:2033
 msgid "All good"
 msgstr ""
 
-#: lib/class_thx_exporter.php:2042
+#: lib/class_thx_exporter.php:2045
 msgid "Please check required fields."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2165
+#: lib/class_thx_exporter.php:2168
 msgid "We were not able to find the original theme."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2180
+#: lib/class_thx_exporter.php:2183
 msgid "We were not able to resolve the new, conflict-free theme slug."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2190
+#: lib/class_thx_exporter.php:2193
 msgid "The original theme appears empty."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2279
+#: lib/class_thx_exporter.php:2282
 msgid "Missing required theme selection."
 msgstr ""
 
-#: lib/class_thx_exporter.php:2440
+#: lib/class_thx_exporter.php:2443
 msgid "some test content"
 msgstr ""
 
-#: lib/class_thx_exporter.php:2450
+#: lib/class_thx_exporter.php:2453
 msgid "some styled test content"
 msgstr ""
 
-#: lib/class_thx_exporter.php:2463
+#: lib/class_thx_exporter.php:2466
 msgid "Sample Post"
 msgstr ""
 
-#: lib/class_thx_kickstart.php:44
+#: lib/class_thx_kickstart.php:62
+msgid "%s Activate an Upfront theme to use Builder"
+msgstr ""
+
+#: lib/class_thx_kickstart.php:63
+msgid "%s You need to have Upfront core present in order to use Builder"
+msgstr ""
+
+#: lib/class_thx_kickstart.php:75 lib/class_thx_kickstart.php:91
 msgid "No way."
 msgstr ""
 
-#: lib/class_thx_kickstart.php:47
+#: lib/class_thx_kickstart.php:78
 msgid "Core not available."
 msgstr ""
 
-#: lib/class_thx_kickstart.php:71
+#: lib/class_thx_kickstart.php:127
 msgid "Ooops, something went wrong."
 msgstr ""
 
-#: lib/class_thx_kickstart.php:72
+#: lib/class_thx_kickstart.php:128
 msgid "All good, please hold on while we redirect you to your Builder page."
 msgstr ""
 
-#: lib/class_thx_l10n.php:46 upfront-theme-exporter.php:256
+#: lib/class_thx_l10n.php:46 upfront-theme-exporter.php:273
 msgid "Builder"
 msgstr ""
 
@@ -515,6 +527,10 @@ msgstr ""
 msgid "We can fix that for you:"
 msgstr ""
 
+#: templates/plugin/kickstart_ready.php:11
+msgid "Do not show this again"
+msgstr ""
+
 #: templates/plugin/theme_form.php:29
 msgid "What do you want to call your new theme?"
 msgstr ""
@@ -615,11 +631,11 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: upfront-theme-exporter.php:264
+#: upfront-theme-exporter.php:281
 msgid "Modify current theme"
 msgstr ""
 
-#: upfront-theme-exporter.php:272
+#: upfront-theme-exporter.php:289
 msgid "Create new theme"
 msgstr ""
 
