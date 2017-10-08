@@ -93,7 +93,13 @@
 		$.post(ajaxurl, {
 			action: 'upfront-kickstart-go_away'
 		}).done(function () {
+			var el_notice = $(".wp-admin .notice.uf-thx-kickstart");
 
+			el_notice.fadeTo(100 , 0, function() {
+				el_notice.slideUp(100, function() {
+					el_notice.remove();
+				});
+			});
 		});
 
 		return false;
