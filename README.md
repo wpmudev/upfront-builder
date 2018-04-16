@@ -1,5 +1,7 @@
 # Upfront Builder
 
+**INACTIVE NOTICE: This plugin is unsupported by WPMUDEV, we've published it here for those technical types who might want to fork and maintain it for their needs.**
+
 Upfront is the fastest, most visual, way to build WordPress themes and now with the builder, anyone can design, build, export, share, and sell WordPress themes. Get started creating your own themes without writing a single line of code.
 
 * Create your own Upfront themes
