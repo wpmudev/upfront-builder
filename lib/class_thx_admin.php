@@ -41,8 +41,6 @@ class Thx_Admin {
 
 		add_filter('upfront-admin-admin_notices', array($this, 'process_core_notices'));
 
-		add_action('admin_init', array($this, 'initialize_dashboard'));
-
 		add_filter('plugin_action_links_' . THX_PLUGIN_BASENAME, array($this, 'add_settings_link'));
 	}
 
@@ -60,24 +58,6 @@ class Thx_Admin {
 			__('Settings', UpfrontThemeExporter::DOMAIN)
 		);
 		return $links;
-	}
-
-	/**
-	 * Initialize dashboard and set it up to render on proper pages
-	 */
-	public function initialize_dashboard () {
-		if (file_exists(dirname(__FILE__) . '/external/dashboard-notice/wpmudev-dash-notification.php')) {
-			global $wpmudev_notices;
-			if (!is_array($wpmudev_notices)) $wpmudev_notices = array();
-			$wpmudev_notices[] = array(
-				'id' => 1107287,
-				'name' => 'Upfront Builder',
-				'screens' => array(
-					'upfront_page_upfront-builder',
-				),
-			);
-			require_once (dirname(__FILE__) . '/external/dashboard-notice/wpmudev-dash-notification.php');
-		}
 	}
 
 	/**
